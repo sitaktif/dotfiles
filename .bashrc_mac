@@ -1,0 +1,18 @@
+test -r /sw/bin/init.sh && . /sw/bin/init.sh || echo "warning: /sw/bin/init.sh not found"
+
+if [ -f /sw/etc/bash_completion ]; then
+    source /sw/etc/bash_completion 
+fi
+
+# Setting PATH for MacPython 2.6
+export PATH="/Library/Frameworks/Python.framework/Versions/2.6/bin:${PATH}"
+export PYTHONPATH=$PYTHONPATH:/Library/Python/2.6/site-packages:/sw/lib/python2.6/site-packages
+
+###############################
+#           ALIASES           #
+###############################
+
+# System
+alias suspend='~/scripts/mac/veille.sh'
+
+alias kstream="/Applications/VLC.app/Contents/MacOS/VLC qtcapture:// --sout='#transcode{vcodec=theo,vb=200,scale=0.5,acodec=none}:std{access=shout,mux=ogg,dst=source:bite@10.7.0.1:8000/sitaktif.ogg}'"

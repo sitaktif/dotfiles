@@ -1,0 +1,2 @@
+supertab.vba: call delete('/Users/sitaktif/.vim/doc/supertab.txt')|call delete('/Users/sitaktif/.vim/plugin/supertab.vim')
+Align.vba: call delete('/Users/sitaktif/.vim/plugin/AlignPlugin.vim')|call delete('/Users/sitaktif/.vim/plugin/AlignMapsPlugin.vim')|call delete('/Users/sitaktif/.vim/plugin/cecutil.vim')|call delete('/Users/sitaktif/.vim/doc/Align.txt')|call delete('/Users/sitaktif/.vim/autoload/Align.vim')|call delete('/Users/sitaktif/.vim/autoload/AlignMaps.vim')
