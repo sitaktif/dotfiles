@@ -1,16 +1,41 @@
 test -r /sw/bin/init.sh && . /sw/bin/init.sh || echo "warning: /sw/bin/init.sh not found"
 
-if [ -f /sw/etc/bash_completion ]; then
-    source /sw/etc/bash_completion 
-fi
+# Uncomment if I really lose some completion stuff, but I'm not convinced it's the case...
+#if [ -f /sw/etc/bash_completion ]; then
+#    source /sw/etc/bash_completion 
+#fi
 
 # Setting PATH for MacPython 2.6
 export PATH="/Library/Frameworks/Python.framework/Versions/2.6/bin:${PATH}"
-export PYTHONPATH=$PYTHONPATH:/Library/Python/2.6/site-packages:/sw/lib/python2.6/site-packages
+export PYTHONPATH=$PYTHONPATH:/Library/Python/2.6/site-packages
+
+# Unison
+export UNISONLOCALHOSTNAME='stalker'
+
+# Vim setting for "mvim" script
+export VIM_APP_DIR=/Applications
+
+if [ "$DISPLAY" != "" ]; then
+    L_VIM="mvim"
+else
+    if [ "$SSH_CONNECTION" = "" ]; then
+	L_VIM="mvim"
+    else
+	L_VIM="/Applications/MacVim.app/Contents/MacOS/Vim"
+    fi
+fi 
+export L_VIM
 
 ###############################
 #           ALIASES           #
 ###############################
+
+
+TODO
+
+# Shortcuts
+alias cdpysites='cd /Library/Python/2.6/site-packages'
+alias cddjango='cd /Library/Python/2.6/site-packages/django'
 
 # System
 alias suspend='~/scripts/mac/veille.sh'

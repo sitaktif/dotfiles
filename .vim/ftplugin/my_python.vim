@@ -32,6 +32,7 @@ syn match pythonError "^\s*if\s.*[^\:]$" display
 syn match pythonError "^\s*except\s.*[^\:]$" display
 syn match pythonError "[;]$" display
 syn keyword pythonError         do 
+hi link pythonError Error
 
 " Make program and debug with :cn and :cp
 autocmd BufRead *.py set makeprg=python\ -c\ \"import\ py_compile,sys;\ sys.stderr=sys.stdout;\ py_compile.compile(r'%')\"
@@ -39,9 +40,12 @@ autocmd BufRead *.py set efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^
 
 
 " Evaluate a pyhon bunch of code
+if has('python')
 python << EOL
 import vim
 def PyEval():
     eval(compile('\n'.join(vim.current.range),'','exec'),globals())
 EOL
+
 map <C-h> :py PyEval() 
+endif

@@ -7,8 +7,8 @@
 "Removes vi-compatibility (mandatory !)
 set nocp
 
-"" Pathogen conf
-"filetype off
+" Pathogen conf
+filetype off
 call pathogen#runtime_append_all_bundles()
 
 " File types and coloration have to be set here
@@ -17,14 +17,6 @@ filetype plugin on
 filetype indent on
 set background=dark
 
-
-"""""""""""""""""""""""""""""""""""""""
-" CHANGE THIS ACCORDING TO YOUR SYSTEM
-"""""""""""""""""""""""""""""""""""""""
-" You may create this dir
-let g:sita_tags_path = "~/tags"
-"
-"""""""""""""""""""""""""""""""""""""""
 au BufRead,BufNewFile *py syntax on
 
 " ---| SYSTEM-DEPENDANT SETTINGS |--- {{{
@@ -43,56 +35,42 @@ else
     let g:PLATFORM = 'other'
 endif
 
-
 " If GUI mode
 if has("gui_running")
     let &guicursor = &guicursor . ",a:blinkon0"
     set guioptions-=e "No gui-like tabs
     set guioptions-=T "No toolbar
     set guioptions-=m "No menubar
-    set guioptions-=r "No scroolbar
-    set guioptions+=a "Gui visual w/ mouse (yank to "*)
+    set guioptions-=r "No scroolbar (right)
+    set guioptions-=L "No scroolbar (left)
     set guioptions+=c "Console dialogs (no popup)
+    "set guioptions+=a "Gui visual w/ mouse (yank to "*)
+
     colorscheme ps_color
-    "colorscheme twilight "Really nice colorscheme, like textmate
-	
+
     if g:PLATFORM =~ "win"
 	set guifont=Terminus:h12
     else
 	set guifont=Terminus:h16
+    else
+	set guifont=Terminus:h14
     endif
-
-    "Highlight current line/col
-    set cursorline
-    "set cursorcolumn
-    hi CursorLine guibg=#333333
-    "hi CursorColumn guibg=#333333
-
-    "Omni menu colors
-    hi Pmenu guibg=#333333
-    hi PmenuSel guibg=#555555 guifg=#ffffff
-
-" If console mode
 else
+	colorscheme desert
 	set termencoding=utf-8
-        "if has('gui')
-            "colorscheme ps_color
-        "else
-            colorscheme desert
-        "endif
-	hi CursorLine cterm=NONE ctermbg=234
+	set ttymouse=xterm2
 	if (&term =~ 'screen-bce') " 256 color screen (condition is not safe)
-		set t_Co=256
-		set nocursorline
-		set nocursorcolumn
+	    set t_Co=256
+	    set nocursorline
+	    set nocursorcolumn
 	elseif (&term =~ 'screen' || &term =~ 'linux')
-		set t_Co=16
-		set nocursorline
-		set nocursorcolumn
+	    set t_Co=16
+	    set nocursorline
+	    set nocursorcolumn
 	else
-		set t_Co=256
-		set ttymouse=xterm2
-        set cursorline
+	    set t_Co=256
+	    set ttymouse=xterm2
+	    set cursorline
 	endif
 endif
 
@@ -124,7 +102,7 @@ set backspace=start,indent,eol "Fix backspace
 set linebreak "Break lines at words, not chars
 set scrolloff=4 "When moving vertical, start scrolling 4 lines before reaching bottom
 set modeline "Vim mini-confs near end of file
-
+set listchars+=tab:>-,trail:·,extends:~,nbsp:-
 set fileformats+=mac
 
 " Search
@@ -132,7 +110,7 @@ set wrapscan "Continue to top after reaching bottom
 set hlsearch "Highlight search
 set incsearch "See results of search step by step
 set ignorecase
-set smartcase
+set smartcase "Do not ignore case if there is a MAJ in pattern
 
 " Parenthesis
 set showmatch "Parenthesis matches
@@ -153,7 +131,7 @@ set wildmenu "Completions view in ex mode (super useful !)
 set wildignore=*.o,*.obj,*.bak,*.exe,*.pyc,*.ps,*.pdf,*.cmo,*.cmi,*.cmx "Don't complete bin files
 set cmdheight=1 "Command line height
 set laststatus=2 "When to show status line (2=always)
-set statusline=%F%m%r%h%w\ \%{&ff}\ %Y\ [%03.3b\ %02.2B]\ [POS=%04l/%L,%04v/%{len(getline('.'))}]\ [%p%%]
+set statusline=%F%m%r%h%w\ %Y\ [%03.3b\ %02.2B]\ [L=%04l/%L,C=%04v/%{len(getline('.'))}]\ [%p%%]
 set ruler "Show line,col in statusbar
 set number "Show lines
 set showmode "Show mode in status (insertion, visual...)
@@ -223,7 +201,7 @@ endfunction
 
 "}}}
 
-" ---| MAPPINGS |--- {-3{{
+" ---| MAPPINGS |--- {{{
 
 "" HANDY MAPPINGS 
 
@@ -239,34 +217,27 @@ map - <c-w>w
 map _ :noh<CR>
 " correct this shitty typo on exit :]
 nmap q: :q
-
 " No more 'fu-, gotta make a `!rm ./1` :( '
 cabbr w1 :w!
 cabbr q1 :q!
 
+" For azerty layouts - TODO: Fix that
+" map! ù <leader>
+" map! ² <leader>
+" map § :e#<cr> " TODO: try with CTRL-6
+
 " For qwerty/azerty pain-in-the-ass typos
 map Q A
+imap   \<espace insécable\>
 
-" Colorscheme
-"map 0 :colorscheme sita_ps_colors<cr>
 
-"" FUNCTION KEYS (used: 4 6 7 8 10 11 12)
-" PERSONAL REMINDER FOR FUNCTION KEYS IN TERMS (not GUI !!!)
-" For x in  F1->F10, <S-x> => F11->F20 (it adds 10)
-" Hence, do NOT use <S-F1> and <S-F2> (it is mapped to F11 and F12)
-" Also, do not use <S-F11> and <S-F12> as it does not exist.
-" Codes (1st line : <F1>-><F12>, 2nd line : <S-F1>-><S-F12>)
-"[11~[12~[13~[14~[15~[17~[18~[19~[20~[21~[23~[24~
-"[23~[24~[25~[26~[28~[29~[31~[32~[33~[34~[23~[24~
 
-" Then, line of conduct : use <Fn> keys only for general (not ft)
-" Hence, it won't be cluttered with "if has('gui') ... endif"
-
+"" FUNCTION KEYS (used: 4 6 7 8 10 11 12) - TODO
 
 " Tabs
 map <F1> :A<cr>
-map <F2> :vnew<cr>
-map <S-F2> :new<cr>
+" map <F2> to something PREV
+" map <F3> to something NEXT
 map <F4> :tabe 
 
 ""Preview zone F6/7/8
@@ -293,10 +264,6 @@ nnoremap * *zz
 nnoremap # #zz
 nnoremap g* g*zz
 nnoremap g# g#zz
-
-" Fixes a bit Scrolling (but ugly on slow connecs)
-"nnoremap <PageUp> zz<PageUp>zz
-"nnoremap <PageDown> zz<PageDown>zz
 
 " Warning:
 " The following may be a bit hardcore for beginners...
@@ -326,7 +293,7 @@ noremap <right> 10zl
 
 
 " Forgot to sudo ? Hehee :)
-if g:PLATFORM == 'win'
+if g:PLATFORM != 'win'
     command! WW w !sudo tee % > /dev/null
 endif
 
@@ -393,7 +360,7 @@ function! SitaShowSearchOnly()
 endfunc
 
 
-" PDF (but actually, all kinds of filetypes)
+" PDF
 "Transforms ´e into é etc.. for cp/paste from bad pdf files
 map <leader>pa :s/´e/é/ge<bar>s/`e/è/ge<bar>s/[ˆ^]e/ê/ge<bar>s/`a/à/ge<bar>s/[ˆ^]o/ô/ge<bar>s/[ˆ^]i/î/ge<cr>
 
@@ -424,30 +391,17 @@ noremap!  <bs>
 "autocmd BufWritePre *  silent! undojoin | call TimeStamp()
 
 " always jump back to the last position when re-entering a file
-autocmd BufReadPost *
-    \ if line("'\"") > 0 && line("'\"") <= line("$") |
-    \   exe "normal g`\"" |
-    \ endif
-
-
-"" Personnal filetype actions
-
-" 1/ append filetype tag (.vim/tags/<Filetype>.tags)
-" 2/ No 2/ anymore
-function! SitaProcessFt(ft)
-    if isdirectory(g:sita_tags_path)
-	let l:fttagfile = g:sita_tags_path."/".a:ft.".tags"
-	if filereadable(l:fttagfile)
-	    exec "set tags+=".l:fttagfile
-	endif
-    endif
-endfunction
-"autocmd FileType * call SitaProcessFt( expand('<amatch>') )
-
+if has("autocmd")
+    autocmd BufReadPost *
+        \ if line("'\"") > 0 && line("'\"") <= line("$") |
+        \   exe "normal g`\"" |
+        \ endif
+endif
 
 " Amadeus only
 autocmd FileType cpp,hpp set tags+=~/pwe/default/tags
 map <F3> :%s/.\{-}FldDB_// <bar> %s/\s*=\s*"\([^"]*\)";\s*/,\1/ <bar> %s/[^,]*/\L&/ <bar> %s/_\(.\)/\u\1/g <bar> %s/\([^,]*\),\([^,]*\)/\2,\1/<cr>
+
 "}}}
 
 " ---| FILETYPE |--- {{{
@@ -484,6 +438,9 @@ autocmd FileType php set omnifunc=phpcomplete#CompletePHP
 
 " C / C++ (OmniCppComplete)
 "autocmd FileType c,cpp map <F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .<CR>
+
+" Vim files
+autocmd FileType vim map <buffer> <f5> :so %<cr>
 
 " JAVA
 " See ftplugin/java.vim

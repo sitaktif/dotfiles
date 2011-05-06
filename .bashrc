@@ -1,10 +1,25 @@
+###############################
+#      SYSTEM SPECIFIC        #
+###############################
 
-# Different behavior depending on system
-if [[ $(uname) == 'Darwin' ]]; then # Leopard
-    if [ -z "$PS1" ]; then
-	PATH=$PATH:/sw/bin # For remote git pulls
-	return   # If not running interactively, don't do anything
-    fi
+# Non-interactive mode
+#
+if [ -z "$PS1" ]; then
+    PATH=$PATH:/sw/bin # For remote git pulls
+    return   # If not running interactively, don't do anything else
+fi
+
+# Default values defined in system-specific rc-files - "L_" for "LOCAL"
+export L_VIM="vim"
+
+# TODO - proper default prompt + specify colors for each
+# stalker: purple - slacker: TODO - kollok: TODO
+PS1='($(uname)) \[\033[38;5;92m\]\u:\[\033[00m\]\[\033[38;5;166m\]$(date +%H:%M)\[\033[01;34m\] \w \[\033[00m\]'
+
+# Load OS-specific rc files
+#
+if [[ "$(uname)" == 'Darwin' ]]; then # Leopard
+    PS1='\[\033[38;5;92m\]\u:\[\033[00m\]\[\033[38;5;166m\]$(date +%H:%M)\[\033[01;34m\] \w \[\033[00m\]'
     source ~/.bashrc_mac
 fi
 
@@ -19,13 +34,18 @@ togit() {
 
 
 ###############################
-#           EXPORTS           #
+#          OPTIONS            #
 ###############################
 
-#PS1='\[\033[01;34m\]\u:\[\033[00m\]\[\033[01;32m\]$(date +%H:%M)\[\033[01;34m\] \w \[\033[00m\]'
-PS1='\[\033[38;5;92m\]\u:\[\033[00m\]\[\033[38;5;166m\]$(date +%H:%M)\[\033[01;34m\] \w \[\033[00m\]'
+# Make extended globs work
+shopt -s extglob
 
-export PATH=$PATH:~/scripts/bin:~/bin/bin
+# Set some nice ls colors
+eval $(dircolors ~/.dircolors)
+
+
+# Binaries in home
+export PATH=~/bin/local:~/bin/shared:$PATH
 
 # General
 export MAIL=/home/sitaktif/.mail/default
@@ -36,6 +56,9 @@ export VISUAL=vim
 export HISTCONTROL=ignoredups
 export HISTFILESIZE=10000
 export HISTSIZE=10000
+
+# Rsync and others transfer apps
+export UPLOAD_BW_LIMIT=400
 
 # App-specific
 export MPD_HOST="localhost"
@@ -53,37 +76,126 @@ alias cdjf='cd ~/git/site_espira/jf'
 alias cdj2='cd ~/git/site_chinafrique/src'
 alias cdjj='cd ~/sites/jj/code'
 alias cdts='cd ~/git/ts.git/src'
+alias cdsp='cd ~/git/sportsclub/club'
 
-#############################
-# THESE ARE FIXED FOREVER ! #
-#############################
+#
+# THESE ARE FIXED FOREVER
+#
 
 # Listing-related
 alias ls='ls --color=auto'
 alias sl='ls'
 alias l='ls'
 alias ll='ls -ahl'
+alias lt='ls -lrth'
+alias lat='ls -larth'
+
+# Tree (particularly useful for django)
+alias ta='tree    --charset ascii -a        -I \.git*\|*\.\~*\|*\.pyc'
+alias ta2='tree   --charset ascii -a  -L 2  -I \.git*\|*\.\~*\|*\.pyc'
+alias ta3='tree   --charset ascii -a  -L 3  -I \.git*\|*\.\~*\|*\.pyc'
+alias tA='tree    --charset ascii -a'
+alias tap='tree   --charset ascii -ap       -I \.git*\|*\.\~*\|*\.pyc'
+alias td='tree    --charset ascii -d        -I \.git*\|*\.\~*\|*\.pyc'
+alias tad='tree   --charset ascii -ad       -I \.git*\|*\.\~*\|*\.pyc'
+alias tad2='tree  --charset ascii -ad -L 2  -I \.git*\|*\.\~*\|*\.pyc'
+alias tad3='tree  --charset ascii -ad -L 3  -I \.git*\|*\.\~*\|*\.pyc'
+alias tas='tree   --charset ascii -ash      -I \.git*\|*\.\~*\|*\.pyc'
+alias tug='tree   --charset ascii -aug      -I \.git*\|*\.\~*\|*\.pyc'
+alias taj='tree   --charset ascii -a        -I \.git*\|*\.\~*\|*\.pyc\|__init__\.py'
+
+alias pud='pushd -n "$args" &> /dev/null' # Push dir on stack
+alias pod='popd >& /dev/null'		 # Go back in time
+alias ds="dirs -v"       # Show DIRSTACK with array index
+
+# Directory change functions
+mkcd () {
+    mkdir -p "$*" ; cd "$*"
+}
+function ,, () {
+    cd ..
+}
+
+# Utilities
+alias g='grep -nr --color'
+alias gi='grep -nri --color'
+alias gr='grep -nr --color'
+alias gri='grep -nri --color'
+alias bn='basename'
 alias dn='dirname'
+
+# Disk use sorted, process list
+alias dus="du -sh * .* | sort -k1,1h"
+alias psa='ps aux | grep'
+alias pst='pstree -hAcpul'
+
+# Rsync - Unison
+alias unison='unison -ui text'
+ TODO Be more smart and reuse older ones
+alias sync="rsync      -aSHAXhq --rsh=ssh --delete"
+alias syncv="rsync     -aSHAXh  --rsh=ssh --delete --progress --stats"
+alias syncnv="rsync    -aSHAXh  --rsh=ssh --delete --progress --stats --numeric-ids"
+alias syncbw80="rsync  -aSHAXh  --rsh=ssh --delete --progress --stats --numeric-ids --bwlimit=80"
+alias syncbw800="rsync -aSHAXh  --rsh=ssh --delete --progress --stats --numeric-ids --bwlimit=800"
+
+
+# Screen
+alias sls='screen -ls'
+alias sr='screen -r'
 
 # Handy prefixes
 alias left='DISPLAY=:0.0'
 alias right='DISPLAY=:0.1'
+
+# Improved man - tries python doc
+function man () {
+(   /usr/bin/man "$@" ||
+    python -c "
+try:
+    help($1)
+except NameError:
+     locals()['$1']=__import__('$1')
+     help('$1')" ||
+    echo "No manual entry or python module for $1" ) 2>/dev/null
+}
+
+# Editor related
+alias e="$L_VIM"
+
+# Bash, zsh, vim
+alias vimb="e ~/.bashrc"
+alias sob='source ~/.bashrc'
+alias vimz="e ~/.zshrc"
+alias soz="source ~/.zshrc"
+alias vimv="e ~/.vimrc"
+
+
+############################
+#        BOOKMARKS         #
+############################
 
 # Kollok-related
 alias kget='~/scripts/kollok/kget.sh'
 alias kput='~/scripts/all/kput.sh'
 alias ktadd="ssh kollok.org TERM=xterm /usr/local/scripts/tadd"
 
-############################
-#        BOOKMARKS         #
-############################
-
 # SSH
 alias k='ssh kollok.org'
+alias k2='ssh uk.kollok.org -p443'
 alias sshg='ssh gamer'
 alias sshm='ssh mickey'
 alias sshp='ssh chossart2006@perso.iiens.net'
 alias sshp2='ssh -p 443 chossart2006@perso.iiens.net'
+
+
+## Works, but to extend!
+##
+##
+#rsync -avub --progress --delete Pictures gamer:Media/mac_pictures/Pictures
+##
+##
+## Works, but to extend!
+
 
 # Lftp
 alias jjftp='lftp jeanjolly@ftp4.phpnet.org'
@@ -110,10 +222,11 @@ alias tip='touch __init__.py'
 alias wxdemo='python /usr/src/python_libs/wxPython-2.8.8.1/demo/Main.py'
 
 # Django
-alias djvim='~/scripts/vim/djvim.sh' # Launch vim with right paths for django
-alias cddjango='cd /sw/lib/python2.6/site-packages/django/'
+alias djvim='~/scripts/shared/vim_djvim.sh' # Launch vim with right paths for django
+alias vimdjango="$L_VIM ../{urls,settings}.py models.py views/*.py forms/*.py templates/*.py"
 alias drs='python manage.py runserver'
 alias dsd='python manage.py syncdb'
+alias dsh='python manage.py shell'
 #}}}
 ## Old {{{
 
@@ -123,5 +236,9 @@ alias dsd='python manage.py syncdb'
 #alias pecdb='mysql -D test -u root -p'
 
 #}}}
+
+#
+# BACKUP STUFF - Unison and Rsync
+#
 
 #vim:foldmethod:marker
