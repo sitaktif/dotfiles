@@ -29,4 +29,5 @@
     ci = commit
     br = branch
     co = checkout
+    rb = rebase
 

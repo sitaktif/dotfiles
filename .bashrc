@@ -29,7 +29,7 @@ fi
 ###############################
 
 togit() {
-    mv "$@" /Users/sitaktif/git/dotfiles/ && ln -s /Users/sitaktif/git/dotfiles/"$@" ./
+    mv "$@" /Users/sitaktif/git/dotfiles_git/ && ln -s /Users/sitaktif/git/dotfiles_git/"$@" ./
 }
 
 
@@ -130,13 +130,14 @@ alias psa='ps aux | grep'
 alias pst='pstree -hAcpul'
 
 # Rsync - Unison
+ TODO Use different conf files for part/full sync
 alias unison='unison -ui text'
- TODO Be more smart and reuse older ones
-alias sync="rsync      -aSHAXhq --rsh=ssh --delete"
-alias syncv="rsync     -aSHAXh  --rsh=ssh --delete --progress --stats"
-alias syncnv="rsync    -aSHAXh  --rsh=ssh --delete --progress --stats --numeric-ids"
-alias syncbw80="rsync  -aSHAXh  --rsh=ssh --delete --progress --stats --numeric-ids --bwlimit=80"
-alias syncbw800="rsync -aSHAXh  --rsh=ssh --delete --progress --stats --numeric-ids --bwlimit=800"
+# syncd for sync-delete (to avoir a deadly typo)
+alias syncd="rsync      -aSHAXh  --rsh=ssh --delete"
+alias syncdv="rsync     -aSHAXh  --rsh=ssh --delete --progress --stats"
+alias syncdnv="rsync    -aSHAXh  --rsh=ssh --delete --progress --stats --numeric-ids"
+alias syncdbw80="rsync  -aSHAXh  --rsh=ssh --delete --progress --stats --numeric-ids --bwlimit=80"
+alias syncdbw800="rsync -aSHAXh  --rsh=ssh --delete --progress --stats --numeric-ids --bwlimit=800"
 
 
 # Screen

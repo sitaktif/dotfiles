@@ -1,5 +1,5 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =8
+let g:netrw_dirhist_cnt =9
 let g:netrw_dirhist_1='/Users/sitaktif/.vim/sitaktif'
 let g:netrw_dirhist_2='/Users/sitaktif/.vim_bordel/ftdetect'
 let g:netrw_dirhist_3='/Users/sitaktif/Documents/archives/sherbrooke_recherche/specs/lnt_selkis_bibli_new'
@@ -8,3 +8,4 @@ let g:netrw_dirhist_5='/Users/sitaktif/git/site_chinafrique/src/css'
 let g:netrw_dirhist_6='/Users/sitaktif/unitodo'
 let g:netrw_dirhist_7='/Users/sitaktif/git/sportsclub/club/views/user'
 let g:netrw_dirhist_8='/Users/sitaktif/scripts/mac/automator'
+let g:netrw_dirhist_9='/Users/sitaktif/.unison'

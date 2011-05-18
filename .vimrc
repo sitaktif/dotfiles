@@ -1,8 +1,6 @@
-" NOTES : some maps may be unusable on some systems, that concerns :
-" ù (ugrave), é (eacute), è (egrave), ç (ccedilla) or µ (mu)
+" Last changes: 2011 May 18 - 09:32
 
-" Last changes: 2009 Dec 02
-
+" ---| BASIC HEADER |--- {{{
 
 "Removes vi-compatibility (mandatory !)
 set nocp
@@ -17,7 +15,7 @@ filetype plugin on
 filetype indent on
 set background=dark
 
-au BufRead,BufNewFile *py syntax on
+"}}}
 
 " ---| SYSTEM-DEPENDANT SETTINGS |--- {{{
 
@@ -120,6 +118,7 @@ au FileType python set path +=/sw/lib/python2.6/site-packages/Django-1.2.3-py2.6
 """   autocmd FileType ocaml,caml,omlet let Tlist_Ctags_Cmd = '~/scripts/linux/octags.sh'
 endif
 
+"}}}
 
 " ---| GLOBAL SETTINGS |--- {{{
 
@@ -177,9 +176,10 @@ set showcmd "Show beginning of normal commands (try d and see at bottom-right)
 " These are files we are not likely to want to edit or read.
 set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc,.job
 
-set tags=./tags;/
+" TODO: This is a try. See if it is ok
+set tags=./tags,../tags,../../tags
 
-" Statusline
+" Statusline (relative to home when possible)
 " function! CurDir()
 "   let curdir = substitute(getcwd(), $HOME, "~", "g")
 "   return curdir
@@ -199,41 +199,37 @@ set ttymouse=xterm2 "Mouse dragging in iTerm
 
 " ---| MORE COMPLEX FUNCTIONS |--- {{{
 "
-"  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
 
-" Updates 'Last change(s):' ; called on every buffer saving 
+
+"  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+" Last Modified: Wed 14 Oct 2009 09:44:38 AM CDT 
+" Called on every buffer saving 
 function! TimeStamp()
-  let lines = line("$") < 10 ? line("$") : 10
-  let pattern1 = '\([Ll]ast [Cc]hanges\=\s\=:\)'
-  let replace1 = '\1' . strftime("%Y %b %d")
-  " First n lines
-  execute printf('silent! 1,%ds/\C\m%s/%s/e', lines, pattern1, replace1)
-  " Last n lines
-  execute printf('silent! $-%d+1,$s/\C\m%s/%s/e', lines, pattern1, replace1)
-  "let pattern2 = '\($Id: \f\+ \d\+\.\d\+\(\.\d\+\.\d\+\)*\)\(+\(\d\+\)\)\? '
-  "           \ . '\(\d\d\d\d[-/]\d\d[-/]\d\d \d\d:\d\d:\d\d\)\(+\d\d\)\?'
-  "let replace2 = '\=submatch(1) . "+" . (submatch(4) + 1) . " "'
-  "           \ . '. strftime("%Y\/%m\/%d %H:%M:%S") . submatch(6)'
-  "execute printf('1,%ds/\C\m%s/%s/e', lines, pattern2, replace2)
-  "execute printf('$-%d+1,$s/\C\m%s/%s/e', lines, pattern2, replace2)
+    let l:save_cursor = getpos(".") 
+    "let save_substitute = " CANNOT MANAGE TO RECOVER THE LAST
+	"SUBSTITUTE (for &, :&, etc..). Already looked doc - look on vim wikia
+    let l:lines = line("$") < 10 ? line("$") : 10
+    let l:pattern1 = '\([Ll]ast \([Mm]odified\|[Cc]hanges\=\)\s\=:\)'
+    let l:replace1 = '\1 ' . strftime("%Y %b %d - %H:%M")
+    " First n lines
+    execute printf('silent! 1,%ds/\C\m%s.*/%s/e', l:lines, l:pattern1, l:replace1)
+    " Last n lines, only if #(lines) > n
+    let l:lines = max([0, line('$') - l:lines])
+    if l:lines > 0
+	execute printf('silent! $-%d+1,$s/\C\m%s.*/%s/e', l:lines, l:pattern1, l:replace1)
+    endif
+    call setpos('.', l:save_cursor)
 endfunction
-
-" Try this new one, one day (merge with previous one) :
-"" Last Modified: Wed 14 Oct 2009 09:44:38 AM CDT 
-	function! UpdateLastModified() 
-	  if &modified 
-	    let save_cursor = getpos(".") 
-	    "let save_substitute = " CANNOT MANAGE TO RECOVER THE LAST
-		"SUBSTITUTE (for &, :&, etc..)
-"	    silent! keepjumps 1,4s/ Last Modified: \zs.*/\=strftime('%c')/ )
-	    silent! undojoin keepjumps 1,4s/\([Ll]ast [Cc]hanges\=\s\=:\s*\)\zs\d\d\d\d \w[a-zé][a-zû] \d\d\ze/\=strftime('%Y %b %d')/
-
-	    call setpos('.', save_cursor) 
-	  endif 
-	endfunction 
-	autocmd BufWritePre * call UpdateLastModified()  
-
 "  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+autocmd BufWritePre * call TimeStamp()
+
+
+func! DeleteTrailingWS()
+  exe "normal mz"
+  %s/\s\+$//ge
+  exe "normal 'z"
+endfunc
+"autocmd BufWrite *.py,*.h,*.hpp,*.c,*.cpp :call DeleteTrailingWS()
 
 "}}}
 
@@ -264,17 +260,19 @@ cabbr q1 :q!
 
 " For qwerty/azerty pain-in-the-ass typos
 map Q A
-imap   \<espace insécable\>
+imap   \<non_space_blank\>
 
 
 
-"" FUNCTION KEYS (used: 4 6 7 8 10 11 12) - TODO
+"" FUNCTION KEYS (used: 1 4 6 7 8 10 11 12) - TODO
 
 " Tabs
 map <F1> :A<cr>
 " map <F2> to something PREV
 " map <F3> to something NEXT
 map <F4> :tabe 
+
+"map <F5> :!% 
 
 ""Preview zone F6/7/8
 "map <F6> :pop<cr>
@@ -284,7 +282,7 @@ map <F4> :tabe
 "map <S-F6> :cp<cr>
 "map <S-F7> :cn<cr>
 "map <S-F8> :ccl<cr>
-"
+
 "" Tags update
 "map <F12> :!ctags -R .<CR><CR>
 "" Toggle 'preview' in omni-completion
@@ -422,9 +420,9 @@ noremap!  <bs>
 
 " ---| AUTOCOMMANDS |--- {{{
 
-" ks is an alias for :mark s
-"autocmd BufWritePre *  silent! undojoin | normal mz | call TimeStamp()|normal `z
-"autocmd BufWritePre *  silent! undojoin | call TimeStamp()
+" Keyword dictionary completion with syntax
+autocmd FileType * exec('setlocal dict+='.$VIMRUNTIME.'/syntax/'.expand('<amatch>').'.vim')
+
 
 " always jump back to the last position when re-entering a file
 if has("autocmd")
@@ -436,31 +434,8 @@ endif
 
 "}}}
 
-" TODO TODO TODO
-" TODO TODO TODO put that in the right files !
-" TODO TODO TODO
 " ---| FILETYPE |--- {{{
-
-" Keyword dictionary complete
-autocmd FileType * exec('setlocal dict+='.$VIMRUNTIME.'/syntax/'.expand('<amatch>').'.vim')
-
-set tags=./TAGS,TAGS,./tags,tags
-
-func! DeleteTrailingWS()
-  exe "normal mz"
-  %s/\s\+$//ge
-  exe "normal 'z"
-endfunc
-autocmd BufWrite *.py :call DeleteTrailingWS()
-
-" OCamL
-autocmd FileType ocaml,caml,omlet setlocal suffixesadd=.ml,.mli
-autocmd FileType ocaml,caml,omlet setlocal includeexpr=substitute(v:fname,'.','\\l&','g')
-autocmd FileType ocaml,caml,omlet let g:tlist_def_ocaml_settings = 'ocaml;m:module;t:type;d:definition'
-autocmd FileType ocaml,caml,omlet nmap <F5> :!ocaml <cfile><CR>
-"autocmd FileType ocaml,caml,omlet let Tlist_Ctags_Cmd = '/usr/local/bin/otags'
-"autocmd FileType 
-
+" Small confs only. Big ones are in ~./vim/ftplugin
 
 " Javascript
 autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
@@ -471,35 +446,12 @@ autocmd FileType css set omnifunc=csscomplete#CompleteCSS
 " PHP
 autocmd FileType php set omnifunc=phpcomplete#CompletePHP
 
-" C / C++ (OmniCppComplete)
-autocmd FileType c,cpp map <F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .<CR>
-
 " Vim files
 autocmd FileType vim map <buffer> <f5> :so %<cr>
-
-" JAVA
-" See ftplugin/java.vim
-"autocmd FileType java 
 
 " HTML
 "Jump to end of tag
 autocmd FileType html,htmldjango,xml,xhtml imap <c-l> <esc>l%a
-
-" RUBY
-autocmd FileType ruby,eruby set omnifunc=rubycomplete#Complete
-autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
-autocmd FileType ruby,eruby let g:rubycomplete_rails = 1
-autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
-
-" Django (ca fout la merde, TODO: régler ca)
-"autocmd FileType htmldjango imap {% {%  %}<esc>2hi
-"autocmd FileType htmldjango imap <leader>b <esc>:s/{% block \(.*\) %}/&\r{% endblock \1 %}<cr>:noh<cr>O
-"autocmd FileType htmldjango imap <leader>e <esc>:s/{% \([a-zA-Z]\+\) \(.*\) %}/&\r{% end\1 \2 %}<cr>:noh<cr>O
-"cmap ftd set filetype=htmldjango<cr>
-
-" Prototype (js framework) :
-"Useful only for azerty
-"imap $ù $('')<esc>hi
 
 " Mutt (mail client)
 au BufRead /tmp/mutt-* set tw=72 spell
