@@ -116,13 +116,24 @@ function ,, () {
     cd ..
 }
 
-# Utilities
+# Utilities (grep, basename, dirname)
 alias g='grep -nr --color'
 alias gi='grep -nri --color'
 alias gr='grep -nr --color'
 alias gri='grep -nri --color'
 alias bn='basename'
 alias dn='dirname'
+
+# Find
+f () {
+    name="$1" ; shift
+    if [[ $# -eq 0 ]] ; then
+	echo zero
+	find . -name '*'"$name"'*'
+    else
+	find . -name '*'"$name"'*' "$@"
+    fi
+}
 
 # Disk use sorted, process list
 alias dus="du -sh * .* | sort -k1,1h"

@@ -1,4 +1,4 @@
-" Last changes: 2011 May 18 - 09:32
+" Last changes: 2011 May 19 - 09:44
 
 " ---| BASIC HEADER |--- {{{
 
@@ -177,7 +177,7 @@ set showcmd "Show beginning of normal commands (try d and see at bottom-right)
 set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc,.job
 
 " TODO: This is a try. See if it is ok
-set tags=./tags,../tags,../../tags
+set tags=tags,./tags,../tags,../../tags
 
 " Statusline (relative to home when possible)
 " function! CurDir()
@@ -202,7 +202,7 @@ set ttymouse=xterm2 "Mouse dragging in iTerm
 
 
 "  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-" Last Modified: Wed 14 Oct 2009 09:44:38 AM CDT 
+" Last Modified: 2011 May 19 - 09:44
 " Called on every buffer saving 
 function! TimeStamp()
     let l:save_cursor = getpos(".") 
