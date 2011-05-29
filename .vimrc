@@ -1,4 +1,4 @@
-" Last changes: 2011 May 19 - 09:44
+" Last changes: 2011 May 26 - 19:44
 
 " ---| BASIC HEADER |--- {{{
 
@@ -8,6 +8,8 @@ set nocp
 " Pathogen conf
 filetype off
 call pathogen#runtime_append_all_bundles()
+call pathogen#helptags()
+
 
 " File types and coloration have to be set here
 syntax on
@@ -166,7 +168,10 @@ set wildmenu "Completions view in ex mode (super useful !)
 set wildignore=*.o,*.obj,*.bak,*.exe,*.pyc,*.ps,*.pdf,*.cmo,*.cmi,*.cmx "Don't complete bin files
 set cmdheight=1 "Command line height
 set laststatus=2 "When to show status line (2=always)
-set statusline=%F%m%r%h%w\ %Y\ [%03.3b\ %02.2B]\ [L=%04l/%L,C=%04v/%{len(getline('.'))}]\ [%p%%]
+" Set statusline - silently fail if vim lacks version / plugins
+set statusline=%F%m%r%h%w\%=[%4l/%-4L\ %3v]\ [%p%%]
+silent! set statusline=%F%m%r%h%w\%=[%4l/%-4L\ %3v/%-3{len(getline('.'))}]\ [%p%%]
+silent! set statusline=%F%m%r%h%w\ %{fugitive#statusline()}\ \%=\ [%4l/%-4L\ %3v/%-3{len(getline('.'))}]\ [%p%%]
 set ruler "Show line,col in statusbar
 set number "Show lines
 set showmode "Show mode in status (insertion, visual...)
@@ -202,7 +207,7 @@ set ttymouse=xterm2 "Mouse dragging in iTerm
 
 
 "  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-" Last Modified: 2011 May 19 - 09:44
+" Last Modified: 2011 May 26 - 19:44
 " Called on every buffer saving 
 function! TimeStamp()
     let l:save_cursor = getpos(".") 
@@ -436,6 +441,9 @@ endif
 
 " ---| FILETYPE |--- {{{
 " Small confs only. Big ones are in ~./vim/ftplugin
+
+" Python
+au FileType python set omnifunc=pythoncomplete#Complete
 
 " Javascript
 autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS

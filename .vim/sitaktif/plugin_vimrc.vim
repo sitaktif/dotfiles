@@ -49,30 +49,67 @@ let g:obviousModeCmdwinHi = 'term=reverse,bold ctermbg=130'
 "nmap <C-J> <Plug>IMAP_JumpForward
 "vmap <C-J> <Plug>IMAP_JumpForward
 
+"" SuperTab
+let g:SuperTabDefaultCompletionType = "context"
+
+"" TaskList plugin
+map <leader>td <Plug>TaskList
+
+"" Gundo plugin - undo tree :)
+map <leader>g :GundoToggle<CR>
+
+"" Ack
+nmap <leader>a <Esc>:Ack!
+
 "}}}
 
 " ---| FILETYPE PLUGINS |--- {{{
 
-" Python in separate file
-autocmd FileType python so ~/.vim/ftplugin/my_python.vim
+"" Python
+" Pyflakes
+let g:pyflakes_use_quickfix = 0
 
+" Green test with python
+map <leader>tg :set makeprg=python\ manage.py\ test\|:call MakeGreen()<CR>
+
+" PyTest - Execute the tests
+nmap <silent><Leader>tf <Esc>:Pytest file<CR>
+nmap <silent><Leader>tc <Esc>:Pytest class<CR>
+nmap <silent><Leader>tm <Esc>:Pytest method<CR>
+" PyTest - Cycle through test errors
+nmap <silent><Leader>tn <Esc>:Pytest next<CR>
+nmap <silent><Leader>tp <Esc>:Pytest previous<CR>
+nmap <silent><Leader>te <Esc>:Pytest error<CR>
+
+" PEP8
+let g:pep8_map='<leader>8'
+
+" Rope
+map <leader>j :RopeGotoDefinition<CR>
+map <leader>r :RopeRename<CR>
+
+
+"" C
 "autocmd FileType c,cpp source ~/.vim/syntax/opengl.vim
 "autocmd FileType c,cpp source ~/.vim/syntax/cppQT.vim
 "autocmd FileType c source ~/.vim/syntax/gtk/gtk.vim
 "autocmd FileType c source ~/.vim/syntax/gtk/gdk.vim
 "autocmd FileType c source ~/.vim/syntax/gtk/glib.vim
 
-" RUBY
+
+"" RUBY
 autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
 autocmd FileType ruby,eruby let g:rubycomplete_rails = 1
 autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
 
-" XML/HTML (xml.vim)
+
+"" XML/HTML (xml.vim)
 let html_use_css = 1
 let xml_no_html = 1
 let xml_use_xhtml = 1
 
-" JAVA
+
+"" JAVA
 "Commenter (jcommenter.vim)
 autocmd FileType java let b:jcommenter_class_author='Romain Chossart (romainchossart@gmail.com)'
 autocmd FileType java let b:jcommenter_file_author='Romain Chossart (romainchossart@gmail.com)'
@@ -83,6 +120,5 @@ autocmd Filetype java setlocal omnifunc=javacomplete#Complete
 autocmd Filetype java setlocal completefunc=javacomplete#CompleteParamsInfo
 autocmd Filetype java inoremap <buffer> <C-X><C-U> <C-X><C-U><C-P>
 autocmd Filetype java inoremap <buffer> <C-S-Space> <C-X><C-U><C-P> 
-
 
 " }}}
