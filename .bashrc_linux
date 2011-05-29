@@ -1,0 +1,32 @@
+
+# Fix gnome-terminal shitty TERM
+if [ "$TERM" == "xterm" ]; then
+    # No it isn't, it's gnome-terminal
+    export TERM=xterm-256color
+fi
+
+
+# Setting PATH for MacPython 2.6
+export PATH="/Library/Frameworks/Python.framework/Versions/2.6/bin:${PATH}"
+export PYTHONPATH=$PYTHONPATH:/Library/Python/2.6/site-packages
+
+# Unison
+#export UNISONLOCALHOSTNAME='slacker'
+
+# Vim setting for "e" alias
+export L_VIM=vim
+
+
+###############################
+#           ALIASES           #
+###############################
+
+# Shortcuts
+alias cdpysites='cd /usr/local/lib/python2.6/site-packages'
+alias cddjango='cd /usr/local/lib/python2.6/site-packages/django'
+
+# System
+alias suspend='~/scripts/linux/os_suspend.sh'
+
+# Kollok stream
+alias kstream="vlc qtcapture:// --sout='#transcode{vcodec=theo,vb=200,scale=0.5,acodec=none}:std{access=shout,mux=ogg,dst=source:bite@10.7.0.1:8000/sitaktif.ogg}'"

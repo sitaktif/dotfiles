@@ -21,6 +21,8 @@ PS1='($(uname)) \[\033[38;5;92m\]\u:\[\033[00m\]\[\033[38;5;166m\]$(date +%H:%M)
 if [[ "$(uname)" == 'Darwin' ]]; then # Leopard
     PS1='\[\033[38;5;92m\]\u:\[\033[00m\]\[\033[38;5;166m\]$(date +%H:%M)\[\033[01;34m\] \w \[\033[00m\]'
     source ~/.bashrc_mac
+elif [[ "$(uname)" == 'Linux' ]]; then # Linux
+    source ~/.bashrc_linux
 fi
 
 

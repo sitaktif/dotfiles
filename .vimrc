@@ -1,4 +1,4 @@
-" Last changes: 2011 May 26 - 19:44
+" Last changes: 2011 May 29 - 13:46
 
 " ---| BASIC HEADER |--- {{{
 
@@ -59,15 +59,6 @@ else
 	colorscheme desert
 	set termencoding=utf-8
 	set ttymouse=xterm2
-	"if (&term =~ 'screen-bce') " 256 color screen (condition is not safe)
-	    "set t_Co=256
-	    "set nocursorcolumn
-	"elseif (&term =~ 'screen' || &term =~ 'linux')
-	    "set t_Co=16
-	    "set nocursorcolumn
-	"else
-	    "set t_Co=256
-	"endif
 endif
 
 " Highlight current line
@@ -207,7 +198,7 @@ set ttymouse=xterm2 "Mouse dragging in iTerm
 
 
 "  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-" Last Modified: 2011 May 26 - 19:44
+" Last Modified: 2011 May 29 - 13:46
 " Called on every buffer saving 
 function! TimeStamp()
     let l:save_cursor = getpos(".") 
