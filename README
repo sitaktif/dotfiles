@@ -1,0 +1,10 @@
+This git repository contains my dotfiles.
+
+Mainly:
+- bashrc (80% ok)
+- vimrc (pretty complete; rocks with python, still some stuff to do with other languages)
+- unison (to synchronise one's boxes)
+- git (Yo dawg..)
+
+Note: this repository contains modules (in .vim/bundle). You have to execute proper git commands to have them in your repository when you clone/update it.
+I have created two simple scripts (init_submodules.sh and update_submodules.sh) for these two respective tasks.

@@ -2,7 +2,7 @@
 
 set -x
 
-git pull
+git submodule init
 git submodule update
 
 set +x
