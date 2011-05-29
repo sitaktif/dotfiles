@@ -1,4 +1,4 @@
-" Last changes: 2011 May 29 - 13:46
+" Last changes: 2011 May 29 - 14:43
 
 " ---| BASIC HEADER |--- {{{
 
@@ -161,8 +161,13 @@ set cmdheight=1 "Command line height
 set laststatus=2 "When to show status line (2=always)
 " Set statusline - silently fail if vim lacks version / plugins
 set statusline=%F%m%r%h%w\%=[%4l/%-4L\ %3v]\ [%p%%]
-silent! set statusline=%F%m%r%h%w\%=[%4l/%-4L\ %3v/%-3{len(getline('.'))}]\ [%p%%]
-silent! set statusline=%F%m%r%h%w\ %{fugitive#statusline()}\ \%=\ [%4l/%-4L\ %3v/%-3{len(getline('.'))}]\ [%p%%]
+if (v:version >= 700)
+    set statusline=%F%m%r%h%w\%=[%4l/%-4L\ %3v/%-3{len(getline('.'))}]\ [%p%%]
+    silent! call fugitive#statusline() " We have to call it first in order to test existence
+    if exists('*fugitive#statusline')
+	set statusline=%F%m%r%h%w\ %{fugitive#statusline()}\ \%=\ [%4l/%-4L\ %3v/%-3{len(getline('.'))}]\ [%p%%]
+    endif
+endif
 set ruler "Show line,col in statusbar
 set number "Show lines
 set showmode "Show mode in status (insertion, visual...)
@@ -198,7 +203,7 @@ set ttymouse=xterm2 "Mouse dragging in iTerm
 
 
 "  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-" Last Modified: 2011 May 29 - 13:46
+" Last Modified: 2011 May 29 - 14:43
 " Called on every buffer saving 
 function! TimeStamp()
     let l:save_cursor = getpos(".") 
