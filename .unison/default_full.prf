@@ -1,0 +1,20 @@
+# Full sync.
+
+# Inherited directories
+# path = Documents
+# path = android
+# path = bin
+# path = dev_small
+# path = dev_medium
+# path = graphisme
+# path = mirrors
+# path = notes
+# path = prog_docs
+# path = scripts
+# path = sites
+# path = src
+
+path = images
+path = Pictures
+
+include default_linux.prf
