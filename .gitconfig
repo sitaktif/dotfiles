@@ -6,7 +6,7 @@
     email = romainchossart@gmail.com
 
 [core]
-    excludesfile = /Users/sitaktif/.git/ignore.files
+    excludesfile = /Users/sitaktif/.gitexclude
 
 [color]
     ui = auto
@@ -29,4 +29,5 @@
     ci = commit
     br = branch
     co = checkout
+    rb = rebase
 

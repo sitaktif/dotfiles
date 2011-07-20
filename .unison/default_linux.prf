@@ -1,0 +1,36 @@
+include config_shared
+
+root = /home/sitaktif
+root = ssh://sitaktif@stalker//Users/sitaktif
+#root = ssh://sitaktif@kollok.org//home/sitaktif
+
+# What about this option ?? 
+#mergebatch  - same as merge but even in batch
+# Merge program
+merge = Regex .* -> vim -d --nofork CURRENT1 CURRENT2
+
+# Files more that 1000KB are copied with the copyprog
+#copyprogpartial = 1000 
+
+# Keep a backup copy of every file in a central location
+backuplocation = central
+# Directory where these are stored
+backupdir = backups/unison/local
+# Backup everything
+backup = Name *
+#backupprefix = bak.$VERSION.
+#backupsuffix = 
+
+# Do not synchronise the log file :)
+logfile = /Users/sitaktif/.unison/unison.log
+
+# Default (inplace is important)
+#copyprog      =   rsync --inplace --compress
+#copyprogrest  =   rsync --partial --inplace --compress
+# ^ Synonym of copyprogpartial probably
+# Add quotes only for rsync by default
+# copyquoterem = default
+
+
+# Play with fastcheck (especially on Windows) to avoid being too slow.
+# It is safe (but may miss updates).

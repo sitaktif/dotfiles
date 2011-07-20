@@ -1,0 +1,74 @@
+## Paths (directories or files) to synchronise
+
+# Directories
+path = Documents
+path = android
+path = bin
+path = dev_small
+path = dev_medium
+path = graphisme
+path = images
+path = mirrors
+path = notes
+path = prog_docs
+path = scripts
+path = sites
+path = src
+
+# I don't want to sync these. I probably want to backup them though.
+#path = Pictures
+#path = backups
+#path = utils
+
+# Files - I will use git for dotfiles: it is more scaleable
+path = .unison/config_shared
+
+# Ignores
+#ignore = Path Documents/archives
+ignore = Path bin/mac
+ignore = Path src/mac
+ignore = Path bin/linux
+ignore = Path src/linux
+ignore = Name temp.*
+ignore = Name *~
+ignore = Name .*~
+ignore = Name *.o
+ignore = Name *.tmp
+ignore = Name *.swp
+ignore = Name *.swo
+ignore = Name *.swn
+
+
+## Config
+
+# If any new preferences are added by Unison (e.g. 'ignore'
+# preferences added via the graphical UI), then store them in the
+# file 'common' rathen than in the top-level preference file
+addprefsto = config_shared
+
+
+
+## Miscellaneous settings
+
+ui = text
+
+# ? See rsh..
+#rshargs = -C
+# Quiet on non-conflicts
+auto = true
+# Request confirmation for big replica deletions
+confirmbigdeletes = true
+# Synchronise all bits (even SUID and stuff). Default: 0o1777
+perms = -1
+# Propagate owner group and times
+#owner = true
+#group = true
+#times = true
+#force = newer
+# Synchronise small files first (useful for small connections)
+sortbysize = true
+# List newly created first (avoids junk) - dunno how it works with last param..
+sortnewfirst = true
+# Straightforward..
+maxthreads = 50
+log = true
