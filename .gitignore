@@ -1,3 +1,10 @@
+.DS_Store
+
+.vim/.netrwhist
+
+# Unison files - do not mess up :)
 .unison/*
-!.unison/config_shared
-!.unison/default_*.prf
+!.unison/default.prf
+!.unison/default_full.prf
+!.unison/default_linux.prf
+!.unison/default_mac.prf

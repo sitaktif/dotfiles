@@ -11,19 +11,18 @@ fi
 
 # Default values defined in system-specific rc-files - "L_" for "LOCAL"
 export L_VIM="vim"
-
-# TODO - proper default prompt + specify colors for each
-# stalker: purple - slacker: TODO - kollok: TODO
-PS1='($(uname)) \[\033[38;5;92m\]\u:\[\033[00m\]\[\033[38;5;166m\]$(date +%H:%M)\[\033[01;34m\] \w \[\033[00m\]'
+export L_PS1_HOST_COLOR="99"
 
 # Load OS-specific rc files
 #
 if [[ "$(uname)" == 'Darwin' ]]; then # Leopard
-    PS1='\[\033[38;5;92m\]\u:\[\033[00m\]\[\033[38;5;166m\]$(date +%H:%M)\[\033[01;34m\] \w \[\033[00m\]'
     source ~/.bashrc_mac
 elif [[ "$(uname)" == 'Linux' ]]; then # Linux
     source ~/.bashrc_linux
 fi
+
+# stalker: purple - slacker: bordeaux - kollok: green
+PS1='($(uname)) \[\033[38;5;${L_PS1_HOST_COLOR}m\]\u:\[\033[00m\]\[\033[38;5;166m\]$(date +%H:%M)\[\033[01;34m\] \w \[\033[00m\]'
 
 
 ###############################
@@ -78,7 +77,12 @@ alias cdjf='cd ~/git/site_espira/jf'
 alias cdj2='cd ~/git/site_chinafrique/src'
 alias cdjj='cd ~/sites/jj/code'
 alias cdts='cd ~/git/ts.git/src'
-alias cdsp='cd ~/git/sportsclub/club'
+alias cdsp='cd ~/git/site_sportsclub/sportsclub/club'
+
+alias cdms='cd ~/Media/series'
+alias cdmf='cd ~/Media/flims_new'
+alias cdma='cd ~/Media/animes'
+alias cdmm='cd ~/Media/music_new'
 
 #
 # THESE ARE FIXED FOREVER
@@ -183,15 +187,13 @@ alias vimz="e ~/.zshrc"
 alias soz="source ~/.zshrc"
 alias vimv="e ~/.vimrc"
 
+# Add link to home bin
+alias add_to_bin_shared='ln -s -t ~/bin/shared/'
+alias add_to_bin_local='ln -s -t ~/bin/local/'
 
 ############################
 #        BOOKMARKS         #
 ############################
-
-# Kollok-related
-alias kget='~/scripts/kollok/kget.sh'
-alias kput='~/scripts/all/kput.sh'
-alias ktadd="ssh kollok.org TERM=xterm /usr/local/scripts/tadd"
 
 # SSH
 alias k='ssh kollok.org'

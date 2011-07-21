@@ -26,6 +26,8 @@ else
 fi 
 export L_VIM
 
+export L_PS1_HOST_COLOR="161"
+
 ###############################
 #           ALIASES           #
 ###############################

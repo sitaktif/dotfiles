@@ -1,4 +1,4 @@
-" Last changes: 2011 May 29 - 14:43
+" Last changes: 2011 Jun 28 - 08:09
 
 " ---| BASIC HEADER |--- {{{
 
@@ -203,7 +203,7 @@ set ttymouse=xterm2 "Mouse dragging in iTerm
 
 
 "  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-" Last Modified: 2011 May 29 - 14:43
+" Last Modified: 2011 Jun 28 - 08:09
 " Called on every buffer saving 
 function! TimeStamp()
     let l:save_cursor = getpos(".") 
@@ -329,6 +329,7 @@ noremap <right> 10zl
 
 " Forgot to sudo ? Hehee :)
 if g:PLATFORM != 'win'
+    command! W w
     command! WW w !sudo tee % > /dev/null
 endif
 
