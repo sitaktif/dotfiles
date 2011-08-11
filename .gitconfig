@@ -6,7 +6,7 @@
     email = romainchossart@gmail.com
 
 [core]
-    excludesfile = /Users/sitaktif/.gitexclude
+    excludesfile = ~/.gitexclude
 
 [color]
     ui = auto
