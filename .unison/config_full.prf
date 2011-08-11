@@ -1,0 +1,2 @@
+include default.prf
+include config_full_sync.prf 

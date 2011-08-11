@@ -15,8 +15,9 @@ merge = Regex .* -> mvim -d --nofork CURRENT1 CURRENT2
 
 # Keep a backup copy of every file in a central location
 backuplocation = central
-# Directory where these are stored
+# Directory where these are stored (do not sync)
 backupdir = backups/unison/local
+ignore = Path backups/unison
 # Backup everything
 backup = Name *
 #backupprefix = bak.$VERSION.

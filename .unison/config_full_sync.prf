@@ -1,0 +1,13 @@
+# Full sync.
+
+# These are only for full unison
+path = Pictures
+path = Public
+
+path = backups
+
+path = utils
+
+
+# Include simple synchro as well
+include config_simple_sync.prf
