@@ -1,0 +1,8 @@
+snippet db
+	Database{
+	    target   => SMT_Target(),
+	    output   => \&COM::DBUtils::strip_db_headers,
+	    compare  => 0,
+	    SQL      => <<'EOD' };
+	${1}
+	EOD

@@ -1,42 +1,56 @@
 [submodule ".vim/bundle/fugitive"]
 	path = .vim/bundle/fugitive
 	url = http://github.com/tpope/vim-fugitive.git
+	ignore = untracked
 [submodule ".vim/bundle/snipmate"]
 	path = .vim/bundle/snipmate
 	url = https://github.com/msanders/snipmate.vim.git
+	ignore = untracked
 [submodule ".vim/bundle/surround"]
 	path = .vim/bundle/surround
 	url = https://github.com/tpope/vim-surround.git
+	ignore = untracked
 [submodule ".vim/bundle/git"]
 	path = .vim/bundle/git
 	url = https://github.com/tpope/vim-git.git
+	ignore = untracked
 [submodule ".vim/bundle/supertab"]
 	path = .vim/bundle/supertab
 	url = https://github.com/ervandew/supertab.git
+	ignore = untracked
 [submodule ".vim/bundle/ack"]
 	path = .vim/bundle/ack
 	url = https://github.com/mileszs/ack.vim.git
+	ignore = untracked
 [submodule ".vim/bundle/gundo"]
 	path = .vim/bundle/gundo
 	url = https://github.com/sjl/gundo.vim.git
+	ignore = untracked
 [submodule ".vim/bundle/pydoc"]
 	path = .vim/bundle/pydoc
 	url = https://github.com/fs111/pydoc.vim.git
+	ignore = untracked
 [submodule ".vim/bundle/pep8"]
 	path = .vim/bundle/pep8
 	url = https://github.com/vim-scripts/pep8.git
+	ignore = untracked
 [submodule ".vim/bundle/makegreen"]
 	path = .vim/bundle/makegreen
 	url = https://github.com/reinh/vim-makegreen
+	ignore = untracked
 [submodule ".vim/bundle/tasklist"]
 	path = .vim/bundle/tasklist
 	url = https://github.com/vim-scripts/TaskList.vim.git
+	ignore = untracked
 [submodule ".vim/bundle/nerdtree"]
 	path = .vim/bundle/nerdtree
 	url = https://github.com/vim-scripts/The-NERD-tree.git
+	ignore = untracked
 [submodule ".vim/bundle/pyflakes"]
 	path = .vim/bundle/pyflakes
 	url = https://github.com/mitechie/pyflakes-pathogen.git
+	ignore = untracked
 [submodule ".vim/bundle/clang_complete"]
 	path = .vim/bundle/clang_complete
 	url = git://github.com/Rip-Rip/clang_complete.git
+	ignore = untracked

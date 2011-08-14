@@ -4,19 +4,20 @@
 path = Documents
 path = android
 path = bin
-path = dev_small
-path = dev_medium
+path = dev_medium # Each folder should be on git...
 path = graphisme
-path = images
 path = mirrors
 path = notes
 path = prog_docs
-path = scripts
+# path = scripts # Are on GIT
 path = sites
 path = src
 
+# These are only for full unison
+path = images
+path = Pictures
+
 # I don't want to sync these. I probably want to backup them though.
-#path = Pictures
 #path = backups
 #path = utils
 
@@ -45,7 +46,6 @@ ignore = Name *.swn
 # preferences added via the graphical UI), then store them in the
 # file 'common' rathen than in the top-level preference file
 addprefsto = config_shared
-
 
 
 ## Miscellaneous settings

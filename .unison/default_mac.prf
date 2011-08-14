@@ -1,7 +1,8 @@
 include config_shared
 
 root = /Users/sitaktif
-root = ssh://sitaktif@gamer//home/sitaktif
+root = ssh://sitaktif@192.168.2.5//home/sitaktif
+#root = ssh://sitaktif@gamer//home/sitaktif
 #root = ssh://sitaktif@kollok.org//home/sitaktif
 
 # What about this option ?? 
@@ -22,7 +23,7 @@ backup = Name *
 #backupsuffix = 
 
 # Do not synchronise the log file :)
-logfile = /Users/sitaktif/.unison/unison.log
+logfile = /home/sitaktif/.unison/unison.log
 
 # Default (inplace is important)
 #copyprog      =   rsync --inplace --compress
