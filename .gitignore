@@ -1,3 +1,5 @@
+.vim/.netrwhist
+
 .unison/*
 !.unison/config_shared
 !.unison/default_*.prf

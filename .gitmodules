@@ -37,3 +37,6 @@
 [submodule ".vim/bundle/pyflakes"]
 	path = .vim/bundle/pyflakes
 	url = https://github.com/mitechie/pyflakes-pathogen.git
+[submodule ".vim/bundle/clang_complete"]
+	path = .vim/bundle/clang_complete
+	url = git://github.com/Rip-Rip/clang_complete.git
