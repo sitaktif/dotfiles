@@ -147,8 +147,10 @@ alias psa='ps aux | grep'
 alias pst='pstree -hAcpul'
 
 # Rsync - Unison
- TODO Use different conf files for part/full sync
 alias unison='unison -ui text'
+alias unipart='unison config_part.prf'
+alias unifull='unison config_full.prf'
+
 # syncd for sync-delete (to avoir a deadly typo)
 alias syncd="rsync      -aSHAXh  --rsh=ssh --delete"
 alias syncdv="rsync     -aSHAXh  --rsh=ssh --delete --progress --stats"

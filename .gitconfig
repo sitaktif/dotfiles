@@ -1,5 +1,5 @@
-#[http]
-#    sslVerify = false
+[http]
+    sslVerify = false
 
 [user]
     name = Romain Chossart
@@ -31,3 +31,6 @@
     co = checkout
     rb = rebase
 
+[github]
+	user = sitaktif
+	token = 1dcc2e58fc6dbcc17e607a71648c1797

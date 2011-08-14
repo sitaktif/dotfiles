@@ -1,35 +1,10 @@
 ## Paths (directories or files) to synchronise
 
-# Directories
-path = Documents
-path = android
-path = bin
-path = dev_medium # Each folder should be on git...
-path = graphisme
-path = mirrors
-path = notes
-path = prog_docs
-# path = scripts # Are on GIT
-path = sites
-path = src
-
-# These are only for full unison
-path = images
-path = Pictures
-
-# I don't want to sync these. I probably want to backup them though.
-#path = backups
-#path = utils
-
-# Files - I will use git for dotfiles: it is more scaleable
-path = .unison/config_shared
-
-# Ignores
-#ignore = Path Documents/archives
-ignore = Path bin/mac
-ignore = Path src/mac
-ignore = Path bin/linux
-ignore = Path src/linux
+# Global ignores
+# ignore = Path bin/mac
+# ignore = Path src/mac
+# ignore = Path bin/linux
+# ignore = Path src/linux
 ignore = Name temp.*
 ignore = Name *~
 ignore = Name .*~
@@ -38,6 +13,7 @@ ignore = Name *.tmp
 ignore = Name *.swp
 ignore = Name *.swo
 ignore = Name *.swn
+ignore = Name *.pyc
 
 
 ## Config
@@ -47,13 +23,11 @@ ignore = Name *.swn
 # file 'common' rathen than in the top-level preference file
 addprefsto = config_shared
 
-
 ## Miscellaneous settings
 
+# Text ui by default
 ui = text
 
-# ? See rsh..
-#rshargs = -C
 # Quiet on non-conflicts
 auto = true
 # Request confirmation for big replica deletions
