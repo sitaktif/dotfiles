@@ -7,11 +7,13 @@ fi
 
 
 # Setting PATH for MacPython 2.6
-export PATH="/Library/Frameworks/Python.framework/Versions/2.6/bin:${PATH}"
-export PYTHONPATH=$PYTHONPATH:/Library/Python/2.6/site-packages
+export PATH="${PATH}:/home/sitaktif/utils/android-sdk-linux_x86/platform-tools"
+#export PYTHONPATH=$PYTHONPATH:/Library/Python/2.6/site-packages
+
 
 # Unison
-#export UNISONLOCALHOSTNAME='slacker'
+export UNISONLOCALHOSTNAME='slacker'
+
 
 # Vim setting for "e" alias
 export L_VIM=vim
