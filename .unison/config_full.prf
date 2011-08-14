@@ -1,2 +1,2 @@
-include default.prf
+include default_local.prf
 include config_full_sync.prf 

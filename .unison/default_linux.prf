@@ -16,13 +16,14 @@ merge = Regex .* -> vim -d --nofork CURRENT1 CURRENT2
 backuplocation = central
 # Directory where these are stored
 backupdir = backups/unison/local
+ignore = Path backups/unison
 # Backup everything
 backup = Name *
 #backupprefix = bak.$VERSION.
 #backupsuffix = 
 
 # Do not synchronise the log file :)
-logfile = /Users/sitaktif/.unison/unison.log
+logfile = /home/sitaktif/.unison/unison.log
 
 # Default (inplace is important)
 #copyprog      =   rsync --inplace --compress

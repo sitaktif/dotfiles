@@ -24,7 +24,7 @@ backup = Name *
 #backupsuffix = 
 
 # Do not synchronise the log file :)
-logfile = /home/sitaktif/.unison/unison.log
+logfile = /Users/sitaktif/.unison/unison.log
 
 # Default (inplace is important)
 #copyprog      =   rsync --inplace --compress
