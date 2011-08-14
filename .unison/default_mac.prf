@@ -15,15 +15,16 @@ merge = Regex .* -> mvim -d --nofork CURRENT1 CURRENT2
 
 # Keep a backup copy of every file in a central location
 backuplocation = central
-# Directory where these are stored
+# Directory where these are stored (do not sync)
 backupdir = backups/unison/local
+ignore = Path backups/unison
 # Backup everything
 backup = Name *
 #backupprefix = bak.$VERSION.
 #backupsuffix = 
 
 # Do not synchronise the log file :)
-logfile = /home/sitaktif/.unison/unison.log
+logfile = /Users/sitaktif/.unison/unison.log
 
 # Default (inplace is important)
 #copyprog      =   rsync --inplace --compress

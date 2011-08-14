@@ -4,7 +4,10 @@
 
 # Unison files - do not mess up :)
 .unison/*
+!.unison/config_full.prf
+!.unison/config_part.prf
+!.unison/config_full_sync.prf
+!.unison/config_part_sync.prf
 !.unison/default.prf
-!.unison/default_full.prf
 !.unison/default_linux.prf
 !.unison/default_mac.prf
