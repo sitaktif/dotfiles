@@ -1,7 +1,7 @@
 include config_shared
 
 root = /Users/sitaktif
-root = ssh://sitaktif@192.168.2.5//home/sitaktif
+root = ssh://sitaktif@lgamer//home/sitaktif
 #root = ssh://sitaktif@gamer//home/sitaktif
 #root = ssh://sitaktif@kollok.org//home/sitaktif
 
@@ -20,6 +20,7 @@ backupdir = backups/unison/local
 ignore = Path backups/unison
 # Backup everything
 backup = Name *
+ignore = Name .DS_Store
 #backupprefix = bak.$VERSION.
 #backupsuffix = 
 

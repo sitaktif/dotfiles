@@ -10,4 +10,4 @@ path = utils
 
 
 # Include simple synchro as well
-include config_simple_sync.prf
+include config_part_sync.prf

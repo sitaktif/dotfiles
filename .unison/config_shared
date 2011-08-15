@@ -5,6 +5,13 @@
 # ignore = Path src/mac
 # ignore = Path bin/linux
 # ignore = Path src/linux
+
+# Ignore local symlinks
+ignore = Path bin/local
+ignore = Path src/local
+ignore = Path utils/local
+
+# Ignore useless files too
 ignore = Name temp.*
 ignore = Name *~
 ignore = Name .*~
