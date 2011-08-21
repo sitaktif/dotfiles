@@ -4,24 +4,22 @@
 
 # Non-interactive mode
 #
-if [ -z "$PS1" ]; then
-    PATH=$PATH:/sw/bin # For remote git pulls
-    return   # If not running interactively, don't do anything else
-fi
 
 # Default values defined in system-specific rc-files - "L_" for "LOCAL"
 export L_VIM="vim"
-export L_PS1_HOST_COLOR="99"
+export L_PS1_HOST_COLOR="46" # Green by default
+export L_PS1_ALREADY_SET=""
 
 # Load OS-specific rc files
 #
 if [[ "$(uname)" == 'Darwin' ]]; then # Leopard
     source ~/.bashrc_mac
-elif [[ "$(uname)" == 'Linux' ]]; then # Linux
+elif [[ "$(uname)" == 'Linux' ]]; then # Linux (slacker / kollok)
     source ~/.bashrc_linux
 fi
 
-# stalker: purple - slacker: bordeaux - kollok: green
+# stalker: purple - slacker: bordeaux - kollok: orange
+if [[ -z L_PS1_ALREADY_SET ]]
 PS1='($(uname)) \[\033[38;5;${L_PS1_HOST_COLOR}m\]\u:\[\033[00m\]\[\033[38;5;166m\]$(date +%H:%M)\[\033[01;34m\] \w \[\033[00m\]'
 
 

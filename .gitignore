@@ -1,6 +1,7 @@
 .DS_Store
 
 .vim/.netrwhist
+.vim/doc/tags
 
 # Unison files - do not mess up :)
 .unison/*

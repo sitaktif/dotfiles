@@ -1,99 +1,19 @@
-#Si le shell est interactif (i.e. non-sftp par exemple)
-[ -z "$PS1" ] && return   # If not running interactively, don't do anything
  
-if [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
-fi
+# Orange prompt color
+export L_PS1_HOST_COLOR=166
 
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+#export PS1=FOOBAR
+#export L_PS1_ALREADY_SET="Y"
+
+# Setting PATH
+#export PATH="FOOBAR:${PATH}"
+#export PYTHONPATH="$PYTHONPATH:FOOBAR"
 
 
-# TODO - TO BE COMPLETELY MERGED TO MATCH SOMETHING LIKE .bashrc_mac
-
-#eval `dircolors -b ~/.dircolors`
-
-#shopt -s cdspell
-#shopt -s extglob
-#shopt -s cmdhist
-#shopt -s checkwinsize
-#shopt -s no_empty_cmd_completion
-#shopt -u promptvars
-#set -o noclobber
-##kill flow control
-#if tty -s ; then
-#    stty -ixon
-#    stty -ixoff
-#fi
-
-## Environment vars ##
-# General
-
-export PATH=$PATH:/home/sitaktif/bin:/usr/local/scripts:/usr/local/bin
-export AS="/etc/apache2/sites-enabled"
-
-export MAIL=/home/sitaktif/.mail/default
-export EDITOR=vim
-export VISUAL=vim
-export HISTCONTROL=ignoredups
-export HISTFILESIZE=10000
-export HISTSIZE=10000
-
-# App-specific
-export CVSROOT=":pserver:any@lunix120.ensiie.fr:/home/cvs/yaka"
-export SVN_EDITOR="vim"
-
-export MPD_HOST="localhost"
-
-export TEXMFHOME="/home/sitaktif/.texmf"
-
-alias sshold='ssh sitaktif@old.kollok.org'
-alias sshl='ssh romain.chossart@lunix121.ensiie.fr'
-alias sshp='ssh chossart2006@perso.iiens.net'
-alias sshp='ssh -p 443 chossart2006@hulk.iiens.net'
-alias sshh='ssh sitaktif@dantesk.net -p 55022'
-alias sshg='ssh l.kollok.org -p 13022'
-
-if [[ -n $(which weechat-curses) ]] ; then
-    alias irc='screen -Rd -S irc weechat-curses'
-else
-    alias irc='screen -Rd -S irc irssi'
-fi
-
-alias sls='screen -ls'
-alias sr='screen -r '
-
-alias ll="ls -ahl --color"
-alias ls='ls --color=auto'
-alias sl=ls
-
-alias vimz='vim ~/.bashrc'
-alias vimv='vim ~/.vimrc'
-
-alias luit_iso='luit -encoding ISO 8859-15'
-alias left='DISPLAY=:0.0'
-alias right='DISPLAY=:0.1'
-
-alias tlunix='ssh -D 8080 romain.chossart@lunix121.ensiie.fr'
-alias arise_wifi_start="ifconfig eth1 up & wpa_supplicant -Dwext -ieth1 -c/etc/wpa_supplicant.conf & dhclient"
-
-alias ssh_pec='ssh pecprod@thepec.net'
-alias pec_start='cd pec && python manage.py runserver 0.0.0.0:8000'
-alias pecdb='mysql -D test -u root -p'
-
-alias mount_moon_nfs='for i in "nbd" "nanimes" "ndvds" "nebooks" "nflims" "nphotos";do mount /mnt/$i;done;'
-alias screenshot='import -window root /tmp/screenshot.png'
-
-alias svnst='svn st|grep -v "\(pyc$\|sw.$\)"'
+###############################
+#           ALIASES           #
+###############################
 
 alias jjftp='lftp jeanjolly@ftp4.phpnet.org'
 
-alias wxdemo='python /usr/src/python_libs/wxPython-2.8.8.1/demo/Main.py'
-
-#temporary
-alias getmodel='tsocks scp sitaktif@pc-gril10:latex/etat_de_lart/modele.pdf ./ && evince modele.pdf'
-alias sqldeveloper='cd /opt/sqldeveloper/ && ./sqldeveloper.sh'
-alias tsqldeveloper='cd /opt/sqldeveloper/ && tsocks ./sqldeveloper.sh'
-
-#function command_not_found_handle {
-#	echo "n00bz !"
-#}
+alias irc='screen -Rd -S irc weechat-curses'
