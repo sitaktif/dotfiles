@@ -16,11 +16,13 @@ if [[ "$(uname)" == 'Darwin' ]]; then # Leopard
     source ~/.bashrc_mac
 elif [[ "$(uname)" == 'Linux' ]]; then # Linux (slacker / kollok)
     source ~/.bashrc_linux
+    echo "bashrc_linux"
 fi
 
 # stalker: purple - slacker: bordeaux - kollok: orange
-if [[ -z L_PS1_ALREADY_SET ]]
-PS1='($(uname)) \[\033[38;5;${L_PS1_HOST_COLOR}m\]\u:\[\033[00m\]\[\033[38;5;166m\]$(date +%H:%M)\[\033[01;34m\] \w \[\033[00m\]'
+if [[ -z $L_PS1_ALREADY_SET ]]; then
+    PS1='($(uname)) \[\033[38;5;${L_PS1_HOST_COLOR}m\]\u:\[\033[00m\]\[\033[38;5;166m\]$(date +%H:%M)\[\033[01;34m\] \w \[\033[00m\]'
+fi
 
 
 ###############################
