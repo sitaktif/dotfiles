@@ -16,7 +16,6 @@ if [[ "$(uname)" == 'Darwin' ]]; then # Leopard
     source ~/.bashrc_mac
 elif [[ "$(uname)" == 'Linux' ]]; then # Linux (slacker / kollok)
     source ~/.bashrc_linux
-    echo "bashrc_linux"
 fi
 
 # stalker: purple - slacker: bordeaux - kollok: orange
