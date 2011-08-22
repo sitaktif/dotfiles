@@ -16,12 +16,12 @@ if [[ "$(uname)" == 'Darwin' ]]; then # Leopard
     source ~/.bashrc_mac
 elif [[ "$(uname)" == 'Linux' ]]; then # Linux (slacker / kollok)
     source ~/.bashrc_linux
-    echo "bashrc_linux"
 fi
 
 # stalker: purple - slacker: bordeaux - kollok: orange
 if [[ -z $L_PS1_ALREADY_SET ]]; then
-    PS1='($(uname)) \[\033[38;5;${L_PS1_HOST_COLOR}m\]\u:\[\033[00m\]\[\033[38;5;166m\]$(date +%H:%M)\[\033[01;34m\] \w \[\033[00m\]'
+    if [[ -n $SSH_CLIENT ]]; then export _P_SSH=" (ssh)" ; echo aa; fi
+    PS1='\[\033[38;5;63m\]$(__git_ps1 "(%s) ")\[\033[38;5;${L_PS1_HOST_COLOR}m\]\u:\[\033[00m\]\[\033[38;5;166m\]$(date +%H:%M)\[\033[01;34m\]${_P_SSH} \w \[\033[00m\]'
 fi
 
 
@@ -30,7 +30,7 @@ fi
 ###############################
 
 togit() {
-    mv "$@" /Users/sitaktif/git/dotfiles_git/ && ln -s /Users/sitaktif/git/dotfiles_git/"$@" ./
+    mv "$@" ~/git/perso_dotfiles/ && ln -s ~/git/perso_dotfiles/"$@" ./
 }
 
 
@@ -84,6 +84,9 @@ alias cdmf='cd ~/Media/flims_new'
 alias cdma='cd ~/Media/animes'
 alias cdmm='cd ~/Media/music_new'
 
+# Git bookmarks begin with cdg
+alias cdgd='cd ~/git/perso_dotfiles'
+
 #
 # THESE ARE FIXED FOREVER
 #
@@ -95,6 +98,9 @@ alias l='ls'
 alias ll='ls -ahl'
 alias lt='ls -lrth'
 alias lat='ls -larth'
+lslinks() { ls "$1" -la |grep " \-> " ; }
+
+alias lshlinks='ls ~/ -la |grep "\->"'
 
 # Tree (particularly useful for django)
 alias ta='tree    --charset ascii -a        -I \.git*\|*\.\~*\|*\.pyc'
