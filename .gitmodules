@@ -54,3 +54,11 @@
 	path = .vim/bundle/clang_complete
 	url = git://github.com/Rip-Rip/clang_complete.git
 	ignore = untracked
+[submodule ".vim/bundle/dokuvimki"]
+	path = .vim/bundle/dokuvimki
+	url = https://github.com/chimeric/dokuvimki.git
+	ignore = untracked
+[submodule "dotfiles_dependencies/python_libs/dokuwikixmlrpc"]
+	path = dotfiles_dependencies/python_libs/dokuwikixmlrpc
+	url = https://github.com/chimeric/dokuwikixmlrpc.git
+	ignore = untracked

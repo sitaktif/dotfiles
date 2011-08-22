@@ -1,0 +1,19 @@
+ 
+# Orange prompt color
+export L_PS1_HOST_COLOR=166
+
+#export PS1=FOOBAR
+#export L_PS1_ALREADY_SET="Y"
+
+# Setting PATH
+#export PATH="FOOBAR:${PATH}"
+#export PYTHONPATH="$PYTHONPATH:FOOBAR"
+
+
+###############################
+#           ALIASES           #
+###############################
+
+alias jjftp='lftp jeanjolly@ftp4.phpnet.org'
+
+alias irc='screen -Rd -S irc weechat-curses'

@@ -1,0 +1,40 @@
+# If not running interactively, don't do anything
+[ -z "$PS1" ] && return
+
+if [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+fi
+
+# Year 2011 - say f**k you to 16 color terminals
+if [ "$TERM" == "xterm" ]; then
+    export TERM=xterm-256color
+fi
+
+# Source Box-specific config
+case $(hostname) in
+    'slacker') # Slacker config
+	source ~/.bashrc_slacker ;;
+    'kollok.org') # Kollok config
+	source ~/.bashrc_kollok ;;
+esac
+
+# Vim setting for "e" alias
+export L_VIM=vim
+#export L_PS1_ALREADY_SET="Y"
+
+###############################
+#           ALIASES           #
+###############################
+
+# Prefixes
+alias luit_iso='luit -encoding ISO 8859-15'
+
+# Shortcuts
+export cdapen="/etc/apache2/sites-enabled"
+export cdapav="/etc/apache2/sites-available"
+
+alias cdpysites='cd /usr/local/lib/python2.6/site-packages'
+alias cddjango='cd /usr/local/lib/python2.6/site-packages/django'
+
+# Kollok stream
+alias kstream="vlc qtcapture:// --sout='#transcode{vcodec=theo,vb=200,scale=0.5,acodec=none}:std{access=shout,mux=ogg,dst=source:bite@10.7.0.1:8000/sitaktif.ogg}'"

@@ -1,5 +1,13 @@
+if [ -z "$PS1" ]; then
+    PATH=$PATH:/sw/bin # For remote git pulls
+    return   # If not running interactively, don't do anything else
+fi
+
+# Fink setup
 test -r /sw/bin/init.sh && . /sw/bin/init.sh || echo "warning: /sw/bin/init.sh not found"
 
+
+# TODO: test that
 # Uncomment if I really lose some completion stuff, but I'm not convinced it's the case...
 #if [ -f /sw/etc/bash_completion ]; then
 #    source /sw/etc/bash_completion 
