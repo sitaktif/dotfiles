@@ -1,7 +1,7 @@
 include config_shared
 
 root = /Users/sitaktif
-root = ssh://sitaktif@192.168.2.5//home/sitaktif
+root = ssh://sitaktif@lgamer//home/sitaktif
 #root = ssh://sitaktif@gamer//home/sitaktif
 #root = ssh://sitaktif@kollok.org//home/sitaktif
 
@@ -20,6 +20,9 @@ backupdir = backups/unison/local
 ignore = Path backups/unison
 # Backup everything
 backup = Name *
+
+ignore = Name {Cache*,.Trash*,.VolumeIcon.icns,.HSicon,Temporary*,.Temporary*,TheFindByContentFolder}
+ignore = Name {TheVolumeSettingsFolder,.Metadata,.filler,.idsff,.Spotlight,.DS_Store,.CFUserTextEncoding}
 #backupprefix = bak.$VERSION.
 #backupsuffix = 
 

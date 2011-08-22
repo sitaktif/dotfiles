@@ -10,5 +10,6 @@
 !.unison/config_full_sync.prf
 !.unison/config_part_sync.prf
 !.unison/default.prf
-!.unison/default_linux.prf
+!.unison/default_kollok.prf
+!.unison/default_slacker.prf
 !.unison/default_mac.prf

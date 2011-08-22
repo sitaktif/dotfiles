@@ -22,8 +22,6 @@ case $(hostname) in
 	;;
 esac
 
-
-
 # Vim setting for "e" alias
 export L_VIM=vim
 #export L_PS1_ALREADY_SET="Y"
