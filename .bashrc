@@ -20,7 +20,7 @@ fi
 
 # stalker: purple - slacker: bordeaux - kollok: orange
 if [[ -z $L_PS1_ALREADY_SET ]]; then
-    if [[ -n $SSH_CLIENT ]]; then export _P_SSH=" (ssh)" ; echo aa; fi
+    if [[ -n $SSH_CLIENT ]]; then export _P_SSH=" (ssh)" ; fi
     PS1='\[\033[38;5;63m\]$(__git_ps1 "(%s) ")\[\033[38;5;${L_PS1_HOST_COLOR}m\]\u:\[\033[00m\]\[\033[38;5;166m\]$(date +%H:%M)\[\033[01;34m\]${_P_SSH} \w \[\033[00m\]'
 fi
 
