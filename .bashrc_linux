@@ -10,12 +10,16 @@ if [ "$TERM" == "xterm" ]; then
     export TERM=xterm-256color
 fi
 
+echo "lal"
+
 # Source Box-specific config
 case $(hostname) in
     'slacker') # Slacker config
-	source ~/.bashrc_slacker ;;
+	source ~/.bashrc_slacker
+	;;
     'kollok.org') # Kollok config
-	source ~/.bashrc_kollok ;;
+	source ~/.bashrc_kollok
+	;;
 esac
 
 # Vim setting for "e" alias
@@ -30,8 +34,8 @@ export L_VIM=vim
 alias luit_iso='luit -encoding ISO 8859-15'
 
 # Shortcuts
-export cdapen="/etc/apache2/sites-enabled"
-export cdapav="/etc/apache2/sites-available"
+alias cdapen='cd /etc/apache2/sites-enabled'
+alias cdapav='cd /etc/apache2/sites-available'
 
 alias cdpysites='cd /usr/local/lib/python2.6/site-packages'
 alias cddjango='cd /usr/local/lib/python2.6/site-packages/django'
