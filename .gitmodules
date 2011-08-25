@@ -62,3 +62,6 @@
 	path = dotfiles_dependencies/python_libs/dokuwikixmlrpc
 	url = https://github.com/chimeric/dokuwikixmlrpc.git
 	ignore = untracked
+[submodule ".vim/bundle/tagbar"]
+	path = .vim/bundle/tagbar
+	url = git@github.com:sitaktif/tagbar.git
