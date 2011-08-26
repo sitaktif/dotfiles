@@ -30,28 +30,38 @@ modkey = "Mod4"
 -- Table of layouts to cover with awful.layout.inc, order matters.
 layouts =
 {
-    awful.layout.suit.floating,
     awful.layout.suit.tile,
-    awful.layout.suit.tile.left,
-    awful.layout.suit.tile.bottom,
-    awful.layout.suit.tile.top,
-    awful.layout.suit.fair,
+    --awful.layout.suit.tile.left,
+    --awful.layout.suit.tile.bottom,
+    --awful.layout.suit.tile.top,
+    --awful.layout.suit.fair,
     awful.layout.suit.fair.horizontal,
-    awful.layout.suit.spiral,
-    awful.layout.suit.spiral.dwindle,
-    awful.layout.suit.max,
-    awful.layout.suit.max.fullscreen,
-    awful.layout.suit.magnifier
+    --awful.layout.suit.spiral,
+    --awful.layout.suit.spiral.dwindle,
+    --awful.layout.suit.max,
+    --awful.layout.suit.max.fullscreen,
+    awful.layout.suit.magnifier,
+    awful.layout.suit.floating
 }
 -- }}}
 
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
 tags = {}
-for s = 1, screen.count() do
-    -- Each screen has its own tag table.
-    tags[s] = awful.tag({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, layouts[1])
+
+-- Screen 1
+tags[1] = awful.tag({ 'Web', 'Term', 'IRC', 4, 5, 6, 7, 8, 'Sync' }, 1, layouts[1])
+-- Set magnifier layout for the web browser
+awful.layout.set(awful.layout.suit.magnifier, tags[1][1])
+
+-- Screen 2 and more
+if screen.count() > 1 then
+    for s = 1, screen.count() do
+	-- Each screen has its own tag table.
+	tags[s] = awful.tag({ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, layouts[1])
+    end
 end
+
 -- }}}
 
 -- {{{ Menu
@@ -102,6 +112,11 @@ mytasklist.buttons = awful.util.table.join(
                                               client.focus = c
                                               c:raise()
                                           end),
+					  -- Kill the client on middle mouse button
+		     awful.button({ }, 2, function (c)
+					      client.focus = c
+					      c:kill()
+					  end),
                      awful.button({ }, 3, function ()
                                               if instance then
                                                   instance:hide()
@@ -301,9 +316,9 @@ awful.rules.rules = {
       properties = { floating = true } },
     { rule = { class = "gimp" },
       properties = { floating = true } },
-    -- Set Firefox to always map on tags number 2 of screen 1.
-    -- { rule = { class = "Firefox" },
-    --   properties = { tag = tags[1][2] } },
+    --Set Firefox to always map on tags number 2 of screen 1.
+    { rule = { class = "Firefox" },
+      properties = { tag = tags[1][1] } },
 }
 -- }}}
 
@@ -311,7 +326,7 @@ awful.rules.rules = {
 -- Signal function to execute when a new client appears.
 client.add_signal("manage", function (c, startup)
     -- Add a titlebar
-    -- awful.titlebar.add(c, { modkey = modkey })
+    --awful.titlebar.add(c, { modkey = modkey })
 
     -- Enable sloppy focus
     c:add_signal("mouse::enter", function(c)
