@@ -1,3 +1,0 @@
-iabbr cnosider consider
-iabbr specificaiton specification
-iabbr specificaitons specifications

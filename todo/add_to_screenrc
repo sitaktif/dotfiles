@@ -1,2 +1,0 @@
-hardstatus string '%H:%`'
-backtick 0 30 30 sh -c 'screen -ls | grep --color=no -o "$PPID[^[:space:]]*"'
