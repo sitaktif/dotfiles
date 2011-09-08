@@ -41,7 +41,9 @@ export L_PS1_HOST_COLOR="161"
 ###############################
 
 
-TODO
+# Shortcuts
+alias cdap='cd /private/etc/apache2'
+alias vimap='sudo vim /private/etc/apache2/httpd.conf'
 
 # Shortcuts
 alias cdpysites='cd /Library/Python/2.6/site-packages'
