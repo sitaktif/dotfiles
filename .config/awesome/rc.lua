@@ -50,7 +50,7 @@ layouts =
 tags = {}
 
 -- Screen 1
-tags[1] = awful.tag({ 'Web', 'Term', 'IRC', 4, 5, 6, 7, 8, 'Sync' }, 1, layouts[1])
+tags[1] = awful.tag({ 'Web', 'Term', 'IRC', 4, 5, 6, 7, 'Music', 'Sync' }, 1, layouts[1])
 -- Set magnifier layout for the web browser
 awful.layout.set(awful.layout.suit.magnifier, tags[1][1])
 
@@ -316,9 +316,15 @@ awful.rules.rules = {
       properties = { floating = true } },
     { rule = { class = "gimp" },
       properties = { floating = true } },
-    --Set Firefox to always map on tags number 2 of screen 1.
+      --Set Firefox to always map on tags number 2 of screen 1.
     { rule = { class = "Firefox" },
       properties = { tag = tags[1][1] } },
+      -- Set ncmpcpp on music tag
+    { rule = { role = "ncmpcpp" },
+      properties = { tag = tags[1][8] } },
+      -- Set Sync tags - 
+    { rule = { class_any = { "Synaptic", "Update-manager" } },
+      properties = { tag = tags[1][9] } },
 }
 -- }}}
 
@@ -351,6 +357,13 @@ end)
 
 client.add_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.add_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+-- }}}
+
+-- {{{ Startup apps
+
+awful.util.spawn("firefox")
+awful.util.spawn("gnome-terminal --role=ncmpcpp -x ncmpcpp")
+
 -- }}}
 
 wibox:set_position(statusbar, {25, 0})
