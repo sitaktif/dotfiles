@@ -221,7 +221,7 @@ alias add_to_bin_local='ln -s -t ~/bin/local/'
 # SSH
 alias k='ssh kollok.org'
 alias k2='ssh uk.kollok.org -p443'
-alias sshg='ssh stalker'
+alias sshs='ssh stalker'
 alias sshg='ssh gamer'
 alias sshm='ssh mickey'
 alias sshp='ssh chossart2006@perso.iiens.net'
@@ -284,11 +284,13 @@ alias dsh='python manage.py shell'
 #
 # My MOTS (Message Of The Session)
 #
-
+echo "--"
 # Display random task if 1/ task present and 2/ task count > 0 (the export LC_ALL is for sort)
 tput setf 4 ; command -v task &>/dev/null && ( export LC_ALL='C' ; [ $(task count) -gt 0 ] && task | head -n -2 | tail -n -2 | sort -R | head -1 )
 # Display a random alias (so that I think about using them :) )
-echo -n " " ; tput setf 2 ; alias | sort -R | head -1
+echo -n " " ; tput setaf 2 ; alias | sort -R | head -1 
+tput sgr0
+echo "--"
 
 
 #vim:foldmethod:marker
