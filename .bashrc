@@ -41,10 +41,6 @@ togit() {
 # Make extended globs work
 shopt -s extglob
 
-# Set some nice ls colors
-eval $(dircolors ~/.dircolors)
-
-
 # Binaries in home
 export PATH=~/bin/local:~/bin/shared:$PATH
 
@@ -52,7 +48,6 @@ export PATH=~/bin/local:~/bin/shared:$PATH
 export MAIL=/home/sitaktif/.mail/default
 export EDITOR=vim
 export VISUAL=vim
-export LS_COLORS=auto
 
 # Bash
 export HISTCONTROL=ignoredups
@@ -67,6 +62,10 @@ export MPD_HOST="localhost"
 export TEXMFHOME="~/.texmf"
 export SVN_EDITOR="vim"
 #export CVSROOT=":pserver:any@server:abs_path"
+
+if [ -f "$HOME/.dircolors" ] ; then
+    eval $(dircolors -b "$HOME/.dircolors")
+fi
 
 
 ###############################
