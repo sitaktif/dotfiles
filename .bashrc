@@ -52,6 +52,7 @@ export PATH=~/bin/local:~/bin/shared:$PATH
 export MAIL=/home/sitaktif/.mail/default
 export EDITOR=vim
 export VISUAL=vim
+export LS_COLORS=auto
 
 # Bash
 export HISTCONTROL=ignoredups
@@ -71,6 +72,8 @@ export SVN_EDITOR="vim"
 ###############################
 #           ALIASES           #
 ###############################
+
+# Summary: cd, ls, t[a] (tree), mkcd, ,, (cd ..), e (edit), f, g gi gr gri (grep), lna, sr, sls
 
 ## Bookmarks
 alias cdjf='cd ~/git/site_espira/jf'
@@ -98,9 +101,9 @@ alias l='ls'
 alias ll='ls -ahl'
 alias lt='ls -lrth'
 alias lat='ls -larth'
-lslinks() { ls "$1" -la |grep " \-> " ; }
 
-alias lshlinks='ls ~/ -la |grep "\->"'
+lsln() { ls "$1" -la |grep " \-> " ; }
+alias lshln='ls ~/ -la |grep "\->"'
 
 # Tree (particularly useful for django)
 alias ta='tree    --charset ascii -a        -I \.git*\|*\.\~*\|*\.pyc'
@@ -190,12 +193,24 @@ alias e="$L_VIM"
 
 # Bash, zsh, vim
 alias vimb="e ~/.bashrc"
+alias vimbs="e ~/.bashrc_stalker"
+alias vimbl="e ~/.bashrc_linux"
+alias vimbg="e ~/.bashrc_gamer"
+alias vimbk="e ~/.bashrc_kollok"
 alias sob='source ~/.bashrc'
 alias vimz="e ~/.zshrc"
 alias soz="source ~/.zshrc"
 alias vimv="e ~/.vimrc"
 
-# Add link to home bin
+# Add absolute symbolic link
+lna() {
+    if [ -z "$1" -o "$#" -gt 2 ] ; then
+	echo "usage: lna [file] [destination]"
+	echo " Creates an absolute symbolic link from relative file pointing to dest"
+    else
+	ln -s $(pwd)/"$1" "$2"
+    fi
+}
 alias add_to_bin_shared='ln -s -t ~/bin/shared/'
 alias add_to_bin_local='ln -s -t ~/bin/local/'
 
@@ -206,6 +221,7 @@ alias add_to_bin_local='ln -s -t ~/bin/local/'
 # SSH
 alias k='ssh kollok.org'
 alias k2='ssh uk.kollok.org -p443'
+alias sshg='ssh stalker'
 alias sshg='ssh gamer'
 alias sshm='ssh mickey'
 alias sshp='ssh chossart2006@perso.iiens.net'
@@ -264,5 +280,15 @@ alias dsh='python manage.py shell'
 #
 # BACKUP STUFF - Unison and Rsync
 #
+
+#
+# My MOTS (Message Of The Session)
+#
+
+# Display random task if 1/ task present and 2/ task count > 0 (the export LC_ALL is for sort)
+tput setf 4 ; command -v task &>/dev/null && ( export LC_ALL='C' ; [ $(task count) -gt 0 ] && task | head -n -2 | tail -n -2 | sort -R | head -1 )
+# Display a random alias (so that I think about using them :) )
+echo -n " " ; tput setf 2 ; alias | sort -R | head -1
+
 
 #vim:foldmethod:marker
