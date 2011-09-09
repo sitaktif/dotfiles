@@ -165,6 +165,9 @@ alias syncdbw80="rsync  -aSHAXh  --rsh=ssh --delete --progress --stats --numeric
 alias syncdbw800="rsync -aSHAXh  --rsh=ssh --delete --progress --stats --numeric-ids --bwlimit=800"
 
 
+# Taskwarrior 
+alias t='task'
+
 # Screen
 alias sls='screen -ls'
 alias sr='screen -r'
