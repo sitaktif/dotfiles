@@ -1,0 +1,93 @@
+startup_message off # No disclaimer
+vbell off # No visual bell
+msgwait 1 # Screen message waiting time
+defscrollback 4000
+
+# Never, ever turn this off.
+autodetach on
+# If a window goes unresponsive, don't block the whole session waiting for it.
+defnonblock on
+
+# Terminfo and termcap for 256 colors
+# allow bold colors - necessary for some reason
+attrcolor b ".I"
+# Tell screen how to set colors. AB = background, AF=foreground
+termcapinfo xterm 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
+
+# erase background with current bg color
+#defbce "on" 
+
+# bufferfile:   The file to use for commands
+#               "readbuf" ('<') and  "writebuf" ('>'):
+bufferfile ~/tmp/screen-exchange
+
+hardstatus on
+
+# Change that depending on my machine !!
+#hardstatus alwayslastline "%-Lw%{= BW}%50>%n%f* %t%{-}%+Lw%<"
+hardstatus alwayslastline
+hardstatus string '%{= kG}[ %{G}%H %{g}][%= %{= kw}%?%-Lw%?%{r}(%{W}%n*%f%t%?(%u)%?%{r})%{w}%?%+Lw%?%?%= %{g}][%{B} %` %{W}]'
+
+# %` is a custom command - here, display the screen name
+backtick 0 30 30 sh -c 'screen -ls | grep --color=no -o "$PPID[^[:space:]]*" | sed s/$PPID.//'
+
+# [%{B} %d/%m %{W}%c %{g}]'    # [ date time ]
+#[%h]%?
+
+
+# Avoid window resizing at attach
+termcapinfo xterm 'is=\E[r\E[m\E[2J\E[H\E[?7h\E[?1;4;6l'
+
+# And that?
+#defutf8 on
+
+# Stop using alternate screen (for scrollback) - does it work ?
+# But it is crappy since the scrollback is then shared amond EACH session
+# So, I disabled it...
+# termcapinfo xterm ti@:te@
+
+# Make shift-PgUp and shift-PgDn work like they do in xterm.  (Note that this
+# requires xterm to be configured to pass those keys through, and not try to
+# act on them itself.) Don't forget to "q[uit]" afterwards...
+# Does NOT work with PuTTY :/
+# Note: with iTerm2, works with fn+Cmd+Up/Down
+bindkey "^[[5;2~" eval "copy" "stuff ^u"
+bindkey -m "^[[5;2~" stuff ^u
+bindkey -m "^[[6;2~" stuff ^d
+
+# Make screen messages stand out a little more - black on bright green.
+#sorendition "+b kG"
+
+# Variants on Sven's custom messages.
+#activity "%c activity -> %n%f %t"
+#bell "%c bell -> %n%f %t^G"
+#vbell_msg " *beep* "
+
+# always create from screen 1
+bind c screen 1
+bind ^c screen 1
+
+#remove some stupid / dangerous key bindings
+bind k
+bind ^k
+bind .
+bind ^\
+bind \\
+bind ^h
+bind h
+
+# Use the function keys to switch among windows.
+#bindkey -k k1 select 1
+#bindkey -k k2 select 2
+#bindkey -k k3 select 3
+#bindkey -k k4 select 4
+#bindkey -k k5 select 5
+#bindkey -k k6 select 6
+#bindkey -k k7 select 7
+#bindkey -k k8 select 8
+#bindkey -k k9 select 9
+#bindkey -k k; select 10
+#bindkey -k F1 select 11
+#bindkey -k F2 select 12
+
+
