@@ -2,6 +2,9 @@
 # Purple prompt color
 export L_PS1_HOST_COLOR=99
 
+# Synergy with local ethernet network
+alias synergysl='synergys -c ~/.synergy_local.conf'
+
 # System
 #alias suspend='~/git/scripts/linux/os_suspend.sh'
 
