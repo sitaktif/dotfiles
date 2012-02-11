@@ -30,6 +30,9 @@ export L_VIM=vim
 #           ALIASES           #
 ###############################
 
+# Hack for ranger
+alias ranger='python2.6 /usr/bin/ranger'
+
 # Prefixes
 alias luit_iso='luit -encoding ISO 8859-15'
 
