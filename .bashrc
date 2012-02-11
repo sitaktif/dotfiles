@@ -4,6 +4,7 @@
 
 # Non-interactive mode
 #
+[ -z "$PS1" ] && return
 
 # Default values defined in system-specific rc-files - "L_" for "LOCAL"
 export L_VIM="vim"
