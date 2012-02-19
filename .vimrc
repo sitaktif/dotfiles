@@ -1,4 +1,4 @@
-" Last changes: 2012 Feb 19 - 23:21
+" Last changes: 2012 Feb 19 - 23:29
 
 " ---| BASIC HEADER |--- {{{
 
@@ -203,11 +203,7 @@ set ttymouse=xterm2 "Mouse dragging in iTerm
 
 
 "  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-<<<<<<< Updated upstream
-" Last Modified: 2012 Feb 19 - 23:21
-=======
-" Last Modified: 2012 Feb 19 - 23:21
->>>>>>> Stashed changes
+" Last Modified: 2012 Feb 19 - 23:29
 " Called on every buffer saving 
 function! TimeStamp()
     let l:save_cursor = getpos(".") 
