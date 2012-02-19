@@ -1,4 +1,4 @@
-" Last changes: 2011 Nov 19 - 15:46
+" Last changes: 2012 Feb 19 - 23:21
 
 " ---| BASIC HEADER |--- {{{
 
@@ -203,7 +203,11 @@ set ttymouse=xterm2 "Mouse dragging in iTerm
 
 
 "  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-" Last Modified: 2011 Nov 19 - 15:46
+<<<<<<< Updated upstream
+" Last Modified: 2012 Feb 19 - 23:21
+=======
+" Last Modified: 2012 Feb 19 - 23:21
+>>>>>>> Stashed changes
 " Called on every buffer saving 
 function! TimeStamp()
     let l:save_cursor = getpos(".") 
@@ -425,6 +429,10 @@ endif
 " Fix the shift-backspace problem
 noremap!  <bs>
 
+"}}}
+
+" ---| ABBREVIATIONS |--- {{{
+iabbrev <silent> CWD <C-R>=getcwd()<CR>
 "}}}
 
 " ---| AUTOCOMMANDS |--- {{{

@@ -34,6 +34,8 @@ backtick 0 30 30 sh -c 'screen -ls | grep --color=no -o "$PPID[^[:space:]]*" | s
 # [%{B} %d/%m %{W}%c %{g}]'    # [ date time ]
 #[%h]%?
 
+# Set TERM env var
+term screen-256color
 
 # Avoid window resizing at attach
 termcapinfo xterm 'is=\E[r\E[m\E[2J\E[H\E[?7h\E[?1;4;6l'
