@@ -41,9 +41,6 @@ togit() {
 # Make extended globs work
 shopt -s extglob
 
-# Set some nice ls colors
-eval $(dircolors ~/.dircolors)
-
 # Binaries in home
 export PATH=~/bin/local:~/bin/shared:$PATH
 
@@ -68,6 +65,10 @@ export MPD_HOST="localhost"
 export TEXMFHOME="~/.texmf"
 export SVN_EDITOR="vim"
 #export CVSROOT=":pserver:any@server:abs_path"
+
+if [ -f "$HOME/.dircolors" ] ; then
+    eval $(dircolors -b "$HOME/.dircolors")
+fi
 
 
 ###############################
@@ -168,6 +169,9 @@ alias syncdnv="rsync    -aSHAXh  --rsh=ssh --delete --progress --stats --numeric
 alias syncdbw80="rsync  -aSHAXh  --rsh=ssh --delete --progress --stats --numeric-ids --bwlimit=80"
 alias syncdbw800="rsync -aSHAXh  --rsh=ssh --delete --progress --stats --numeric-ids --bwlimit=800"
 
+
+# Taskwarrior 
+alias t='task'
 
 # Screen
 alias sls='screen -ls'

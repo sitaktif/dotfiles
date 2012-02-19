@@ -1,4 +1,4 @@
-" Last changes: 2011 Jun 28 - 08:09
+" Last changes: 2011 Nov 19 - 15:46
 
 " ---| BASIC HEADER |--- {{{
 
@@ -203,7 +203,7 @@ set ttymouse=xterm2 "Mouse dragging in iTerm
 
 
 "  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-" Last Modified: 2011 Jun 28 - 08:09
+" Last Modified: 2011 Nov 19 - 15:46
 " Called on every buffer saving 
 function! TimeStamp()
     let l:save_cursor = getpos(".") 
@@ -335,6 +335,13 @@ endif
 
 
 "" Misc (maps using <leader>)
+
+" Highlight word
+" TODO: define the color of the groups below
+"nnoremap <silent> <leader>hh :execute 'match InterestingWord1 /\<<c-r><c-w>\>/'<cr>
+"nnoremap <silent> <leader>h1 :execute 'match InterestingWord1 /\<<c-r><c-w>\>/'<cr>
+"nnoremap <silent> <leader>h2 :execute '2match InterestingWord2 /\<<c-r><c-w>\>/'<cr>
+"nnoremap <silent> <leader>h3 :execute '3match InterestingWord3 /\<<c-r><c-w>\>/'<cr>
 
 " Set paste
 noremap <leader>sp :set paste!<cr>
