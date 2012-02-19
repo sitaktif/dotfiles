@@ -2,9 +2,6 @@
 #      SYSTEM SPECIFIC        #
 ###############################
 
-# Non-interactive mode
-#
-
 # Default values defined in system-specific rc-files - "L_" for "LOCAL"
 export L_VIM="vim"
 export L_PS1_HOST_COLOR="46" # Green by default
@@ -17,6 +14,9 @@ if [[ "$(uname)" == 'Darwin' ]]; then # Leopard
 elif [[ "$(uname)" == 'Linux' ]]; then # Linux (slacker / kollok)
     source ~/.bashrc_linux
 fi
+
+# Non-interactive mode
+[ -z "$PS1" ] && return
 
 # stalker: purple - slacker: bordeaux - kollok: orange
 if [[ -z $L_PS1_ALREADY_SET ]]; then
@@ -44,7 +44,6 @@ shopt -s extglob
 # Set some nice ls colors
 eval $(dircolors ~/.dircolors)
 
-
 # Binaries in home
 export PATH=~/bin/local:~/bin/shared:$PATH
 
@@ -52,7 +51,9 @@ export PATH=~/bin/local:~/bin/shared:$PATH
 export MAIL=/home/sitaktif/.mail/default
 export EDITOR=vim
 export VISUAL=vim
-export LS_COLORS=auto
+
+# Works for Mac - does it for others?
+eval $(dircolors ~/.dircolors)
 
 # Bash
 export HISTCONTROL=ignoredups
@@ -226,6 +227,8 @@ alias sshg='ssh gamer'
 alias sshm='ssh mickey'
 alias sshp='ssh chossart2006@perso.iiens.net'
 alias sshp2='ssh -p 443 chossart2006@perso.iiens.net'
+alias sshr='ssh -l rchossart'
+alias ssha='ssh rchossart@theisland.acunu.com' # Ssh Acunu VPN
 
 
 ## Works, but to extend!
@@ -280,6 +283,7 @@ alias dsh='python manage.py shell'
 #
 # BACKUP STUFF - Unison and Rsync
 #
+# In respective bashrcs
 
 #
 # My MOTS (Message Of The Session)
