@@ -6,7 +6,8 @@
 #
 
 # Default values defined in system-specific rc-files - "L_" for "LOCAL"
-export L_VIM="vim"
+[ -z "$(which vim)" ] && export L_VIM="vi" || export L_VIM="vim"
+
 export L_PS1_HOST_COLOR="46" # Green by default
 export L_PS1_ALREADY_SET=""
 
@@ -17,6 +18,8 @@ if [[ "$(uname)" == 'Darwin' ]]; then # Leopard
 elif [[ "$(uname)" == 'Linux' ]]; then # Linux (slacker / kollok)
     source ~/.bashrc_linux
 fi
+
+[ -z "$PS1" ] && return
 
 # stalker: purple - slacker: bordeaux - kollok: orange
 if [[ -z $L_PS1_ALREADY_SET ]]; then
@@ -45,7 +48,6 @@ shopt -s extglob
 export PATH=~/bin/local:~/bin/shared:$PATH
 
 # General
-export MAIL=/home/sitaktif/.mail/default
 export EDITOR=vim
 export VISUAL=vim
 
@@ -100,6 +102,7 @@ alias l='ls'
 alias ll='ls -ahl'
 alias lt='ls -lrth'
 alias lat='ls -larth'
+alias lsdir='ls -p | grep "/$"'
 
 lsln() { ls "$1" -la |grep " \-> " ; }
 alias lshln='ls ~/ -la |grep "\->"'
@@ -167,7 +170,7 @@ alias syncdbw80="rsync  -aSHAXh  --rsh=ssh --delete --progress --stats --numeric
 alias syncdbw800="rsync -aSHAXh  --rsh=ssh --delete --progress --stats --numeric-ids --bwlimit=800"
 
 
-# Taskwarrior 
+# Taskwarrior
 alias t='task'
 
 # Screen
@@ -216,13 +219,21 @@ lna() {
 alias add_to_bin_shared='ln -s -t ~/bin/shared/'
 alias add_to_bin_local='ln -s -t ~/bin/local/'
 
+# Patch / merge - rudimentary
+function merge-rej () {
+    for i in "$@"; do
+	e -d "$i" "b/$i.rej"
+    done
+}
+
+
 ############################
 #        BOOKMARKS         #
 ############################
 
 # SSH
-alias k='ssh kollok.org'
-alias k2='ssh uk.kollok.org -p443'
+alias k='ssh sitaktif@kollok.org'
+alias k2='ssh sitaktif@uk.kollok.org -p443'
 alias sshs='ssh stalker'
 alias sshg='ssh gamer'
 alias sshm='ssh mickey'
@@ -286,11 +297,19 @@ alias dsh='python manage.py shell'
 #
 # My MOTS (Message Of The Session)
 #
+case $(hostname) in
+    kollok|stalker|slacker|gamer)
+        break;;
+    *)
+        return;
+        break;;
+esac
+
 echo "--"
 # Display random task if 1/ task present and 2/ task count > 0 (the export LC_ALL is for sort)
 tput setf 4 ; command -v task &>/dev/null && ( export LC_ALL='C' ; [ $(task count) -gt 0 ] && task | head -n -2 | tail -n -2 | sort -R | head -1 )
 # Display a random alias (so that I think about using them :) )
-echo -n " " ; tput setaf 2 ; alias | sort -R | head -1 
+echo -n " " ; tput setaf 2 ; alias | sort -R | head -1
 tput sgr0
 echo "--"
 
