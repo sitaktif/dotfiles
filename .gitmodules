@@ -68,3 +68,6 @@
 [submodule ".vim/bundle/space"]
 	path = .vim/bundle/space
 	url = https://github.com/sitaktif/vim-space.git
+[submodule ".vim/bundle/puppet"]
+	path = .vim/bundle/puppet
+	url = git@github.com:sitaktif/vim-puppet.git
