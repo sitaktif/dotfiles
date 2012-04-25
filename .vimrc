@@ -1,5 +1,3 @@
-" Last changes: 2012 Apr 20 - 14:56
-
 " ---| BASIC HEADER |--- {{{
 
 "Removes vi-compatibility (mandatory !)
@@ -207,7 +205,7 @@ set ttymouse=xterm2 "Mouse dragging in iTerm
 
 
 "  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-" Last Modified: 2012 Apr 20 - 14:56
+" Last Modified: 2012 Apr 25 - 16:03
 " Called on every buffer saving 
 function! TimeStamp()
     let l:save_cursor = getpos(".") 
@@ -340,6 +338,13 @@ endif
 
 "" Misc (maps using <leader>)
 
+" Highlight word
+" TODO: define the color of the groups below
+"nnoremap <silent> <leader>hh :execute 'match InterestingWord1 /\<<c-r><c-w>\>/'<cr>
+"nnoremap <silent> <leader>h1 :execute 'match InterestingWord1 /\<<c-r><c-w>\>/'<cr>
+"nnoremap <silent> <leader>h2 :execute '2match InterestingWord2 /\<<c-r><c-w>\>/'<cr>
+"nnoremap <silent> <leader>h3 :execute '3match InterestingWord3 /\<<c-r><c-w>\>/'<cr>
+
 " Set paste
 noremap <leader>sp :set paste!<cr>
 
@@ -422,6 +427,10 @@ endif
 " Fix the shift-backspace problem
 noremap!  <bs>
 
+"}}}
+
+" ---| ABBREVIATIONS |--- {{{
+iabbrev <silent> CWD <C-R>=getcwd()<CR>
 "}}}
 
 " ---| AUTOCOMMANDS |--- {{{

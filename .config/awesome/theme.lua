@@ -6,6 +6,7 @@ theme = {}
 
 --theme.font          = "sans 8"
 theme.font          = "terminus 9"
+theme.notif_font          = "terminus 12"
 
 theme.bg_normal     = "#111111"
 theme.bg_focus      = "#535d6c"

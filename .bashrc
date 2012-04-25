@@ -2,9 +2,6 @@
 #      SYSTEM SPECIFIC        #
 ###############################
 
-# Non-interactive mode
-#
-
 # Default values defined in system-specific rc-files - "L_" for "LOCAL"
 [ -z "$(which vim)" ] && export L_VIM="vi" || export L_VIM="vim"
 
@@ -19,6 +16,7 @@ elif [[ "$(uname)" == 'Linux' ]]; then # Linux (slacker / kollok)
     source ~/.bashrc_linux
 fi
 
+# Non-interactive mode
 [ -z "$PS1" ] && return
 
 # stalker: purple - slacker: bordeaux - kollok: orange
@@ -50,6 +48,9 @@ export PATH=~/bin/local:~/bin/shared:$PATH
 # General
 export EDITOR=vim
 export VISUAL=vim
+
+# Works for Mac - does it for others?
+eval $(dircolors ~/.dircolors)
 
 # Bash
 export HISTCONTROL=ignoredups
@@ -239,6 +240,8 @@ alias sshg='ssh gamer'
 alias sshm='ssh mickey'
 alias sshp='ssh chossart2006@perso.iiens.net'
 alias sshp2='ssh -p 443 chossart2006@perso.iiens.net'
+alias sshr='ssh -l rchossart'
+alias ssha='ssh rchossart@theisland.acunu.com' # Ssh Acunu VPN
 
 
 ## Works, but to extend!
@@ -293,6 +296,7 @@ alias dsh='python manage.py shell'
 #
 # BACKUP STUFF - Unison and Rsync
 #
+# In respective bashrcs
 
 #
 # My MOTS (Message Of The Session)
