@@ -10,8 +10,6 @@ if [ "$TERM" == "xterm" ]; then
     export TERM=xterm-256color
 fi
 
-echo "lal"
-
 # Source Box-specific config
 case $(hostname) in
     'slacker') # Slacker config
@@ -23,12 +21,20 @@ case $(hostname) in
 esac
 
 # Vim setting for "e" alias
-export L_VIM=vim
+[ -z "$(which vim)" ] && export L_VIM="vi" || export L_VIM="vim"
 #export L_PS1_ALREADY_SET="Y"
 
 ###############################
 #           ALIASES           #
 ###############################
+
+# General
+alias api='sudo aptitude install'
+alias aps='sudo aptitude search'
+
+[[ $(cat /etc/issue) =~ ^Ubuntu ]] && __ACK='ack-grep' || __ACK='ack'
+alias ack="$__ACK"
+alias a="$__ACK"
 
 # Hack for ranger
 alias ranger='python2.6 /usr/bin/ranger'

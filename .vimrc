@@ -1,5 +1,3 @@
-" Last changes: 2012 Feb 19 - 23:29
-
 " ---| BASIC HEADER |--- {{{
 
 "Removes vi-compatibility (mandatory !)
@@ -9,7 +7,6 @@ set nocp
 filetype off
 call pathogen#runtime_append_all_bundles()
 call pathogen#helptags()
-
 
 " File types and coloration have to be set here
 syntax on
@@ -35,8 +32,7 @@ else
     let g:PLATFORM = 'other'
 endif
 
-" If GUI mode
-if has("gui_running")
+if has("gui_running") " GUI mode
     let &guicursor = &guicursor . ",a:blinkon0"
     set guioptions-=e "No gui-like tabs
     set guioptions-=T "No toolbar
@@ -46,24 +42,29 @@ if has("gui_running")
     set guioptions+=c "Console dialogs (no popup)
     "set guioptions+=a "Gui visual w/ mouse (yank to "*)
 
-    colorscheme ps_color
+    colorscheme molokai
 
     if g:PLATFORM =~ "win"
 	set guifont=Terminus:h12
     elseif g:PLATFORM =~ "mac"
 	set guifont=
     else
-	set guifont=Terminus:h14
+	set guifont=Terminus\ 12
     endif
+elseif has('gui') " A terminal with GUI support
+	colorscheme ps_color
+	set termencoding=utf-8
+	set ttymouse=xterm2
 else
-	colorscheme desert
+	colorscheme molokai
+        set bg=dark
 	set termencoding=utf-8
 	set ttymouse=xterm2
 endif
 
 " Highlight current line
 set cursorline
-hi CursorLine guibg=#333333
+"hi CursorLine guibg=#333333
 
 "Omni menu colors
 hi Pmenu guibg=#333333 ctermbg=black
@@ -119,6 +120,7 @@ endif
 set autoindent "Indent (based on above line) when adding a line
 set tabstop=8 "A tab is 8 spaces
 set softtabstop=4 "See 4 spaces per tab
+set expandtab
 set shiftwidth=4 "Indent is 4
 set shiftround
 set nosmartindent "Cindent is better
@@ -203,7 +205,7 @@ set ttymouse=xterm2 "Mouse dragging in iTerm
 
 
 "  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-" Last Modified: 2012 Feb 19 - 23:29
+" Last Modified: 2012 Apr 25 - 16:03
 " Called on every buffer saving 
 function! TimeStamp()
     let l:save_cursor = getpos(".") 
@@ -226,11 +228,11 @@ autocmd BufWritePre * call TimeStamp()
 
 
 func! DeleteTrailingWS()
-  exe "normal mz"
-  %s/\s\+$//ge
-  exe "normal 'z"
+  silent! exe "normal mz"
+  silent! %s/\s\+$//ge
+  silent! exe "normal 'z"
 endfunc
-"autocmd BufWrite *.py,*.h,*.hpp,*.c,*.cpp :call DeleteTrailingWS()
+autocmd BufWrite *.py,*.h,*.hpp,*.c,*.cpp :call DeleteTrailingWS()
 
 "}}}
 
@@ -268,7 +270,7 @@ imap   \<non_space_blank\>
 "" FUNCTION KEYS (used: 1 4 6 7 8 10 11 12) - TODO
 
 " Tabs
-map <F1> :A<cr>
+map <F3> :A<cr>
 " map <F2> to something PREV
 " map <F3> to something NEXT
 map <F4> :tabe 
@@ -448,7 +450,7 @@ endif
 "}}}
 
 " ---| FILETYPE |--- {{{
-" Small confs only. Big ones are in ~./vim/ftplugin
+" Small confs only. Big ones are in ~/.vim/ftplugin
 
 " Python
 au FileType python set omnifunc=pythoncomplete#Complete

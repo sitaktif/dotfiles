@@ -14,8 +14,10 @@ attrcolor b ".I"
 # Tell screen how to set colors. AB = background, AF=foreground
 termcapinfo xterm 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
 
-# erase background with current bg color
-#defbce "on" 
+term xterm-256color
+
+# erase background with current bg color (useful for vim)
+defbce on
 
 # bufferfile:   The file to use for commands
 #               "readbuf" ('<') and  "writebuf" ('>'):

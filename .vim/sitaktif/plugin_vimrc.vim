@@ -3,6 +3,15 @@
 
 " ---| PLUGINS SETTINGS |--- {{{
 
+" Space plugin
+nmap <unique> <F1> <Plug>SmartspaceNext
+nmap <unique> <F2> <Plug>SmartspacePrev
+"noremap <unique> <S-Space> <Plug>SmartspacePrevnongui
+let g:space_no_second_prev_mapping = 1
+
+" CSApprox
+let g:CSApprox_verbose_level = 0
+
 " Taglist plugin
 let Tlist_Use_Right_Window = 1
 let Tlist_Exit_OnlyWindow = 1
@@ -50,6 +59,8 @@ let g:obviousModeCmdwinHi = 'term=reverse,bold ctermbg=130'
 "vmap <C-J> <Plug>IMAP_JumpForward
 
 "" SuperTab
+" Deactivate supertab
+let g:complType = 1
 let g:SuperTabDefaultCompletionType = "context"
 
 "" TaskList plugin
@@ -67,7 +78,11 @@ nmap <leader>a <Esc>:Ack!
 
 "" Python
 " Pyflakes
+if !has('python')
+    let b:did_pyflakes_plugin = 1
+endif
 let g:pyflakes_use_quickfix = 0
+
 
 " Green test with python
 map <leader>tg :set makeprg=python\ manage.py\ test\|:call MakeGreen()<CR>

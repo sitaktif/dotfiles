@@ -31,8 +31,11 @@ nnoremap <buffer> <f5> :!python ./%<cr>
 "autocmd BufRead *.py set makeprg=python\ -c\ \"import\ py_compile,sys;\ sys.stderr=sys.stdout;\ py_compile.compile(r'%')\"
 "autocmd BufRead *.py set efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m 
 
+
+if has('python')
+
 " Add the virtualenv's site-packages to vim path
-py << EOF
+python << EOF
 import os.path
 import sys
 import vim
@@ -44,11 +47,11 @@ if 'VIRTUAL_ENV' in os.environ:
 EOF
 
 " Evaluate a pyhon bunch of code
-if has('python')
 python << EOL
 import vim
 def PyEval():
     eval(compile('\n'.join(vim.current.range),'','exec'),globals())
 EOL
 map <C-h> :py PyEval() 
+
 endif
