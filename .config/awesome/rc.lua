@@ -60,7 +60,7 @@ end
 tags = {}
 
 -- Screen 1
-tags[1] = awful.tag({ 'Web', 'Term', 'IRC', 4, 5, 6, 'Kollok', 'Music', 'Sync' }, 1, layouts[1])
+tags[1] = awful.tag({ 'Firefox', 'Chrome', 'IRC', 4, 5, 6, 'Kollok', 'Music', 'Sync' }, 1, layouts[1])
 -- Set magnifier layout for the web browser
 awful.layout.set(awful.layout.suit.magnifier, tags[1][1])
 
@@ -311,6 +311,21 @@ clientbuttons = awful.util.table.join(
 root.keys(globalkeys)
 -- }}}
 
+--Kill all other instances of windows with the same name+class
+function stonith_or_raise (c)
+    naughty.notify({ text = "lala?" })
+    for a,t in pairs(c:tags()) do
+	for a,d in pairs(t:clients()) do
+	    if d.instance == c.instance and d.class == c.class and d.window ~= c.window then
+		naughty.notify({text="Killme!"})
+		c:kill()
+		return
+	    end
+	end
+    end
+    c:raise() -- Otherwise, raise...
+end
+
 -- {{{ Rules
 awful.rules.rules = {
     -- All clients will match this rule.
@@ -319,7 +334,9 @@ awful.rules.rules = {
                      border_color = beautiful.border_normal,
                      focus = true,
                      keys = clientkeys,
-                     buttons = clientbuttons } },
+                     buttons = clientbuttons },
+      --callback = function(c) naughty.notify({text= c.class .. "--" .. c.instance}) end
+    },
     { rule = { class = "MPlayer" },
       properties = { floating = true } },
     { rule = { class = "pinentry" },
@@ -327,15 +344,19 @@ awful.rules.rules = {
     { rule = { class = "gimp" },
       properties = { floating = true } },
       --Set Firefox to always map on tags number 2 of screen 1.
-    { rule = { class = "Firefox" },
+    { rule = { class = "Firefox", instance = "Firefox" },
       properties = { tag = tags[1][1] } },
+    { rule = { class = "Firefox", instance = "Dialog" },
+      properties = { tag = tags[1][1] },
+      callback = function(c) stonith_or_raise(c) end,
+    },
       -- Set ncmpcpp on music tag
     { rule = { role = "kollok" },
       properties = { tag = tags[1][7] } },
       -- Set ncmpcpp on music tag
     { rule = { role = "ncmpcpp" },
       properties = { tag = tags[1][8] } },
-      -- Set Sync tags - 
+      -- Set Sync tags -
     { rule = { class_any = { "Synaptic", "Update-manager" } },
       properties = { tag = tags[1][9] } },
 }
@@ -384,14 +405,14 @@ client.add_signal("unfocus", function(c) c.border_color = beautiful.border_norma
 
 -- Causes an error ??
 --wibox::set_position(statusbar, {25, 0})
--- 
+--
 -- -- {{{ File includes (extensions)
--- 
+--
 -- -- Calendar over clock (mouse wheel to change months)
 -- --dofile "calendar.lua"
 --     local calendar = nil
 --     local offset = 0
--- 
+--
 --     function remove_calendar()
 --         if calendar ~= nil then
 --             naughty.destroy(calendar)
@@ -399,7 +420,7 @@ client.add_signal("unfocus", function(c) c.border_color = beautiful.border_norma
 --             offset = 0
 --         end
 --     end
--- 
+--
 --     function add_calendar(inc_offset)
 --         --local save_offset = offset
 --         --remove_calendar()
@@ -416,13 +437,13 @@ client.add_signal("unfocus", function(c) c.border_color = beautiful.border_norma
 --             width = 160,
 --         })
 --     end
--- 
+--
 -- -- change clockbox for your clock widget (e.g. mytextclock)
 --     mytextclock:add_signal("mouse::enter", function()
 --       add_calendar(0)
 --     end)
 --     mytextclock:add_signal("mouse::leave", remove_calendar)
---  
+--
 --     mytextclock:buttons(awful.util.table.join(
 --         button({ }, 4, function()
 --             add_calendar(-1)
@@ -431,8 +452,8 @@ client.add_signal("unfocus", function(c) c.border_color = beautiful.border_norma
 --             add_calendar(1)
 --         end)
 --     ))
--- 
--- 
+--
+--
 -- -- }}}
 
-dofile "naughty_conf.lua"
+--dofile "naughty_conf.lua"
