@@ -43,7 +43,7 @@ togit() {
 shopt -s extglob
 
 # Binaries in home
-export PATH=~/bin/local:~/bin/shared:$PATH
+export PATH=~/bin:~/bin/scripts:$PATH
 
 # General
 export EDITOR=vim
