@@ -1,8 +1,11 @@
-.vim
-.vimrc
 .bashrc
 .bashrc_mac
-.bashrc_linux
-.unison
+.dircolors
 .gitconfig
 .gitexclude
+.gitignore
+.screenrc
+.taskrc
+.unison
+.vim
+.vimrc
