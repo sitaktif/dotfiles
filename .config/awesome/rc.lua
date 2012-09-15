@@ -93,7 +93,7 @@ awful.layout.set(awful.layout.suit.magnifier, tags[1][1])
 if screen.count() > 1 then
     for s = 2, screen.count() do
 	-- Each screen has its own tag table.
-	tags[s] = awful.tag({ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, layouts[1])
+	tags[s] = awful.tag({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, layouts[1])
     end
 end
 
