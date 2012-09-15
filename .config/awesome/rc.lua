@@ -389,7 +389,7 @@ awful.rules.rules = {
       properties = { tag = tags[1][1] } },
      { rule = { class = "Firefox", instance = "Dialog" },
        properties = { tag = tags[1][1] },
-       callback = function(c) stonith_or_raise(c) end,
+       --callback = function(c) stonith_or_raise(c) end,
      },
        -- Set ncmpcpp on music tag
      { rule = { role = "kollok" },
