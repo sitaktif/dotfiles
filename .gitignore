@@ -5,11 +5,6 @@
 
 # Unison files - do not mess up :)
 .unison/*
-!.unison/config_full.prf
-!.unison/config_part.prf
-!.unison/config_full_sync.prf
-!.unison/config_part_sync.prf
-!.unison/default.prf
-!.unison/default_kollok.prf
-!.unison/default_slacker.prf
-!.unison/default_mac.prf
+!.unison/config_shared
+!.unison/big_data.prf
+!.unison/small_data.prf

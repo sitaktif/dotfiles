@@ -205,7 +205,7 @@ set ttymouse=xterm2 "Mouse dragging in iTerm
 
 
 "  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-" Last Modified: 2012 Apr 25 - 16:03
+" Last Modified: 2012 Sep 09 - 17:37
 " Called on every buffer saving 
 function! TimeStamp()
     let l:save_cursor = getpos(".") 
@@ -430,7 +430,6 @@ noremap!  <bs>
 "}}}
 
 " ---| ABBREVIATIONS |--- {{{
-iabbrev <silent> CWD <C-R>=getcwd()<CR>
 "}}}
 
 " ---| AUTOCOMMANDS |--- {{{

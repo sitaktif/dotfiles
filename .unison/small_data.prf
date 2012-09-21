@@ -1,0 +1,22 @@
+## Basically all the documents, images, mirrors that are < 2 GB
+#   Pictures are too big (22GB, compared to current sum of others = 1.2GB..)
+#   See big_data.prf for the Pictures
+
+## Run unison with the home dirs, e.g.
+#   unison  /Users/sitaktif ssh://sitaktif@slacker//home/sitaktif
+
+include config_shared
+
+## Paths (directories or files) to synchronise
+path = bin
+path = Documents
+path = graphisme
+path = images
+path = mirrors
+path = notes
+path = prog_docs
+
+# Ignore local symlinks
+ignore = Path bin/local
+ignore = Path bin/local
+

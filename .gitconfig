@@ -2,7 +2,7 @@
     sslVerify = false
 
 [user]
-    name = Romain Chossart
+	name = Romain Chossart
     email = romainchossart@gmail.com
 
 [core]

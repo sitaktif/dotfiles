@@ -10,6 +10,31 @@ require("naughty")
 -- Load Debian menu entries
 require("debian.menu")
 
+-- {{{ Error handling
+-- Check if awesome encountered an error during startup and fell back to
+-- another config (This code will only ever execute for the fallback config)
+if awesome.startup_errors then
+    naughty.notify({ preset = naughty.config.presets.critical,
+                     title = "Oops, there were errors during startup!",
+                     text = awesome.startup_errors })
+end
+
+-- Handle runtime errors after startup
+do
+    local in_error = false
+    awesome.add_signal("debug::error", function (err)
+        -- Make sure we don't go into an endless error loop
+        if in_error then return end
+        in_error = true
+
+        naughty.notify({ preset = naughty.config.presets.critical,
+                         title = "Oops, an error happened!",
+                         text = err })
+        in_error = false
+    end)
+end
+-- }}}
+
 -- {{{ Variable definitions
 -- Themes define colours, icons, and wallpapers
 beautiful.init("/home/sitaktif/.config/awesome/theme.lua")
@@ -60,15 +85,15 @@ end
 tags = {}
 
 -- Screen 1
-tags[1] = awful.tag({ 'Firefox', 'Chrome', 'IRC', 4, 5, 6, 'Kollok', 'Music', 'Sync' }, 1, layouts[1])
+tags[1] = awful.tag({ 'Ⅰ  ', 'Ⅱ  ', 'Ⅲ  ', 'Ⅳ  ', 'Ⅴ  ', 'Ⅵ  ', 'Ⅶ  ', 'Ⅷ  ', '♫' }, 1, layouts[1])
 -- Set magnifier layout for the web browser
 awful.layout.set(awful.layout.suit.magnifier, tags[1][1])
 
 -- Screen 2 and more
 if screen.count() > 1 then
-    for s = 1, screen.count() do
+    for s = 2, screen.count() do
 	-- Each screen has its own tag table.
-	tags[s] = awful.tag({ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, layouts[1])
+	tags[s] = awful.tag({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, layouts[1])
     end
 end
 
@@ -116,11 +141,17 @@ mytaglist.buttons = awful.util.table.join(
 mytasklist = {}
 mytasklist.buttons = awful.util.table.join(
                      awful.button({ }, 1, function (c)
-                                              if not c:isvisible() then
-                                                  awful.tag.viewonly(c:tags()[1])
+                                              if c == client.focus then
+                                                  c.minimized = true
+                                              else
+                                                  if not c:isvisible() then
+                                                      awful.tag.viewonly(c:tags()[1])
+                                                  end
+                                                  -- This will also un-minimize
+                                                  -- the client, if needed
+                                                  client.focus = c
+                                                  c:raise()
                                               end
-                                              client.focus = c
-                                              c:raise()
                                           end),
 					  -- Kill the client on middle mouse button
 		     awful.button({ }, 2, function (c)
@@ -164,7 +195,8 @@ for s = 1, screen.count() do
                                           end, mytasklist.buttons)
 
     -- Create the wibox
-    mywibox[s] = awful.wibox({ position = "top", screen = s, x = "25" })
+    --mywibox[s] = awful.wibox({ position = "top", screen = s, x = "25" })
+    mywibox[s] = awful.wibox({ position = "top", screen = s })
     -- Add widgets to the wibox - order matters
     mywibox[s].widgets = {
         {
@@ -206,7 +238,7 @@ globalkeys = awful.util.table.join(
             awful.client.focus.byidx(-1)
             if client.focus then client.focus:raise() end
         end),
-    awful.key({ modkey,           }, "w", function () mymainmenu:show(true)        end),
+    awful.key({ modkey,           }, "w", function () mymainmenu:show({keygrabber=true}) end),
 
     -- Layout manipulation
     awful.key({ modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end),
@@ -236,6 +268,8 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) end),
     awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
 
+    awful.key({ modkey, "Control" }, "n", awful.client.restore),
+
     -- Prompt
     awful.key({ modkey },            "r",     function () mypromptbox[mouse.screen]:run() end),
 
@@ -253,9 +287,16 @@ clientkeys = awful.util.table.join(
     awful.key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end),
     awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ),
     awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end),
+    awful.key({ modkey,           }, "`",      function () awful.screen.focus_relative( 1)   end),
     awful.key({ modkey,           }, "o",      awful.client.movetoscreen                        ),
     awful.key({ modkey, "Shift"   }, "r",      function (c) c:redraw()                       end),
-    awful.key({ modkey,           }, "n",      function (c) c.minimized = not c.minimized    end),
+    awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end),
+    awful.key({ modkey,           }, "n",
+        function (c)
+            -- The client currently has the input focus, so it cannot be
+            -- minimized, since minimized clients can't have the focus.
+            c.minimized = true
+        end),
     awful.key({ modkey,           }, "m",
         function (c)
             c.maximized_horizontal = not c.maximized_horizontal
@@ -311,20 +352,22 @@ clientbuttons = awful.util.table.join(
 root.keys(globalkeys)
 -- }}}
 
---Kill all other instances of windows with the same name+class
-function stonith_or_raise (c)
-    naughty.notify({ text = "lala?" })
-    for a,t in pairs(c:tags()) do
-	for a,d in pairs(t:clients()) do
-	    if d.instance == c.instance and d.class == c.class and d.window ~= c.window then
-		naughty.notify({text="Killme!"})
-		c:kill()
-		return
-	    end
-	end
-    end
-    c:raise() -- Otherwise, raise...
-end
+-- --Kill all other instances of windows with the same name+class
+-- --This is useful for spurious firefox "enter your password" but it's not
+-- --flawless, as in it might kill windows we don't want to kill
+-- function stonith_or_raise (c)
+--     naughty.notify({ text = "lala?" })
+--     for a,t in pairs(c:tags()) do
+-- 	for a,d in pairs(t:clients()) do
+-- 	    if d.instance == c.instance and d.class == c.class and d.window ~= c.window then
+-- 		naughty.notify({text="Killme!"})
+-- 		c:kill()
+-- 		return
+-- 	    end
+-- 	end
+--     end
+--     c:raise() -- Otherwise, raise...
+-- end
 
 -- {{{ Rules
 awful.rules.rules = {
@@ -334,9 +377,7 @@ awful.rules.rules = {
                      border_color = beautiful.border_normal,
                      focus = true,
                      keys = clientkeys,
-                     buttons = clientbuttons },
-      --callback = function(c) naughty.notify({text= c.class .. "--" .. c.instance}) end
-    },
+                     buttons = clientbuttons } },
     { rule = { class = "MPlayer" },
       properties = { floating = true } },
     { rule = { class = "pinentry" },
@@ -346,19 +387,19 @@ awful.rules.rules = {
       --Set Firefox to always map on tags number 2 of screen 1.
     { rule = { class = "Firefox", instance = "Firefox" },
       properties = { tag = tags[1][1] } },
-    { rule = { class = "Firefox", instance = "Dialog" },
-      properties = { tag = tags[1][1] },
-      callback = function(c) stonith_or_raise(c) end,
-    },
-      -- Set ncmpcpp on music tag
-    { rule = { role = "kollok" },
-      properties = { tag = tags[1][7] } },
-      -- Set ncmpcpp on music tag
-    { rule = { role = "ncmpcpp" },
-      properties = { tag = tags[1][8] } },
-      -- Set Sync tags -
-    { rule = { class_any = { "Synaptic", "Update-manager" } },
-      properties = { tag = tags[1][9] } },
+     { rule = { class = "Firefox", instance = "Dialog" },
+       properties = { tag = tags[1][1] },
+       --callback = function(c) stonith_or_raise(c) end,
+     },
+       -- Set ncmpcpp on music tag
+     { rule = { role = "kollok" },
+       properties = { tag = tags[1][7] } },
+       -- Set ncmpcpp on music tag
+     { rule = { role = "ncmpcpp" },
+       properties = { tag = tags[1][8] } },
+       -- Set Sync tags -
+     { rule = { class_any = { "Synaptic", "Update-manager" } },
+       properties = { tag = tags[1][9] } },
 }
 -- }}}
 
@@ -366,7 +407,7 @@ awful.rules.rules = {
 -- Signal function to execute when a new client appears.
 client.add_signal("manage", function (c, startup)
     -- Add a titlebar
-    --awful.titlebar.add(c, { modkey = modkey })
+    -- awful.titlebar.add(c, { modkey = modkey })
 
     -- Enable sloppy focus
     c:add_signal("mouse::enter", function(c)

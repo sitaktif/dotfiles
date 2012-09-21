@@ -43,7 +43,7 @@ togit() {
 shopt -s extglob
 
 # Binaries in home
-export PATH=~/bin:~/bin/scripts:$PATH
+export PATH=~/bin/local:~/bin:~/bin/scripts:$PATH
 
 # General
 export EDITOR=vim
@@ -292,6 +292,15 @@ alias dsh='python manage.py shell'
 #alias pecdb='mysql -D test -u root -p'
 
 #}}}
+
+## SSH AGENT
+SSHAGENT=/usr/bin/ssh-agent
+SSHAGENTARGS="-s"
+if [ -z "$SSH_AUTH_SOCK" -a -x "$SSHAGENT" ]; then
+    eval `$SSHAGENT $SSHAGENTARGS`
+    trap "kill $SSH_AGENT_PID" 0
+fi
+
 
 #
 # BACKUP STUFF - Unison and Rsync
