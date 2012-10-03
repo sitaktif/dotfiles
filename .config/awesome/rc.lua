@@ -390,19 +390,25 @@ awful.rules.rules = {
       --Set Firefox to always map on tags number 2 of screen 1.
     { rule = { class = "Firefox", instance = "Firefox" },
       properties = { tag = tags[1][1] } },
-     { rule = { class = "Firefox", instance = "Dialog" },
-       properties = { tag = tags[1][1] },
-       --callback = function(c) stonith_or_raise(c) end,
-     },
-       -- Set ncmpcpp on music tag
-     { rule = { role = "kollok" },
-       properties = { tag = tags[1][7] } },
-       -- Set ncmpcpp on music tag
-     { rule = { role = "ncmpcpp" },
-       properties = { tag = tags[1][8] } },
-       -- Set Sync tags -
-     { rule = { class_any = { "Synaptic", "Update-manager" } },
-       properties = { tag = tags[1][9] } },
+      --Youtube fullscreen stuff
+    { rule = { instance = "plugin-container" }, -- on firefox
+      properties = { floating = true } },
+    { rule = { instance = "exe" }, -- on chrome
+      properties = { floating = true } },
+
+    { rule = { class = "Firefox", instance = "Dialog" },
+      properties = { tag = tags[1][1] },
+      --callback = function(c) stonith_or_raise(c) end,
+    },
+      -- Set ncmpcpp on music tag
+    { rule = { role = "kollok" },
+      properties = { tag = tags[1][7] } },
+      -- Set ncmpcpp on music tag
+    { rule = { role = "ncmpcpp" },
+      properties = { tag = tags[1][8] } },
+      -- Set Sync tags -
+    { rule = { class_any = { "Synaptic", "Update-manager" } },
+      properties = { tag = tags[1][9] } },
 }
 -- }}}
 
