@@ -44,6 +44,7 @@ beautiful.init("/home/sitaktif/.config/awesome/theme.lua")
 terminal = "x-terminal-emulator"
 editor = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
+xrandr_external_top = "xrandr --output VGA1 --above LVDS1"
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
@@ -301,7 +302,9 @@ clientkeys = awful.util.table.join(
         function (c)
             c.maximized_horizontal = not c.maximized_horizontal
             c.maximized_vertical   = not c.maximized_vertical
-        end)
+        end),
+    awful.key({                   }, "XF86Launch1", function () awful.util.spawn(xrandr_external_top) end)
+
 )
 
 -- Compute the maximum number of digit we need, limited to 9
