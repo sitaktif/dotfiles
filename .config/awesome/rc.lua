@@ -10,6 +10,9 @@ require("naughty")
 -- Load Debian menu entries
 require("debian.menu")
 
+-- Battery widget
+require("sita_battery")
+
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -123,6 +126,13 @@ mylauncher = awful.widget.launcher({ image = image(beautiful.awesome_icon),
 -- Create a textclock widget
 mytextclock = awful.widget.textclock({ align = "right" })
 
+-- Create a battery widget -- sita_battery.lua
+sita_batterywidget = widget({type = "textbox", name = "batterywidget", align = "right" })
+sita_batterywidget.text = "Bat: (init)"
+awful.hooks.timer.register(5, function()
+    batteryInfo(sita_batterywidget, "BAT0")
+end)
+
 -- Create a systray
 mysystray = widget({ type = "systray" })
 
@@ -207,6 +217,7 @@ for s = 1, screen.count() do
             layout = awful.widget.layout.horizontal.leftright
         },
         mylayoutbox[s],
+        sita_batterywidget,
         mytextclock,
         s == 1 and mysystray or nil,
         mytasklist[s],
