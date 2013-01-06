@@ -57,12 +57,16 @@
 [submodule ".vim/bundle/tagbar"]
 	path = .vim/bundle/tagbar
 	url = git@github.com:sitaktif/tagbar.git
+        ignore = untracked
 [submodule ".vim/bundle/space"]
 	path = .vim/bundle/space
 	url = https://github.com/sitaktif/vim-space.git
+        ignore = untracked
 [submodule ".vim/bundle/puppet"]
 	path = .vim/bundle/puppet
 	url = git@github.com:sitaktif/vim-puppet.git
+        ignore = untracked
 [submodule ".vim/bundle/vcscommand"]
 	path = .vim/bundle/vcscommand
 	url = https://github.com/vim-scripts/vcscommand.vim.git
+        ignore = untracked
