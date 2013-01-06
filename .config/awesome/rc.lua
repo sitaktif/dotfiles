@@ -427,6 +427,16 @@ awful.rules.rules = {
 -- Signal function to execute when a new client appears.
 client.add_signal("manage", function (c, startup)
     -- Add a titlebar
+    processfloating = function(c)
+        if awful.client.floating.get(c) then
+            awful.titlebar.add(c, { modkey = modkey, height = 16})
+        else
+            awful.titlebar.remove(c)
+        end
+    end
+
+    processfloating(c)
+    c:add_signal("property::floating", processfloating)
     -- awful.titlebar.add(c, { modkey = modkey })
 
     -- Enable sloppy focus
