@@ -2,7 +2,7 @@
     sslVerify = false
 
 [user]
-	name = Romain Chossart
+    name = Romain Chossart
     email = romainchossart@gmail.com
 
 [core]
@@ -30,4 +30,6 @@
     br = branch
     co = checkout
     rb = rebase
+    di = diff
+    dif = diff
 
