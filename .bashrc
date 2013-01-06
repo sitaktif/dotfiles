@@ -135,6 +135,7 @@ function ,, () {
 }
 
 # Utilities (grep, basename, dirname)
+alias grep='grep --color'
 alias g='grep -nr --color'
 alias gi='grep -nri --color'
 alias gr='grep -nr --color'
@@ -293,14 +294,19 @@ alias dsh='python manage.py shell'
 
 #}}}
 
-## SSH AGENT
-SSHAGENT=/usr/bin/ssh-agent
-SSHAGENTARGS="-s"
-if [ -z "$SSH_AUTH_SOCK" -a -x "$SSHAGENT" ]; then
-    eval `$SSHAGENT $SSHAGENTARGS`
-    trap "kill $SSH_AGENT_PID" 0
+## SSH AGENT - use keychain to prompt at login (requires the package..)
+#SSHAGENT=/usr/bin/ssh-agent
+#SSHAGENTARGS="-s"
+#if [ -z "$SSH_AUTH_SOCK" -a -x "$SSHAGENT" ]; then
+#    echo sshagent
+#    eval `$SSHAGENT $SSHAGENTARGS`
+#    trap "kill $SSH_AGENT_PID" 0
+#fi
+if [ -n "$TERM" ] && [ -x "$(which keychain)" ] && \
+    [ -f "$HOME/.ssh/id_rsa" ] ; then
+    keychain -q $HOME/.ssh/id_rsa
+    . $HOME/.keychain/$(hostname)-sh
 fi
-
 
 #
 # BACKUP STUFF - Unison and Rsync
@@ -311,7 +317,7 @@ fi
 # My MOTS (Message Of The Session)
 #
 case $(hostname) in
-    kollok|stalker|slacker|gamer)
+    kollok|stalker|slacker|gamer|blinker)
         break;;
     *)
         return;
@@ -320,7 +326,8 @@ esac
 
 echo "--"
 # Display random task if 1/ task present and 2/ task count > 0 (the export LC_ALL is for sort)
-tput setf 4 ; command -v task &>/dev/null && ( export LC_ALL='C' ; [ $(task count) -gt 0 ] && task | head -n -2 | tail -n -2 | sort -R | head -1 )
+tput setf 4 ; task list | head
+echo
 # Display a random alias (so that I think about using them :) )
 echo -n " " ; tput setaf 2 ; alias | sort -R | head -1
 tput sgr0
