@@ -27,3 +27,9 @@ data.location=~/.task
 
 merge.default.uri=ssh://sitaktif@kollok.org/~/.task/
 merge.autopush=yes
+
+dateformat=Y/m/d
+dateformat.report=Y/m/d
+dateformat.holiday=Y/m/d
+dateformat.annotation=Y/m/d
+
