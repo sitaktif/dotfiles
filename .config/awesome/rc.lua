@@ -67,9 +67,9 @@ layouts =
     awful.layout.suit.fair.horizontal,
     --awful.layout.suit.spiral,
     --awful.layout.suit.spiral.dwindle,
-    --awful.layout.suit.max,
+    awful.layout.suit.max,
     --awful.layout.suit.max.fullscreen,
-    awful.layout.suit.magnifier,
+    --awful.layout.suit.magnifier,
     awful.layout.suit.floating
 }
 -- }}}
@@ -91,7 +91,7 @@ tags = {}
 -- Screen 1
 tags[1] = awful.tag({ 'Ⅰ  ', 'Ⅱ  ', 'Ⅲ  ', 'Ⅳ  ', 'Ⅴ  ', 'Ⅵ  ', 'Ⅶ  ', 'Ⅷ  ', '♫' }, 1, layouts[1])
 -- Set magnifier layout for the web browser
-awful.layout.set(awful.layout.suit.magnifier, tags[1][1])
+awful.layout.set(awful.layout.suit.max, tags[1][1])
 
 -- Screen 2 and more
 if screen.count() > 1 then
@@ -426,10 +426,15 @@ awful.rules.rules = {
 -- {{{ Signals
 -- Signal function to execute when a new client appears.
 client.add_signal("manage", function (c, startup)
-    -- Add a titlebar
+    -- Add a titlebar, do not put offscreen and bring to front
     processfloating = function(c)
         if awful.client.floating.get(c) then
             awful.titlebar.add(c, { modkey = modkey, height = 16})
+            -- Floating clients don't overlap, cover 
+            -- the titlebar or get placed offscreen
+            awful.placement.no_overlap(c)
+            awful.placement.no_offscreen(c)
+            c:raise()
         else
             awful.titlebar.remove(c)
         end
@@ -528,3 +533,6 @@ client.add_signal("unfocus", function(c) c.border_color = beautiful.border_norma
 -- -- }}}
 
 --dofile "naughty_conf.lua"
+
+
+
