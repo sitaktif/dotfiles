@@ -33,3 +33,8 @@ dateformat.report=Y/m/d
 dateformat.holiday=Y/m/d
 dateformat.annotation=Y/m/d
 
+# Example report "All tasks"
+#report.alltags.description=All tasks with tags
+#report.alltags.columns=id,project,tags,depends,description
+#report.alltags.filter=limit:page
+#report.alltags.sort=project+,description+
