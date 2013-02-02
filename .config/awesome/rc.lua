@@ -107,7 +107,7 @@ end
 -- Create a laucher widget and a main menu
 myawesomemenu = {
    { "manual", terminal .. " -e man awesome" },
-   { "edit config", editor_cmd .. " " .. awful.util.getdir("config") .. "/rc.lua" },
+   { "edit config", editor_cmd .. " " .. awesome.conffile },
    { "restart", awesome.restart },
    { "quit", awesome.quit }
 }
@@ -314,7 +314,12 @@ clientkeys = awful.util.table.join(
             c.maximized_horizontal = not c.maximized_horizontal
             c.maximized_vertical   = not c.maximized_vertical
         end),
-    awful.key({                   }, "XF86Launch1", function () awful.util.spawn(xrandr_external_top) end)
+    awful.key({                   }, "XF86Launch1",
+        function ()
+            awful.util.spawn(xrandr_external_top)
+            -- Reload the theme (esp for the background stuff)
+            beautiful.init("/home/sitaktif/.config/awesome/theme.lua")
+        end)
 
 )
 
@@ -434,7 +439,15 @@ client.add_signal("manage", function (c, startup)
             -- the titlebar or get placed offscreen
             awful.placement.no_overlap(c)
             awful.placement.no_offscreen(c)
-            c:raise()
+
+            -- If it's not visible, make it visible
+            -- XXX: For now, I disable it and will enable it only if I can see
+            -- other occurences of the "sneaky floating window that stays in
+            -- the background" issue.
+            -- sleep(.5) -- NOT DEFINED YET...
+            -- if not c:isvisible() then
+            --     c:raise()
+            -- end
         else
             awful.titlebar.remove(c)
         end
