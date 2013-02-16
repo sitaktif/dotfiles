@@ -1,4 +1,7 @@
-function batteryInfo(widget, adapter)
+local naughty = require("naughty")
+
+local sita_battery = {}
+function sita_battery.batteryInfo(widget, adapter)
     spacer = " "
     local fsta = io.open("/sys/class/power_supply/"..adapter.."/status")
     local fcur = io.open("/sys/class/power_supply/"..adapter.."/energy_now")
@@ -16,10 +19,9 @@ function batteryInfo(widget, adapter)
     if sta:match("Unknown") then
         dir = "?"
     elseif sta:match("Charging") then
-        dir = "^"
-        battery = "A/C ("..battery..")"
+        dir = "<span color='green'>^</span>"
     elseif sta:match("Discharging") then
-        dir = "v"
+        dir = "<span color='orange'>v</span>"
         if tonumber(battery) > 25 and tonumber(battery) < 75 then
             battery = battery
         elseif tonumber(battery) < 25 then
@@ -40,8 +42,10 @@ function batteryInfo(widget, adapter)
         dir = "="
         battery = "A/C"
     end
-    widget.text = spacer.."Bat:"..spacer..dir..battery..dir..spacer
+    widget:set_markup(spacer.."Bat:"..spacer..dir..battery..dir..spacer)
     fcur:close()
     fcap:close()
     fsta:close()
 end
+
+return sita_battery
