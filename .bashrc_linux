@@ -34,10 +34,6 @@ alias aps='sudo aptitude search'
 
 [[ $(cat /etc/issue) =~ ^Ubuntu ]] && __ACK='ack-grep' || __ACK='ack'
 alias ack="$__ACK"
-alias a="$__ACK"
-
-# Hack for ranger
-alias ranger='python2.6 /usr/bin/ranger'
 
 # Prefixes
 alias luit_iso='luit -encoding ISO 8859-15'
@@ -46,7 +42,7 @@ alias luit_iso='luit -encoding ISO 8859-15'
 alias cdapen='cd /etc/apache2/sites-enabled'
 alias cdapav='cd /etc/apache2/sites-available'
 
-alias cdpysites='cd /usr/local/lib/python2.6/site-packages'
+alias cdpysite='cd /usr/local/lib/python2.6/site-packages'
 alias cddjango='cd /usr/local/lib/python2.6/site-packages/django'
 
 # Kollok stream
