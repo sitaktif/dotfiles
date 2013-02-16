@@ -1,3 +1,7 @@
+# Complete symlinks dirs with a slash (like normal ones) (!)
+set mark-symlinked-directories
+
 # Search history with same beginning as what's been typed so far
+# Bind it to shift-up and shift-down
 "\e[1;2A": history-search-backward
 "\e[1;2B": history-search-forward
