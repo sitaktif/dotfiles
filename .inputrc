@@ -1,3 +1,3 @@
 # Search history with same beginning as what's been typed so far
-bind '"\e[1;2A": history-search-backward'
-bind '"\e[1;2B": history-search-forward'
+"\e[1;2A": history-search-backward
+"\e[1;2B": history-search-forward
