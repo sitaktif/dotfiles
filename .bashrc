@@ -166,8 +166,9 @@ alias pst='pstree -hAcpul'
 
 # Rsync - Unison
 alias unison='unison -ui text'
-alias unipart='unison config_part.prf'
-alias unifull='unison config_full.prf'
+alias unismall='unison small_data'
+alias unibig='unison big_data'
+alias unifull='unismall && unibig'
 
 # syncd for sync-delete (to avoir a deadly typo)
 alias syncd="rsync      -aSHAXh  --rsh=ssh --delete"
