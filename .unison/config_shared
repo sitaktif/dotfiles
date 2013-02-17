@@ -1,7 +1,7 @@
 # Roots
 # Actually just use unison source dest
-#root = /home/sitaktif
-#root = ssh://sitaktif@stalker//Users/sitaktif
+root = /home/sitaktif
+root = ssh://sitaktif@lslacker//home/sitaktif
 
 
 # Global ignores
@@ -61,11 +61,11 @@ merge = Regex .* -> vim -d --nofork CURRENT1 CURRENT2
 #copyprogpartial = 1000 
 
 # Backup everything (!= sync)
-# backup = Name * TODO
+backup = Name *
 # Keep a backup copy centrally (not next to files) for files specified with "backup = Name foo"
 backuplocation = central
 # Directory where these are stored
-backupdir = backups/unison/local
+backupdir = media/backups/unison/local
 
 # Max OS X Shit
 ignore = Path backups/unison
