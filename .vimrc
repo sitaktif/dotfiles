@@ -205,7 +205,7 @@ set ttymouse=xterm2 "Mouse dragging in iTerm
 
 
 "  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-" Last Modified: 2012 Sep 09 - 17:37
+" Last Modified: 2013 Feb 19 - 18:17
 " Called on every buffer saving 
 function! TimeStamp()
     let l:save_cursor = getpos(".") 
@@ -426,6 +426,22 @@ endif
 
 " Fix the shift-backspace problem
 noremap!  <bs>
+
+"" COMMAND LINE MAPPINGS
+" TODO: they are not perfect since <esc>b can be annoying when I actually want
+" to press <esc> and b.
+"cnoremap <C-a>  <Home>
+"cnoremap <C-b>  <Left>
+"cnoremap <C-f>  <Right>
+"cnoremap <C-d>  <Delete>
+"cnoremap <M-b>  <S-Left>
+"cnoremap <M-f>  <S-Right>
+"cnoremap <M-d>  <S-right><Delete>
+"cnoremap <Esc>b <S-Left>
+"cnoremap <Esc>f <S-Right>
+"cnoremap <Esc>d <S-right><Delete>
+"cnoremap <C-g>  <C-c>
+
 
 "}}}
 
