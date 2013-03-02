@@ -280,7 +280,7 @@ mytasklist.buttons = awful.util.table.join(
                                               end
                                           end),
 					  -- Kill the client on middle mouse button
-		     awful.button({ }, 2, function (c)
+		     awful.button({ "Control" }, 2, function (c)
 					      client.focus = c
 					      c:kill()
 					  end),
