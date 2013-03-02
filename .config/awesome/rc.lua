@@ -441,7 +441,7 @@ clientkeys = awful.util.table.join(
             -- The line below screws things up, so do not use it
             -- beautiful.init("/home/sitaktif/.config/awesome/theme.lua")
         end),
-        awful.key({ modkey, "Shift" }, "t", function (c)
+        awful.key({ modkey, "Control" }, "t", function (c)
             put_titlebar(c) 
         end),
         awful.key({ modkey, "Shift", "Control" }, "t", function (c)
@@ -562,10 +562,11 @@ client.connect_signal("manage", function (c, startup)
 
     local titlebars_enabled = false
 
-    -- Add a titlebar, do not put offscreen and bring to front
+    -- Do not put offscreen
     processfloating = function(c)
         if awful.client.floating.get(c) then
-            titlebars_enabled = true
+            -- titlebars_enabled = true -- After all that's annoying
+
             -- Floating clients don't overlap, cover 
             -- the titlebar or get placed offscreen
             awful.placement.no_overlap(c)
