@@ -83,6 +83,8 @@ alias cdj2='cd ~/git/site_chinafrique/src'
 alias cdjj='cd ~/sites/jj/code'
 alias cdts='cd ~/git/ts.git/src'
 alias cdsp='cd ~/git/site_sportsclub/sportsclub/club'
+alias cdts='cd ~/git/ts/src'
+
 
 alias cdms='cd ~/Media/series'
 alias cdmf='cd ~/Media/flims_new'
