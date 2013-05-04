@@ -72,3 +72,6 @@
 [submodule ".vim/bundle/ultisnips"]
 	path = .vim/bundle/ultisnips
 	url = https://github.com/sitaktif/ultisnips.git
+[submodule ".vim/bundle/pytest"]
+	path = .vim/bundle/pytest
+	url = https://github.com/alfredodeza/pytest.vim.git
