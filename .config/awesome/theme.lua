@@ -4,21 +4,22 @@
 
 theme = {}
 
---theme.font          = "sans 8"
+-- theme.font          = "sans 8"
 theme.font          = "terminus 9"
-theme.notif_font          = "terminus 12"
+theme.notif_font    = "terminus 12"
 
-theme.bg_normal     = "#111111"
+theme.bg_normal     = "#222222"
 theme.bg_focus      = "#535d6c"
 theme.bg_urgent     = "#ff0000"
-theme.bg_minimize   = "#333333"
+theme.bg_minimize   = "#444444"
+theme.bg_systray    = theme.bg_normal
 
 theme.fg_normal     = "#aaaaaa"
 theme.fg_focus      = "#ffffff"
 theme.fg_urgent     = "#ffffff"
 theme.fg_minimize   = "#ffffff"
 
-theme.border_width  = "1"
+theme.border_width  = 1
 theme.border_normal = "#000000"
 theme.border_focus  = "#535d6c"
 theme.border_marked = "#91231c"
@@ -32,20 +33,19 @@ theme.border_marked = "#91231c"
 -- mouse_finder_[color|timeout|animate_timeout|radius|factor]
 -- Example:
 --theme.taglist_bg_focus = "#ff0000"
-theme.statusbar_height = "40"
+
+-- theme.statusbar_height = "40"
 
 -- Display the taglist squares
 theme.taglist_squares_sel   = "/usr/share/awesome/themes/default/taglist/squarefw.png"
 theme.taglist_squares_unsel = "/usr/share/awesome/themes/default/taglist/squarew.png"
 
-theme.tasklist_floating_icon = "/usr/share/awesome/themes/default/tasklist/floatingw.png"
-
 -- Variables set for theming the menu:
 -- menu_[bg|fg]_[normal|focus]
 -- menu_[border_color|border_width]
 theme.menu_submenu_icon = "/usr/share/awesome/themes/default/submenu.png"
-theme.menu_height = "15"
-theme.menu_width  = "100"
+theme.menu_height = 15
+theme.menu_width  = 100
 
 -- You can add as many variables as
 -- you wish and access them by using
@@ -76,11 +76,13 @@ theme.titlebar_maximized_button_focus_inactive  = "/usr/share/awesome/themes/def
 theme.titlebar_maximized_button_normal_active = "/usr/share/awesome/themes/default/titlebar/maximized_normal_active.png"
 theme.titlebar_maximized_button_focus_active  = "/usr/share/awesome/themes/default/titlebar/maximized_focus_active.png"
 
+theme.wallpaper = "/home/sitaktif/images/wallpapers/bw_forest.jpg"
+
 -- You can use your own command to set your wallpaper
 -- NOTE: There is a kind of race condition if we use awsetbg (see my wiki).
 -- This is a workaround.
 -- theme.wallpaper_cmd = { "awsetbg /usr/share/awesome/themes/default/background.png" }
-theme.wallpaper_cmd = { "feh --bg-scale /home/sitaktif/tmp/DSC_0319.JPG" }
+-- theme.wallpaper_cmd = { "feh --bg-scale /home/sitaktif/tmp/DSC_0319.JPG" }
 
 -- You can use your own layout icons like this:
 theme.layout_fairh = "/usr/share/awesome/themes/default/layouts/fairhw.png"
@@ -98,5 +100,9 @@ theme.layout_dwindle = "/usr/share/awesome/themes/default/layouts/dwindlew.png"
 
 theme.awesome_icon = "/usr/share/awesome/icons/awesome16.png"
 
+-- Define the icon theme for application icons. If not set then the icons 
+-- from /usr/share/icons and /usr/share/icons/hicolor will be used.
+theme.icon_theme = nil
+
 return theme
--- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:encoding=utf-8:textwidth=80
+-- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80
