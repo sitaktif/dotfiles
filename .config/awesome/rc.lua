@@ -51,7 +51,8 @@ beautiful.init("/home/sitaktif/.config/awesome/theme.lua")
 terminal = "x-terminal-emulator"
 editor = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
-xrandr_external_top = "xrandr --output VGA1 --primary --mode 1920x1080 --output LVDS1 --below VGA1"
+xrandr_external_top = "xrandr --output DP1 --primary --mode 2560x1440 --output LVDS1 --below VGA1"
+-- xrandr_external_top = "xrandr --output VGA1 --primary --mode 1920x1080 --output LVDS1 --below VGA1"
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
