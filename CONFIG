@@ -1,0 +1,29 @@
+# This is the config to know:
+# 1- which files should simply be ignored
+# 2- which files (more precisely, directories) should have their children
+#    symlinked instead of themselves (e.g. for a directory like .config/foo, you
+#    don't want to symlink .config directly in ~/ because it is probably used by
+#    other applications. Instead, you want to symlink .config/foo inside
+#    ~/.config)
+# 3- all the other files will be symlinked directly in the home
+
+# Ignore these
+cfg_ignore=("CONFIG" "README.md" "bin" "todo"	# This repo
+	".git" ".gitignore" ".gitmodules"	# Git
+	"*.orig" "*.rej"			# Patch residues
+	".*.swp" "*~" "\#*\#"			# Vim/Emacs
+	".DS_Store"				# Mac
+	"tags" "TAGS")				# CTags
+
+# As explained above, link what's inside
+cfg_first_child=(".config")
+
+# Destination: home directory
+cfg_dest_dir=/tmp/a
+
+# Relative path: if not set, use absolute path, otherwise, trust the user that
+# the dotfiles directory is located at the given value relative to
+# cfg_dest_dir.
+# E.g: If cfg_dest_dir is /home/foo and the dotfiles directory is in
+# /home/foo/git/dotfiles, then you should put "git/dotfiles" in there.
+cfg_dotfiles_relative_path="git/dotfiles"
