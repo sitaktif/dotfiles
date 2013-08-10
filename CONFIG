@@ -19,7 +19,7 @@ cfg_ignore=("CONFIG" "README.md" "bin" "todo"	# This repo
 cfg_first_child=(".config")
 
 # Destination: home directory
-cfg_dest_dir=/tmp/a
+cfg_dest_dir=/home/sitaktif
 
 # Relative path: if not set, use absolute path, otherwise, trust the user that
 # the dotfiles directory is located at the given value relative to
