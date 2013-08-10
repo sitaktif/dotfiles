@@ -1,3 +1,4 @@
+.*.sw[opnm]
 .DS_Store
 
 .vim/.netrwhist
