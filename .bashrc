@@ -30,6 +30,8 @@ fi
 #        VERY TEMPORARY       #
 ###############################
 
+alias cdgc='cd ~/git/config'
+
 togit() {
     mv "$@" ~/git/perso_dotfiles/ && ln -s ~/git/perso_dotfiles/"$@" ./
 }
