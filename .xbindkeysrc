@@ -3,7 +3,7 @@
 # xbindkeys configuration #
 ###########################
 #
-# Version: 1.8.3
+# Version: 1.8.5
 #
 # If you edit this file, do not forget to uncomment any lines
 # that you change.
@@ -37,22 +37,8 @@
 #keystate_capslock = enable
 #keystate_scrolllock= enable
 
-# Suspend computer
-"sudo pm-suspend"
-  XF86Favorites
-
-## MPD ##
-"mpc toggle"
-  XF86AudioPlay
-
-"mpc prev"
-  XF86AudioPrev
-
-"mpc next"
-  XF86AudioNext
-
 # Examples of commands:
-
+#
 #"xbindkeys_show" 
 #  control+shift + q
 
@@ -63,7 +49,6 @@
 # specify a mouse button
 #"xterm"
 #  control + b:2
-
 
 #"xterm -geom 50x20+20+20"
 #   Shift+Mod2+alt + s
@@ -79,6 +64,23 @@
 ## Control + mouse button 2 release event starts rxvt
 #"rxvt"
 #  Control + b:2 + Release
+
+
+
+## Suspend computer
+#"sudo pm-suspend"
+#  XF86Favorites
+#
+### MPD ##
+#"mpc toggle"
+#  XF86AudioPlay
+#
+#"mpc prev"
+#  XF86AudioPrev
+#
+#"mpc next"
+#  XF86AudioNext
+
 
 ##################################
 # End of xbindkeys configuration #
