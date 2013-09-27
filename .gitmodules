@@ -78,3 +78,6 @@
 [submodule ".vim/bundle/rope"]
 	path = .vim/bundle/rope
 	url = https://github.com/sontek/rope-vim.git
+[submodule ".vim/bundle/easymotion"]
+	path = .vim/bundle/easymotion
+	url = git@github.com:sitaktif/vim-easymotion.git
