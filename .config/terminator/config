@@ -2,7 +2,7 @@
   title_hide_sizetext = True
   borderless = True
   focus = system
-  enabled_plugins = LaunchpadCodeURLHandler, APTURLHandler, LaunchpadBugURLHandler
+  enabled_plugins = TerminalShot, LaunchpadCodeURLHandler, APTURLHandler, LaunchpadBugURLHandler
   geometry_hinting = False
   tab_position = hidden
 [keybindings]
@@ -10,7 +10,7 @@
 [profiles]
   [[default]]
     scroll_on_output = False
-    font = Monospace 10
+    font = Terminus 14
     scrollback_lines = 4096
     show_titlebar = False
     use_system_font = False
