@@ -3,6 +3,18 @@
 
 " ---| PLUGINS SETTINGS |--- {{{
 
+" EasyMotion
+" Use autocmd because we want it to be set last.
+autocmd VimEnter * hi EasyMotionTarget ctermbg=none ctermfg=red
+autocmd VimEnter * hi EasyMotionShade  ctermbg=none ctermfg=blue
+"hi link EasyMotionTarget Error
+"hi link EasyMotionShade  LineNr
+
+
+
+" UltiSnips
+let g:UltiSnipsSnippetDir = 'UltiSnips'
+
 " Space plugin
 nmap <unique> <F1> <Plug>SmartspaceNext
 nmap <unique> <F2> <Plug>SmartspacePrev
