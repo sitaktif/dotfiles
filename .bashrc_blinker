@@ -1,0 +1,3 @@
+# Teal prompt color
+export L_PS1_HOST_COLOR=180
+

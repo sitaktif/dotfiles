@@ -19,10 +19,30 @@ fi
 # Non-interactive mode
 [ -z "$PS1" ] && return
 
-# stalker: purple - slacker: bordeaux - kollok: orange
+
+function __prompt_command() {
+    local EXIT="$?"             # This needs to be first
+    PS1=""
+
+    local C_RST='\[\e[0m\]'
+    local C_RED='\[\e[0;31m\]'
+    local C_BLUE='\[\e[01;34m\]'
+    local C_USER='\[\e[38;5;${L_PS1_HOST_COLOR}m\]'
+    local C_DATE='\[\e[38;5;166m\]'
+    local C_GIT='\[\e[38;5;63m\]'
+
+    local PS_EXIT=''
+    if [ $EXIT != 0 ]; then
+        PS_EXIT="${C_RED}[$EXIT]${C_RST} "      # Add red if exit code non 0
+    fi
+
+    PS1+="${C_GIT}$(__git_ps1 "(%s) ")${C_USER}\u:${C_RST}${C_DATE}$(date +%H:%M)${C_BLUE}${_P_SSH} ${PS_EXIT}${C_BLUE}\w ${C_RST}"
+}
+
+# stalker: purple - slacker: bordeaux - kollok: orange - blinker: 'skin'
 if [[ -z $L_PS1_ALREADY_SET ]]; then
     if [[ -n $SSH_CLIENT ]]; then export _P_SSH=" (ssh)" ; fi
-    PS1='\[\033[38;5;63m\]$(__git_ps1 "(%s) ")\[\033[38;5;${L_PS1_HOST_COLOR}m\]\u:\[\033[00m\]\[\033[38;5;166m\]$(date +%H:%M)\[\033[01;34m\]${_P_SSH} \w \[\033[00m\]'
+    export PROMPT_COMMAND=__prompt_command  # Func to gen PS1 after CMDs
 fi
 
 
@@ -89,7 +109,7 @@ alias cdts='cd ~/git/ts/src'
 
 
 alias cdms='cd ~/Media/series'
-alias cdmf='cd ~/Media/flims_new'
+alias cdmf='cd ~/Media/films'
 alias cdma='cd ~/Media/animes'
 alias cdmm='cd ~/Media/music_new'
 
@@ -317,31 +337,6 @@ if [ -n "$TERM" ] && [ -x "$(which keychain)" ] && \
     keychain -q $HOME/.ssh/id_rsa
     . $HOME/.keychain/$(hostname)-sh
 fi
-
-#
-# BACKUP STUFF - Unison and Rsync
-#
-# In respective bashrcs
-
-#
-# My MOTS (Message Of The Session)
-#
-case $(hostname) in
-    kollok|stalker|slacker|gamer|blinker)
-        break;;
-    *)
-        return;
-        break;;
-esac
-
-echo "--"
-# Display random task if 1/ task present and 2/ task count > 0 (the export LC_ALL is for sort)
-tput setf 4 ; task list | head
-echo
-# Display a random alias (so that I think about using them :) )
-echo -n " " ; tput setaf 2 ; alias | sort -R | head -1
-tput sgr0
-echo "--"
 
 
 #vim:foldmethod:marker
