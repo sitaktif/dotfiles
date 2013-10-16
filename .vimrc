@@ -205,7 +205,7 @@ set ttymouse=xterm2 "Mouse dragging in iTerm
 
 
 "  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-" Last Modified: 2013 Feb 19 - 18:17
+" Last Modified: 2013 Apr 03 - 15:19
 " Called on every buffer saving 
 function! TimeStamp()
     let l:save_cursor = getpos(".") 
@@ -488,6 +488,9 @@ autocmd FileType html,htmldjango,xml,xhtml imap <c-l> <esc>l%a
 
 " Mutt (mail client)
 au BufRead /tmp/mutt-* set tw=72 spell
+
+" Shell / Bash
+au FileType sh set iskeyword-=.
 
 " XML
 com! XMLClean 1,$!xmllint --format -
