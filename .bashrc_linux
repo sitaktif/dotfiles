@@ -15,6 +15,9 @@ case $(hostname) in
     'slacker') # Slacker config
 	source ~/.bashrc_slacker
 	;;
+    'blinker') # Blinker config
+	source ~/.bashrc_blinker
+	;;
     'kollok.org') # Kollok config
 	source ~/.bashrc_kollok
 	;;

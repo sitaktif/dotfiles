@@ -1,0 +1,115 @@
+# pdb
+snippet pdb "PDB set trace" b
+import pdb; pdb.set_trace()
+endsnippet
+
+##########
+# COMMON #
+##########
+
+# The smart def and smart class snippets use a global option called
+# "g:ultisnips_python_style" which, if set to "doxygen" will use doxygen
+# style comments in docstrings.
+
+global !p
+
+NORMAL  = 0x1
+DOXYGEN = 0x2
+SPHINX  = 0x3
+
+SINGLE_QUOTES = 0x1
+DOUBLE_QUOTES = 0x2
+
+def get_args(arglist):
+    args = [arg.split('=')[0].strip() for arg in arglist.split(',') if arg]
+    args = [arg for arg in args if arg and arg != "self"]
+
+    return args
+
+
+def get_quoting_style(snip):
+    style = snip.opt("g:ultisnips_python_quoting_style", "double")
+    if style == 'single':
+        return SINGLE_QUOTES
+    return DOUBLE_QUOTES
+
+def tripple_quotes(snip):
+    if get_quoting_style(snip) == SINGLE_QUOTES:
+        return "'''"
+    return '"""'
+
+def get_style(snip):
+    style = snip.opt("g:ultisnips_python_style", "normal")
+
+    if    style == "doxygen": return DOXYGEN
+    elif  style == "sphinx": return SPHINX
+    else: return NORMAL
+
+
+def format_arg(arg, style):
+    if style == DOXYGEN:
+        return "@param %s @todo" % arg
+    elif style == SPHINX:
+        return ":param %s: @todo" % arg
+    elif style == NORMAL:
+        return ":%s: @todo" % arg
+
+
+def format_return(style):
+    if style == DOXYGEN:
+        return "@return: @todo"
+    elif style in (NORMAL, SPHINX):
+        return ":returns: @todo"
+
+
+def write_docstring_args(args, snip):
+    if not args:
+        snip.rv += ' {0}'.format(tripple_quotes(snip))
+        return
+
+    snip.rv += '\n' + snip.mkline('', indent='')
+
+    style = get_style(snip)
+
+    for arg in args:
+        snip += format_arg(arg, style)
+
+
+def write_init_body(args, parents, snip):
+    parents = [p.strip() for p in parents.split(",")]
+    parents = [p for p in parents if p != 'object']
+
+    for p in parents:
+        snip += p + ".__init__(self)"
+
+    if parents:
+        snip.rv += '\n' + snip.mkline('', indent='')
+
+    for arg in args:
+        snip += "self._%s = %s" % (arg, arg)
+
+
+def write_slots_args(args, snip):
+    args = ['"%s"' % arg for arg in args]
+    snip += '__slots__ = (%s,)' % ', '.join(args)
+
+endglobal
+
+##
+## Snippets using the definitions above
+##
+
+snippet cl "class without docstrings" b
+class ${1:MyClass}(${2:object}):
+	`!p snip.rv = tripple_quotes(snip)`${3:Docstring for $1 }`!p snip.rv = tripple_quotes(snip)`
+
+	def __init__(self$4):`!p
+snip.rv = ""
+snip >> 2
+
+args = get_args(t[4])
+
+write_init_body(args, t[2], snip)
+`
+		$0
+endsnippet

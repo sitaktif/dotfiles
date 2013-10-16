@@ -2,4 +2,6 @@
 *.o
 *.pyc
 .DS_Store
-
+#*#
+*.orig
+*.rej

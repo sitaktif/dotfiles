@@ -48,7 +48,7 @@
 	ignore = untracked
 [submodule ".vim/bundle/clang_complete"]
 	path = .vim/bundle/clang_complete
-	url = git://github.com/Rip-Rip/clang_complete.git
+	url = https://github.com/Rip-Rip/clang_complete
 	ignore = untracked
 [submodule ".vim/bundle/tagbar"]
 	path = .vim/bundle/tagbar
@@ -69,6 +69,20 @@
 [submodule ".vim/bundle/gitgutter"]
 	path = .vim/bundle/gitgutter
 	url = https://github.com/sitaktif/vim-gitgutter.git
+        ignore = untracked
 [submodule ".vim/bundle/ultisnips"]
 	path = .vim/bundle/ultisnips
 	url = https://github.com/sitaktif/ultisnips.git
+        ignore = untracked
+[submodule ".vim/bundle/pytest"]
+	path = .vim/bundle/pytest
+	url = https://github.com/alfredodeza/pytest.vim.git
+        ignore = untracked
+[submodule ".vim/bundle/rope"]
+	path = .vim/bundle/rope
+	url = https://github.com/sontek/rope-vim.git
+        ignore = untracked
+[submodule ".vim/bundle/easymotion"]
+	path = .vim/bundle/easymotion
+	url = git@github.com:sitaktif/vim-easymotion.git
+        ignore = untracked

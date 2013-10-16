@@ -19,6 +19,7 @@
     frag = magenta bold
     old = red bold
     new = green bold
+    whitespace = red reverse
 [color "status"]
     added = yellow
     changed = green
@@ -33,3 +34,20 @@
     di = diff
     dif = diff
 
+    # To make sure you don commit a given file:
+    # git assume passwords.txt
+    # # Do whatever (including commit/push)
+    # git status
+    # # List the 'assumed-unchanged' files
+    # git assumed
+    # git unassume passwords.txt
+    assume   = update-index --assume-unchanged
+    unassume = update-index --no-assume-unchanged
+    assumed  = "!git ls-files -v | grep ^h | cut -c 3-"
+
+    # Snapshot without changing working tree
+    snapshot = git stash save "snapshot: $(date)" || git stash apply "stash@{0}"
+
+    # Tip: use git diff --patience (or git pull/merge -s patience) when there
+    # is a lot of repeated lines (see
+    # http://blog.apiaxle.com/post/handy-git-tips-to-stop-you-getting-fired/)
