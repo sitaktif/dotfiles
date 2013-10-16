@@ -54,7 +54,7 @@ eval $(dircolors ~/.dircolors)
 
 # Bash
 export HISTCONTROL=ignoredups
-export HISTFILESIZE=10000
+export HISTFILESIZE=100000
 export HISTSIZE=10000
 
 # Rsync and others transfer apps
@@ -151,14 +151,13 @@ alias bn='basename'
 alias dn='dirname'
 
 # Find
-f () {
+f() {
     name="$1" ; shift
-    if [[ $# -eq 0 ]] ; then
-	echo zero
-	find . -name '*'"$name"'*'
-    else
-	find . -name '*'"$name"'*' "$@"
-    fi
+    find . -name '*'"$name"'*' "$@"
+}
+fl() {
+    name="$1" ; shift
+    find -L . -name '*'"$name"'*' "$@"
 }
 
 # Disk use sorted, process list
