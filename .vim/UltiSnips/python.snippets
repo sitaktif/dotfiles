@@ -3,6 +3,21 @@ snippet pdb "PDB set trace" b
 import pdb; pdb.set_trace()
 endsnippet
 
+# Clears all snippets that match ".." - this is to delete the builtin "self."
+# that gets triggered with ".." but shouldn't (I redefine it below).
+clearsnippets ..
+
+# . for self. -- override
+# doesn't expand when there is a word or dot in front
+snippet /(^|(?<!(\w|\.)))\./ "self." !r
+self.
+endsnippet
+
+# self._foo = foo
+snippet .. "self._foo = foo" b
+self._${1:attribute} = $1
+endsnippet
+
 ##########
 # COMMON #
 ##########
