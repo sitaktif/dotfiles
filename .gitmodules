@@ -86,3 +86,6 @@
 	path = .vim/bundle/easymotion
 	url = git@github.com:sitaktif/vim-easymotion.git
         ignore = untracked
+[submodule ".vim/bundle/tabular"]
+	path = .vim/bundle/tabular
+	url = git@github.com:sitaktif/tabular.git
