@@ -14,6 +14,10 @@ autocmd VimEnter * hi EasyMotionShade  ctermbg=none ctermfg=blue
 
 " UltiSnips
 let g:UltiSnipsSnippetDir = 'UltiSnips'
+let g:UltiSnipsListSnippets = '<c-x><tab>'
+let g:UltiSnipsJumpForwardTrigger='<tab>'
+let g:UltiSnipsJumpBackwardTrigger='<s-tab>'
+
 
 " Space plugin
 nmap <unique> <F1> <Plug>SmartspaceNext
