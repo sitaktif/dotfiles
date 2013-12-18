@@ -13,10 +13,22 @@ CYAN=$(tput setaf 6)
 WHITE=$(tput setaf 7)
 CRESET=$(tput sgr0)
 
-this_dir="$(dirname "$(readlink -f "$0")")"
+myreadlink() {
+    if readlink -f . >/dev/null 2>&1; then
+        readlink "$@"
+    else
+        greadlink "$@" # Provided on Homebrew's coreutils
+    fi
+}
+
+this_dir="$(dirname "$(myreadlink -f "$0")")"
 base_dir="$this_dir/.."
 
 # Should define arrays: cfg_ignore cfg_first_child and cfg_dest_dir
+if ! [[ -e  $base_dir/CONFIG ]]; then
+    echo "CONFIG file needed. See CONFIG.example for directions and copy it to CONFIG."
+    exit 1
+fi
 . "$base_dir/CONFIG"
 
 DEBUG=0
@@ -66,7 +78,7 @@ do_symlink() {
     
     # Use absolute or relative depending on cfg_dotfiles_relative_path
     if [[ -z $cfg_dotfiles_relative_path ]]; then
-        target="$(readlink -f "$target")"
+        target="$(myreadlink -f "$target")"
     else
         target="${prepend_target}$cfg_dotfiles_relative_path/$target"
     fi
