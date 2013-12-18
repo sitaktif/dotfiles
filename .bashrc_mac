@@ -1,21 +1,6 @@
-if [ -z "$PS1" ]; then
-    PATH=$PATH:/sw/bin # For remote git pulls
-    return   # If not running interactively, don't do anything else
-fi
-
-# Fink setup
-test -r /sw/bin/init.sh && . /sw/bin/init.sh || echo "warning: /sw/bin/init.sh not found"
-
-
-# TODO: test that
-# Uncomment if I really lose some completion stuff, but I'm not convinced it's the case...
-#if [ -f /sw/etc/bash_completion ]; then
-#    source /sw/etc/bash_completion 
-#fi
-
-# Setting PATH for MacPython 2.6
-export PATH="/Library/Frameworks/Python.framework/Versions/2.6/bin:${PATH}"
-export PYTHONPATH=$PYTHONPATH:/Library/Python/2.6/site-packages
+# Gradle
+export GRADLE_HOME=/usr/local/Cellar/gradle/1.9
+export PATH=$GRADLE_HOME/bin:$PATH
 
 # Unison
 #export UNISONLOCALHOSTNAME='stalker'
@@ -48,8 +33,3 @@ alias vimap='sudo vim /private/etc/apache2/httpd.conf'
 # Shortcuts
 alias cdpysites='cd /Library/Python/2.6/site-packages'
 alias cddjango='cd /Library/Python/2.6/site-packages/django'
-
-# System
-alias suspend='~/scripts/mac/veille.sh'
-
-alias kstream="/Applications/VLC.app/Contents/MacOS/VLC qtcapture:// --sout='#transcode{vcodec=theo,vb=200,scale=0.5,acodec=none}:std{access=shout,mux=ogg,dst=source:bite@10.7.0.1:8000/sitaktif.ogg}'"
