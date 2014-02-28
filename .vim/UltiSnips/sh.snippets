@@ -1,26 +1,30 @@
 snippet sita_skel
 usage() {
-    echo "usage: \$(basename \$0) [ -h | --help | -n | --dry-run ]"
+    echo "usage: \$(basename \$0) [-h|--help ] [-q|--quiet] [-v|--verbose] [-n|--dry-run]"
 }
 
 err() {
-    echo "ERROR: \$@" 1>&2
-    exit 1
+    if ! [[ \$quiet == 1 ]]; then
+        echo "ERROR: \$@" 1>&2
+        exit 1
+    fi
 }
 
 warn() {
-    echo "WARN: \$@" 1>&2
+    if ! [[ \$quiet == 1 ]]; then
+        echo "WARN: \$@" 1>&2
+    fi
 }
 
 info() {
-    if ! [[ \$quiet == 1 ]]; then
+    if [[ \$verbose == 1 ]]; then
         echo "\$@"
     fi
 }
 
 doit() {
     if [[ \$dry_run == 1 ]]; then
-        echo "\$@"
+        echo "DRY-RUN: \$@"
     else
         "\$@"
     fi
@@ -28,6 +32,7 @@ doit() {
 
 opts=()
 quiet=0
+verbose=0
 dry_run=0
 while [[ \$# -gt 0 ]]; do
     case "\$1" in
@@ -37,6 +42,10 @@ while [[ \$# -gt 0 ]]; do
             ;;
         -q|--quiet)
             quiet=1
+            shift
+            ;;
+        -v|--verbose)
+            verbose=1
             shift
             ;;
         -n|--dry-run|--noop)
