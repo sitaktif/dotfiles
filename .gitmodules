@@ -89,3 +89,6 @@
 [submodule ".vim/bundle/tabular"]
 	path = .vim/bundle/tabular
 	url = git@github.com:sitaktif/tabular.git
+[submodule ".vim/bundle/exchange"]
+	path = .vim/bundle/exchange
+	url = https://github.com/sitaktif/vim-exchange.git
