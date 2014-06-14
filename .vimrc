@@ -125,6 +125,8 @@ set shiftwidth=4 "Indent is 4
 set shiftround
 set nosmartindent "Cindent is better
 set cindent
+set cinkeys-=0# " Otherwise, it prevents '#' from being indented
+set indentkeys-=0#
 
 " Editing layout
 set formatoptions+=ln "See :h 'formatoptions' :)
@@ -132,6 +134,7 @@ set backspace=start,indent,eol "Fix backspace
 set linebreak "Break lines at words, not chars
 set scrolloff=4 "When moving vertical, start scrolling 4 lines before reaching bottom
 set modeline "Vim mini-confs near end of file
+set modelines=5
 set listchars+=tab:>-,trail:·,extends:~,nbsp:-
 set fileformats+=mac
 
@@ -204,35 +207,14 @@ set ttymouse=xterm2 "Mouse dragging in iTerm
 "
 
 
-"  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-" Last Modified: 2013 Apr 03 - 15:19
-" Called on every buffer saving 
-function! TimeStamp()
-    let l:save_cursor = getpos(".") 
-    "let save_substitute = " CANNOT MANAGE TO RECOVER THE LAST
-	"SUBSTITUTE (for &, :&, etc..). Already looked doc - look on vim wikia
-    let l:lines = line("$") < 10 ? line("$") : 10
-    let l:pattern1 = '\([Ll]ast \([Mm]odified\|[Cc]hanges\=\)\s\=:\)'
-    let l:replace1 = '\1 ' . strftime("%Y %b %d - %H:%M")
-    " First n lines
-    execute printf('silent! 1,%ds/\C\m%s.*/%s/e', l:lines, l:pattern1, l:replace1)
-    " Last n lines, only if #(lines) > n
-    let l:lines = max([0, line('$') - l:lines])
-    if l:lines > 0
-	execute printf('silent! $-%d+1,$s/\C\m%s.*/%s/e', l:lines, l:pattern1, l:replace1)
-    endif
-    call setpos('.', l:save_cursor)
-endfunction
-"  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-autocmd BufWritePre * call TimeStamp()
 
 
 func! DeleteTrailingWS()
-  silent! exe "normal mz"
-  silent! %s/\s\+$//ge
-  silent! exe "normal 'z"
+    let lnum = line(".")
+    silent! keepjumps %s/\s\+$//ge
+    silent! exe "keepjumps normal " . lnum . "G"
 endfunc
-autocmd BufWrite *.py,*.h,*.hpp,*.c,*.cpp :call DeleteTrailingWS()
+autocmd BufWrite *.py,*.h,*.hpp,*.c,*.cpp,*.md :call DeleteTrailingWS()
 
 "}}}
 
@@ -255,6 +237,9 @@ nmap q: :q
 " No more 'fu-, gotta make a `!rm ./1` :( '
 cabbr w1 :w!
 cabbr q1 :q!
+
+" I use this one often enough to make it easier to type
+cnoremap § %:h
 
 " For azerty layouts
 " map! ù <leader>
