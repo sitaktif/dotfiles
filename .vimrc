@@ -123,8 +123,7 @@ set softtabstop=4 "See 4 spaces per tab
 set expandtab
 set shiftwidth=4 "Indent is 4
 set shiftround
-set nosmartindent "Cindent is better
-set cindent
+set nosmartindent "Cindent is better (it is set in ftplugin)
 set cinkeys-=0# " Otherwise, it prevents '#' from being indented
 set indentkeys-=0#
 
@@ -137,6 +136,7 @@ set modeline "Vim mini-confs near end of file
 set modelines=5
 set listchars+=tab:>-,trail:·,extends:~,nbsp:-
 set fileformats+=mac
+set nojoinspaces
 
 " Search
 set wrapscan "Continue to top after reaching bottom
@@ -208,6 +208,10 @@ set ttymouse=xterm2 "Mouse dragging in iTerm
 
 
 
+if !exists(":DiffOrig")
+command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
+            \ | wincmd p | diffthis
+endif
 
 func! DeleteTrailingWS()
     let lnum = line(".")
