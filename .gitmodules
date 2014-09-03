@@ -92,3 +92,6 @@
 [submodule ".vim/bundle/exchange"]
 	path = .vim/bundle/exchange
 	url = https://github.com/sitaktif/vim-exchange.git
+[submodule ".vim/bundle/obsession"]
+	path = .vim/bundle/obsession
+	url = https://github.com/sitaktif/vim-obsession.git
