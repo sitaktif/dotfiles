@@ -7,6 +7,7 @@
 
 [core]
     excludesfile = ~/.gitexclude
+    trustctime = false
 
 [color]
     ui = auto
@@ -33,6 +34,11 @@
     rb = rebase
     di = diff
     dif = diff
+    dica = diff --cached
+    difca = diff --cached
+
+    out = !git fetch && git log FETCH_HEAD
+    in  = !git fetch && git log ..FETCH_HEAD
 
     # To make sure you don commit a given file:
     # git assume passwords.txt
@@ -51,3 +57,11 @@
     # Tip: use git diff --patience (or git pull/merge -s patience) when there
     # is a lot of repeated lines (see
     # http://blog.apiaxle.com/post/handy-git-tips-to-stop-you-getting-fired/)
+
+    lol = log --graph --decorate --pretty=oneline --abbrev-commit
+    lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
+
+[rerere]
+	enabled = true
+[push]
+	default = simple
