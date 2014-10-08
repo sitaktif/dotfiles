@@ -11,6 +11,9 @@ set completeopt=menuone,longest,preview
 "nnoremap <buffer> <f5> :!/usr/bin/python ./ts.py<cr>
 
 nnoremap <buffer> <f5> :!python ./%<cr>
+nnoremap <buffer> <f6> :!nosetests %:h<cr>
+" Run tests with output
+nnoremap <buffer> <S-f6> :!nosetests %:h --nocapture<cr>
 
 
 "syn match pythonError "^\s*def\s\+\w\+(.*)\s*$" display
