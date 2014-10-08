@@ -52,7 +52,8 @@ let g:tlist_omlet_settings = 'ocaml;m:module;t:type;d:definition'
 
 "Panel with list of functions, vars...
 map <F10> :NERDTreeToggle<cr>
-map <F11> :TlistToggle<cr>
+map <F11> :TagbarToggle<cr>
+let g:tagbar_autoclose = 1
 
 "" Showmarks plugin
 "highlight SignColumn ctermbg=0
