@@ -16,6 +16,10 @@ elif [[ "$(uname)" == 'Linux' ]]; then # Linux (slacker / kollok)
     source ~/.bashrc_linux
 fi
 
+if [[ -e ~/.bashrc_misc ]]; then
+    source ~/.bashrc_misc
+fi
+
 # Non-interactive mode
 [ -z "$PS1" ] && return
 
@@ -120,22 +124,36 @@ alias cdgd='cd ~/git/perso_dotfiles'
 # THESE ARE FIXED FOREVER
 #
 
+# gradle
+GRA() { # Run gradle if found in the current or parent directories
+    for i in . .. ../.. ../../.. ../../../..; do
+        if [[ -x $i/gradlew ]]; then
+            (cd $i && ./gradlew "$@") ; return
+        fi
+    done
+    echo "No gradlew found in current or parent directories"
+}
+
 # git
 alias gg='git log --graph --full-history --all --color --pretty=format:"%x1b[31m%h%x09%x1b[32m%d%x1b[0m%x20%s"'
 alias gl="git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
-
+alias gr='git remote'
+alias gd='git diff'
+alias gdc='git diff --cached'
+alias gra='git remote add'
+alias grr='git remote rm'
+alias grv='git remote -v'
 
 # Listing-related
 alias ls='ls --color=auto'
 alias sl='ls'
 alias l='ls'
 alias ll='ls -ahl'
-alias lt='ls -lrth'
-alias lat='ls -larth'
-alias lsdir='ls -p | grep "/$"'
+alias lt='ls -lrt'
 
-lsln() { ls "$1" -la |grep " \-> " ; }
-alias lshln='ls ~/ -la |grep "\->"'
+lsd() { ls -F "$@" |grep "/$" ; }
+lsl()  { ls -F "$@" |grep "@$" ; }
+lsx()   { ls -F "$@" |grep "\\*$" ; }
 
 # Tree (particularly useful for django)
 alias ta='tree    --charset ascii -a        -I \.git*\|*\.\~*\|*\.pyc'
@@ -159,18 +177,14 @@ alias ds="dirs -v"       # Show DIRSTACK with array index
 mkcd () {
     mkdir -p "$*" ; cd "$*"
 }
-function ,, () {
-    cd ..
-}
+
+function , ()    { cd .. ; }
+function ,, ()   { cd ../.. ; }
+function ,,, ()  { cd ../../.. ; }
+function ,,,, () { cd ../../../.. ; }
 
 # Utilities (grep, basename, dirname)
 alias grep='grep --color'
-alias g='grep -nr --color'
-alias gi='grep -nri --color'
-alias gr='grep -nr --color'
-alias gri='grep -nri --color'
-alias bn='basename'
-alias dn='dirname'
 
 # Find
 f() {
@@ -192,14 +206,6 @@ alias unison='unison -ui text'
 alias unismall='unison small_data'
 alias unibig='unison big_data'
 alias unifull='unismall && unibig'
-
-# syncd for sync-delete (to avoir a deadly typo)
-alias syncd="rsync      -aSHAXh  --rsh=ssh --delete"
-alias syncdv="rsync     -aSHAXh  --rsh=ssh --delete --progress --stats"
-alias syncdnv="rsync    -aSHAXh  --rsh=ssh --delete --progress --stats --numeric-ids"
-alias syncdbw80="rsync  -aSHAXh  --rsh=ssh --delete --progress --stats --numeric-ids --bwlimit=80"
-alias syncdbw800="rsync -aSHAXh  --rsh=ssh --delete --progress --stats --numeric-ids --bwlimit=800"
-
 
 # Taskwarrior
 alias t='task'
@@ -229,11 +235,11 @@ alias e="$L_VIM"
 
 # Bash, zsh, vim
 alias vimb="e ~/.bashrc"
+alias sob='source ~/.bashrc'
 alias vimbs="e ~/.bashrc_stalker"
 alias vimbl="e ~/.bashrc_linux"
-alias vimbg="e ~/.bashrc_gamer"
+alias vimbg="e ~/.bashrc_slacker"
 alias vimbk="e ~/.bashrc_kollok"
-alias sob='source ~/.bashrc'
 alias vimz="e ~/.zshrc"
 alias soz="source ~/.zshrc"
 alias vimv="e ~/.vimrc"
@@ -244,17 +250,8 @@ lna() {
 	echo "usage: lna [file] [destination]"
 	echo " Creates an absolute symbolic link from relative file pointing to dest"
     else
-	ln -s $(pwd)/"$1" "$2"
+        ln -s "$(readlink -f "$(pwd)/$1")" "$2"
     fi
-}
-alias add_to_bin_shared='ln -s -t ~/bin/shared/'
-alias add_to_bin_local='ln -s -t ~/bin/local/'
-
-# Patch / merge - rudimentary
-function merge-rej () {
-    for i in "$@"; do
-	e -d "$i" "b/$i.rej"
-    done
 }
 
 
@@ -272,16 +269,6 @@ alias sshp='ssh chossart2006@perso.iiens.net'
 alias sshp2='ssh -p 443 chossart2006@perso.iiens.net'
 alias sshr='ssh -l rchossart'
 alias ssha='ssh rchossart@theisland.acunu.com' # Ssh Acunu VPN
-
-
-## Works, but to extend!
-##
-##
-#rsync -avub --progress --delete Pictures gamer:Media/mac_pictures/Pictures
-##
-##
-## Works, but to extend!
-
 
 # Lftp
 alias jjftp='lftp jeanjolly@ftp4.phpnet.org'
@@ -304,11 +291,7 @@ alias myports='netstat -alpe --ip'
 ## Python {{{
 alias tip='touch __init__.py'
 
-# WXPython
-alias wxdemo='python /usr/src/python_libs/wxPython-2.8.8.1/demo/Main.py'
-
 # Django
-alias djvim='~/scripts/shared/vim_djvim.sh' # Launch vim with right paths for django
 alias vimdjango="$L_VIM ../{urls,settings}.py models.py views/*.py forms/*.py templates/*.py"
 alias drs='python manage.py runserver'
 alias dsd='python manage.py syncdb'
@@ -337,5 +320,7 @@ if [ -n "$TERM" ] && [ -x "$(which keychain)" ] && \
     . $HOME/.keychain/$(hostname)-sh
 fi
 
+
+PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 
 #vim:foldmethod:marker
