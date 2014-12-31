@@ -1,2 +1,2 @@
-au BufNewFile,BufRead *.aurora	set filetype=python
+au BufNewFile,BufRead *.aurora	set filetype=aurora
 
