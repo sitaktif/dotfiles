@@ -4,6 +4,10 @@ export PATH="/usr/local/bin:/usr/local/sbin:/usr/local/opt/coreutils/libexec/gnu
 export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
 source `brew --repository`/Library/Contributions/brew_bash_completion.sh
 
+# Boot2docker
+alias bdsi='$(boot2docker shellinit)'
+alias bdsii='boot2docker shellinit'
+
 # Git
 [[ -s ~/bin/git-completion.bash ]] && . ~/bin/git-completion.bash
 [[ -s ~/bin/git-prompt.sh ]] && . ~/bin/git-prompt.sh
