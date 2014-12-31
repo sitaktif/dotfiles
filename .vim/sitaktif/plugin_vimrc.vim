@@ -100,6 +100,9 @@ if !has('python')
 endif
 let g:pyflakes_use_quickfix = 0
 
+" Sytastic Settings
+" let g:syntastic_python_checkers = ["flake8"]
+let g:syntastic_python_flake8_args = "--max-line-length=160"
 
 " Green test with python
 map <leader>tg :set makeprg=python\ manage.py\ test\|:call MakeGreen()<CR>
