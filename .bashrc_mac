@@ -18,7 +18,9 @@ export PROTOBUF_HOME=/usr/local/protobuf-2.4.1/
 export PATH=$GRADLE_HOME/bin:$PROTOBUF_HOME/bin:$PATH
 
 # Bash
-export TERM=xterm-256color
+if [[ -z $TERM ]]; then
+    export TERM=xterm-256color
+fi
 
 # Unison
 #export UNISONLOCALHOSTNAME='stalker'
