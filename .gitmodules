@@ -101,3 +101,9 @@
 [submodule ".vim/bundle/unimpaired"]
 	path = .vim/bundle/unimpaired
 	url = https://github.com/sitaktif/vim-unimpaired.git
+[submodule ".vim/bundle/vimux"]
+	path = .vim/bundle/vimux
+	url = https://github.com/benmills/vimux.git
+[submodule ".vim/bundle/html5"]
+	path = .vim/bundle/html5
+	url = https://github.com/othree/html5.vim.git
