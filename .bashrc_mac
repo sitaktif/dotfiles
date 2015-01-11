@@ -22,6 +22,9 @@ if [[ -z $TERM ]]; then
     export TERM=xterm-256color
 fi
 
+# Autojump
+[[ -s $(brew --prefix)/etc/autojump.sh ]] && . $(brew --prefix)/etc/autojump.sh
+
 # Unison
 #export UNISONLOCALHOSTNAME='stalker'
 
