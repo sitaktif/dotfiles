@@ -185,6 +185,7 @@ function ,,,, () { cd ../../../.. ; }
 
 # Utilities (grep, basename, dirname)
 alias grep='grep --color'
+alias gri='grep -rI'
 
 # Find
 f() {
