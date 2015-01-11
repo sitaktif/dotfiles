@@ -219,18 +219,6 @@ alias sr='screen -r'
 alias left='DISPLAY=:0.0'
 alias right='DISPLAY=:0.1'
 
-# Improved man - tries python doc
-function man () {
-(   /usr/bin/man "$@" ||
-    python -c "
-try:
-    help($1)
-except NameError:
-     locals()['$1']=__import__('$1')
-     help('$1')" ||
-    echo "No manual entry or python module for $1" ) 2>/dev/null
-}
-
 # Editor related
 alias e="$L_VIM"
 
