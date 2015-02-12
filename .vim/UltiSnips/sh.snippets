@@ -61,7 +61,7 @@ while [[ \$# -gt 0 ]]; do
             err "Unknown option: \$1"
             ;;
         *)
-            opts+=("\$@")
+            opts+=("\$1")
             shift
             ;;
     esac
@@ -69,4 +69,27 @@ done
 
 set -- "\${opts[@]}"
 
+endsnippet
+
+
+snippet tempdir
+# Temp dir and cleanup
+tempdir="$(mktemp -d)" # Don't mess this up - it gets rm-rf'ed below
+on_exit() {
+    trap - EXIT ERR INT TERM QUIT
+    if [[ -e "\$tempdir" ]]; then
+        rm -rf "\$tempdir"
+    fi
+}
+trap on_exit EXIT ERR INT TERM QUIT
+
+endsnippet
+
+snippet trap
+on_exit() {
+    trap - EXIT ERR INT TERM QUIT
+    $1
+}
+trap on_exit EXIT ERR INT TERM QUIT
+$2
 endsnippet
