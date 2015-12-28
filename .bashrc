@@ -175,9 +175,9 @@ alias sl='ls'
 alias l='ls'
 alias ll='ls -ahl'
 
-lsd() { ls -F "$@" | grep '/$'  ; }
-lsl() { ls -F "$@" | grep '@$'  ; }
-lsx() { ls -F "$@" | grep '\*$' ; }
+lsd() { ls -F "$@" |grep '/$'  ; }
+lsl() { ls -F "$@" |grep '@$'  ; }
+lsx() { ls -F "$@" |grep '\*$' ; }
 
 # Tree (particularly useful for django)
 alias ta='tree    --charset ascii -a        -I \.git*\|*\.\~*\|*\.pyc'
