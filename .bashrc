@@ -24,6 +24,7 @@ fi
 [ -z "$PS1" ] && return
 
 
+# Nice, complete prompt
 function __prompt_command() {
     local EXIT="$?"             # This needs to be first
     PS1=""
@@ -42,12 +43,38 @@ function __prompt_command() {
 
     PS1+="${C_GIT}$(__git_ps1 "(%s) ")${C_USER}\u:${C_RST}${C_DATE}$(date +%H:%M)${C_BLUE}${_P_SSH} ${PS_EXIT}${C_BLUE}\w ${C_RST}"
 }
+# Smaller prompt, good for presentations
+function __prompt_command2() {
+    local EXIT="$?"             # This needs to be first
+    PS1=""
+
+    local C_RST='\[\e[0m\]'
+    local C_RED='\[\e[0;31m\]'
+    local C_BLUE='\[\e[01;34m\]'
+    local C_USER='\[\e[38;5;${L_PS1_HOST_COLOR}m\]'
+    local C_DATE='\[\e[38;5;166m\]'
+    local C_GIT='\[\e[38;5;63m\]'
+
+    local PS_EXIT=''
+    if [ $EXIT != 0 ]; then
+        PS_EXIT="${C_RED}[$EXIT]${C_RST} "      # Add red if exit code non 0
+    fi
+
+    PS1+="${C_DATE}$(date +%H:%M) ${PS_EXIT}${C_BLUE}\W \$${C_RST} "
+}
 
 # stalker: purple - slacker: bordeaux - kollok: orange - blinker: 'skin'
 if [[ -z $L_PS1_ALREADY_SET ]]; then
     if [[ -n $SSH_CLIENT ]]; then export _P_SSH=" (ssh)" ; fi
     export PROMPT_COMMAND=__prompt_command  # Func to gen PS1 after CMDs
 fi
+
+alias prompt_default='export PROMPT_COMMAND=__prompt_command'
+alias prompt_simple='export PROMPT_COMMAND=__prompt_command2'
+
+# GO stuff
+export GOPATH="$HOME/go"
+export PATH=$PATH:$GOPATH/bin
 
 
 ###############################
@@ -125,7 +152,7 @@ alias cdgd='cd ~/git/perso_dotfiles'
 #
 
 # gradle
-GRA() { # Run gradle if found in the current or parent directories
+gw() { # Run gradle if found in the current or parent directories
     for i in . .. ../.. ../../.. ../../../..; do
         if [[ -x $i/gradlew ]]; then
             (cd $i && ./gradlew "$@") ; return
@@ -136,10 +163,8 @@ GRA() { # Run gradle if found in the current or parent directories
 
 # git
 alias gg='git log --graph --full-history --all --color --pretty=format:"%x1b[31m%h%x09%x1b[32m%d%x1b[0m%x20%s"'
-alias gl="git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
-alias gr='git remote'
-alias gd='git diff'
-alias gdc='git diff --cached'
+alias gg2='git log --graph --full-history --all --color --pretty=format:"%x1b[31m%h%x09%x20%x1b[0m%s%x1b[32m%d%x1b[0m"'
+alias gl="git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd) %C(bold blue)<%an>%Creset' --abbrev-commit --date=local"
 alias gra='git remote add'
 alias grr='git remote rm'
 alias grv='git remote -v'
@@ -149,25 +174,15 @@ alias ls='ls --color=auto'
 alias sl='ls'
 alias l='ls'
 alias ll='ls -ahl'
-alias lt='ls -lrt'
 
-lsd() { ls -F "$@" |grep "/$" ; }
-lsl()  { ls -F "$@" |grep "@$" ; }
-lsx()   { ls -F "$@" |grep "\\*$" ; }
+lsd() { ls -F "$@" | grep '/$'  ; }
+lsl() { ls -F "$@" | grep '@$'  ; }
+lsx() { ls -F "$@" | grep '\*$' ; }
 
 # Tree (particularly useful for django)
 alias ta='tree    --charset ascii -a        -I \.git*\|*\.\~*\|*\.pyc'
 alias ta2='tree   --charset ascii -a  -L 2  -I \.git*\|*\.\~*\|*\.pyc'
 alias ta3='tree   --charset ascii -a  -L 3  -I \.git*\|*\.\~*\|*\.pyc'
-alias tA='tree    --charset ascii -a'
-alias tap='tree   --charset ascii -ap       -I \.git*\|*\.\~*\|*\.pyc'
-alias td='tree    --charset ascii -d        -I \.git*\|*\.\~*\|*\.pyc'
-alias tad='tree   --charset ascii -ad       -I \.git*\|*\.\~*\|*\.pyc'
-alias tad2='tree  --charset ascii -ad -L 2  -I \.git*\|*\.\~*\|*\.pyc'
-alias tad3='tree  --charset ascii -ad -L 3  -I \.git*\|*\.\~*\|*\.pyc'
-alias tas='tree   --charset ascii -ash      -I \.git*\|*\.\~*\|*\.pyc'
-alias tug='tree   --charset ascii -aug      -I \.git*\|*\.\~*\|*\.pyc'
-alias taj='tree   --charset ascii -a        -I \.git*\|*\.\~*\|*\.pyc\|__init__\.py'
 
 alias pud='pushd -n "$args" &> /dev/null' # Push dir on stack
 alias pod='popd >& /dev/null'		 # Go back in time
@@ -214,6 +229,12 @@ alias t='task'
 # Screen
 alias sls='screen -ls'
 alias sr='screen -r'
+
+# Docker / docker-machine
+alias dm='docker-machine'
+alias dme='eval $(docker-machine env default)'
+alias dr='docker run -ti'
+alias di='docker images'
 
 # Handy prefixes
 alias left='DISPLAY=:0.0'
@@ -310,6 +331,6 @@ if [ -n "$TERM" ] && [ -x "$(which keychain)" ] && \
 fi
 
 
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
-
 #vim:foldmethod:marker
+
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting

@@ -2,11 +2,11 @@
 # Homebrew
 export PATH="/usr/local/bin:/usr/local/sbin:/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+export PYTHONPATH="$PYTHONPATH:$HOME/.vim/bundle/rope"
 source `brew --repository`/Library/Contributions/brew_bash_completion.sh
 
-# Boot2docker
-alias bdsi='$(boot2docker shellinit)'
-alias bdsii='boot2docker shellinit'
+# Autojump
+[[ -s $(brew --prefix)/etc/profile.d/autojump.sh ]] && . $(brew --prefix)/etc/profile.d/autojump.sh
 
 # Git
 [[ -s ~/bin/git-completion.bash ]] && . ~/bin/git-completion.bash
