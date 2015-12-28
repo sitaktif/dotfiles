@@ -245,13 +245,16 @@ nmap q: :q
 cabbr w1 :w!
 cabbr q1 :q!
 
-" I use this one often enough to make it easier to type
-cnoremap § %:h
+" For different keyboard layouts
 
-" For azerty layouts
-" map! ù <leader>
-" map! ² <leader>
+" TODO: test this:
+" map ù <leader>
+" map ² <leader>
 " map § :e#<cr> " TODO: try with CTRL-6
+
+" Note: use Karabiner (on Mac) to remap the key instead
+" map § `
+" map! § `
 
 " For qwerty/azerty pain-in-the-ass typos
 map Q A
