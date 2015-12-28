@@ -45,11 +45,11 @@ if has("gui_running") " GUI mode
     colorscheme molokai
 
     if g:PLATFORM =~ "win"
-	set guifont=Terminus:h12
+        set guifont=Terminus:h12
     elseif g:PLATFORM =~ "mac"
-	set guifont=
+        set guifont=
     else
-	set guifont=Terminus\ 12
+        set guifont=Terminus\ 12
     endif
 elseif has('gui') " A terminal with GUI support
 	colorscheme ps_color
@@ -57,14 +57,17 @@ elseif has('gui') " A terminal with GUI support
 	set ttymouse=xterm2
 else
 	colorscheme molokai
-        set bg=dark
+    set bg=dark
 	set termencoding=utf-8
 	set ttymouse=xterm2
+    if g:PLATFORM =~ "mac"
+        set t_ZH=[3m t_ZR=[23m " Set the italics code
+    endif
 endif
 
-" Highlight current line
+" Highlight current line, no underline/bold/whatnot
 set cursorline
-"hi CursorLine guibg=#333333
+hi CursorLine cterm=NONE term=NONE
 
 "Omni menu colors
 hi Pmenu guibg=#333333 ctermbg=black
