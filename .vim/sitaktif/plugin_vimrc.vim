@@ -102,7 +102,8 @@ let g:pyflakes_use_quickfix = 0
 
 " Sytastic Settings
 " let g:syntastic_python_checkers = ["flake8"]
-let g:syntastic_python_flake8_args = "--max-line-length=160"
+let g:syntastic_python_flake8_args = "--max-line-length=160 --ignore=E201,E202,C0103"
+let g:syntastic_quiet_messages = { "type": "style" }
 
 " Green test with python
 map <leader>tg :set makeprg=python\ manage.py\ test\|:call MakeGreen()<CR>
