@@ -61,7 +61,18 @@
     lol = log --graph --decorate --pretty=oneline --abbrev-commit
     lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
 
+[credential]
+	helper = osxkeychain
 [rerere]
 	enabled = true
 [push]
 	default = simple
+
+[merge "ours"]
+	driver = true
+
+[merge "theirs"]
+	driver = mv %B %A
+
+[merge "conflict"]
+	driver = false
