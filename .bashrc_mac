@@ -1,58 +1,77 @@
+#!/bin/bash
+
+_this_dir=$(dirname "$(readlink "$BASH_SOURCE")")
+export HOMEBREW_GITHUB_API_TOKEN="5314e6779f3cec5137450c22e430b80c687c5a29"
+
+export L_PS1_HOST_COLOR="161" # Fuschia
+
+# tag (jump to files with ag)
+if hash ag 2>/dev/null; then
+  tag() { command tag "$@"; source "${TAG_ALIAS_FILE:-/tmp/tag_aliases}" 2>/dev/null; }
+fi
 
 # Homebrew
-export PATH="/usr/local/bin:/usr/local/sbin:/usr/local/opt/coreutils/libexec/gnubin:$PATH"
-export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+if command -v brew >/dev/null 2>&1; then
+    export PATH="/usr/local/bin:/usr/local/sbin:/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+    export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+
+    # The $(brew --prefix) command takes > 100ms. Just use a hardcoded value
+    # and check once in a while that it is up-to-date so that I eventually know
+    # that it gets out of sync.
+    if [[ $RANDOM == *9 ]]; then
+        if [[ $(brew --prefix) != /usr/local ]]; then
+            echo '"$(brew --prefix)" is not "/usr/local" anymore! Change your .bashrc_mac!'
+        fi
+    fi
+    L_BREW_PREFIX=/usr/local
+fi
+
+# Z (autojump)
+[[ -f "$L_BREW_PREFIX/etc/profile.d/z.sh" ]] && . "$L_BREW_PREFIX/etc/profile.d/z.sh"
+if command -v _z >/dev/null 2>&1; then
+    L_Z_PROMPT_CMD=_z
+else
+    L_Z_PROMPT_CMD=true
+fi
+
+# Misc
 export PYTHONPATH="$PYTHONPATH:$HOME/.vim/bundle/rope"
-source `brew --repository`/Library/Contributions/brew_bash_completion.sh
+export VAGRANT_DEFAULT_PROVIDER=virtualbox
 
-# Autojump
-[[ -s $(brew --prefix)/etc/profile.d/autojump.sh ]] && . $(brew --prefix)/etc/profile.d/autojump.sh
+_completion_dir=/usr/local/etc/bash_completion.d
 
-# Git
-[[ -s ~/bin/git-completion.bash ]] && . ~/bin/git-completion.bash
-[[ -s ~/bin/git-prompt.sh ]] && . ~/bin/git-prompt.sh
+# Docker, Git
+[[ -s $_completion_dir/docker ]] && . "$_completion_dir/docker"
+[[ -s $_completion_dir/git-completion.bash ]] && . "$_completion_dir/git-completion.bash"
+[[ -s $_completion_dir/git-prompt.sh ]] && . "$_completion_dir/git-prompt.sh"
+
+# A copy of the git prompt is in the resources/ dir
+[[ -s $_this_dir/resources/bash/git-prompt.sh ]] && . "$_this_dir/resources/bash/git-prompt.sh"
 
 # Gradle
-export GRADLE_HOME=/usr/local/Cellar/gradle/1.9/libexec
-export PROTOBUF_HOME=/usr/local/protobuf-2.4.1/
+export GRADLE_HOME=/usr/local/Cellar/gradle/2.12/libexec
+export PROTOBUF_HOME=/usr/local/protobuf-2.4.1
 export PATH=$GRADLE_HOME/bin:$PROTOBUF_HOME/bin:$PATH
 
 # Bash
-if [[ -z $TERM ]]; then
-    export TERM=xterm-256color
-fi
+[[ -z $TERM ]] && export TERM=xterm-256color
 
-# Autojump
-[[ -s $(brew --prefix)/etc/autojump.sh ]] && . $(brew --prefix)/etc/autojump.sh
-
-# Unison
-#export UNISONLOCALHOSTNAME='stalker'
-
-# Vim setting for "e" alias
-export VIM_APP_DIR=/Applications
-
-if [ "$DISPLAY" != "" ]; then
-    L_VIM="mvim"
+if [[ -n $DISPLAY || -z $SSH_CONNECTION ]]; then
+    export L_VIM="mvim" # graphical
 else
-    if [ "$SSH_CONNECTION" = "" ]; then
-	L_VIM="mvim"
-    else
-	L_VIM="/Applications/MacVim.app/Contents/MacOS/Vim"
-    fi
+    export L_VIM="vim" # terminal
 fi 
-export L_VIM
-
-export L_PS1_HOST_COLOR="161"
 
 
 ###############################
 #           ALIASES           #
 ###############################
 
-# Shortcuts
-alias cdap='cd /private/etc/apache2'
-alias vimap='sudo vim /private/etc/apache2/httpd.conf'
-
-# Shortcuts
-alias cdpysites='cd /Library/Python/2.6/site-packages'
-alias cddjango='cd /Library/Python/2.6/site-packages/django'
+# Docker-machine
+alias dm='docker-machine'
+alias dme='eval $(docker-machine env default)'
+alias dmu='unset ${!DOCKER_*}' # Unset variables
+alias dms='docker-machine start default'
+alias dmp='docker-machine stop default'
+alias dmr='docker-machine restart default'
+alias dmh='docker-machine ssh default'

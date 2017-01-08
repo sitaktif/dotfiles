@@ -2,8 +2,11 @@
 #      SYSTEM SPECIFIC        #
 ###############################
 
+# Non-interactive mode
+[[ -z "$PS1" ]] && return
+
 # Default values defined in system-specific rc-files - "L_" for "LOCAL"
-[ -z "$(which vim)" ] && export L_VIM="vi" || export L_VIM="vim"
+[[ -z "$(which vim)" ]] && export L_VIM="vi" || export L_VIM="vim"
 
 export L_PS1_HOST_COLOR="46" # Green by default
 export L_PS1_ALREADY_SET=""
@@ -16,37 +19,50 @@ elif [[ "$(uname)" == 'Linux' ]]; then # Linux (slacker / kollok)
     source ~/.bashrc_linux
 fi
 
+# This one is only for local stuff
 if [[ -e ~/.bashrc_misc ]]; then
     source ~/.bashrc_misc
 fi
 
-# Non-interactive mode
-[ -z "$PS1" ] && return
+###############################
+#           PROMPT            #
+###############################
 
+export GIT_PS1_SHOWDIRTYSTATE=true # *: unstaged changes, +: staged changes
+export GIT_PS1_SHOWSTASHSTATE=true # $: something is stashed
+# export GIT_PS1_SHOWUNTRACKEDFILES=true # %: untracked files exist
+export GIT_PS1_SHOWUPSTREAM="auto" # <: behind upstream, >: ahead upstream, <>: diverged
+L_Z_PROMPT_CMD=${L_Z_PROMPT_CMD:-true}
 
 # Nice, complete prompt
-function __prompt_command() {
-    local EXIT="$?"             # This needs to be first
-    PS1=""
+function __rc_prompt_command() {
+    local EXIT="$?"  # This needs to be first
 
     local C_RST='\[\e[0m\]'
     local C_RED='\[\e[0;31m\]'
+    local C_GREEN='\[\e[0;32m\]'
     local C_BLUE='\[\e[01;34m\]'
     local C_USER='\[\e[38;5;${L_PS1_HOST_COLOR}m\]'
+    local C_VENV=$C_GREEN
     local C_DATE='\[\e[38;5;166m\]'
     local C_GIT='\[\e[38;5;63m\]'
 
-    local PS_EXIT=''
-    if [ $EXIT != 0 ]; then
-        PS_EXIT="${C_RED}[$EXIT]${C_RST} "      # Add red if exit code non 0
+    local PS_EXIT=""
+    if [[ $EXIT != 0 ]]; then
+        PS_EXIT="${C_RED}[$EXIT]${C_RST} "
     fi
 
-    PS1+="${C_GIT}$(__git_ps1 "(%s) ")${C_USER}\u:${C_RST}${C_DATE}$(date +%H:%M)${C_BLUE}${_P_SSH} ${PS_EXIT}${C_BLUE}\w ${C_RST}"
+    PS1=""
+    [[ -n $VIRTUAL_ENV ]] && PS1+="${C_VENV}(venv)${C_RST} "
+    PS1+="${C_GIT}$(__git_ps1 "(%s) ")${C_USER}\u:${C_RST}"
+    PS1+="${C_DATE}$(date +%H:%M)${C_BLUE}${_P_SSH} ${PS_EXIT}${C_BLUE}\w ${C_RST}"
+
+    # Z (autojump like thing) - defined in other .bashrc_xxx
+    "$L_Z_PROMPT_CMD" --add "$(command pwd -P 2>/dev/null)" 2>/dev/null
 }
 # Smaller prompt, good for presentations
-function __prompt_command2() {
-    local EXIT="$?"             # This needs to be first
-    PS1=""
+function __rc_prompt_command2() {
+    local EXIT="$?"  # This needs to be first
 
     local C_RST='\[\e[0m\]'
     local C_RED='\[\e[0;31m\]'
@@ -55,45 +71,30 @@ function __prompt_command2() {
     local C_DATE='\[\e[38;5;166m\]'
     local C_GIT='\[\e[38;5;63m\]'
 
-    local PS_EXIT=''
-    if [ $EXIT != 0 ]; then
-        PS_EXIT="${C_RED}[$EXIT]${C_RST} "      # Add red if exit code non 0
+    local PS_EXIT=""
+    if [[ $EXIT != 0 ]]; then
+        PS_EXIT="${C_RED}[$EXIT]${C_RST} "
     fi
 
+    PS1=""
     PS1+="${C_DATE}$(date +%H:%M) ${PS_EXIT}${C_BLUE}\W \$${C_RST} "
+
+    # Z (autojump like thing) - defined in other .bashrc_xxx
+    "$L_Z_PROMPT_CMD" --add "$(command pwd -P 2>/dev/null)" 2>/dev/null
 }
 
 # stalker: purple - slacker: bordeaux - kollok: orange - blinker: 'skin'
 if [[ -z $L_PS1_ALREADY_SET ]]; then
     if [[ -n $SSH_CLIENT ]]; then export _P_SSH=" (ssh)" ; fi
-    export PROMPT_COMMAND=__prompt_command  # Func to gen PS1 after CMDs
+    export PROMPT_COMMAND=__rc_prompt_command  # Func to gen PS1 after CMDs
 fi
 
-alias prompt_default='export PROMPT_COMMAND=__prompt_command'
-alias prompt_simple='export PROMPT_COMMAND=__prompt_command2'
-
-# GO stuff
-export GOPATH="$HOME/go"
-export PATH=$PATH:$GOPATH/bin
-
-
-###############################
-#        VERY TEMPORARY       #
-###############################
-
-alias cdgc='cd ~/git/config'
-
-togit() {
-    mv "$@" ~/git/perso_dotfiles/ && ln -s ~/git/perso_dotfiles/"$@" ./
-}
-
+alias prompt_default='export PROMPT_COMMAND=__rc_prompt_command'
+alias prompt_simple='export PROMPT_COMMAND=__rc_prompt_command2'
 
 ###############################
 #          OPTIONS            #
 ###############################
-
-# Make extended globs work
-shopt -s extglob
 
 # Binaries in home
 export PATH=~/bin/local:~/bin:~/bin/scripts:$PATH
@@ -102,25 +103,25 @@ export PATH=~/bin/local:~/bin:~/bin/scripts:$PATH
 export EDITOR=vim
 export VISUAL=vim
 
-# Works for Mac - does it for others?
-eval $(dircolors ~/.dircolors)
-
 # Bash
 export HISTCONTROL=ignoredups
 export HISTFILESIZE=100000
 export HISTSIZE=10000
 
+# Go
+export GOPATH="$HOME/go"
+export PATH=$PATH:$GOPATH/bin
+
 # Rsync and others transfer apps
 export UPLOAD_BW_LIMIT=400
 
 # App-specific
-export MPD_HOST="localhost"
-export TEXMFHOME="~/.texmf"
-export SVN_EDITOR="vim"
-#export CVSROOT=":pserver:any@server:abs_path"
+export MPD_HOST=localhost
+export TEXMFHOME=~/.texmf
 
 if [ -f "$HOME/.dircolors" ] ; then
-    eval $(dircolors -b "$HOME/.dircolors")
+    # Works for Mac - does it for others?
+    eval "$(dircolors "$HOME/.dircolors")"
 fi
 
 
@@ -148,7 +149,7 @@ alias cdmm='cd ~/Media/music_new'
 alias cdgd='cd ~/git/perso_dotfiles'
 
 #
-# THESE ARE FIXED FOREVER
+# THESE ARE FIXED FOREVER (this is a lie)
 #
 
 # gradle
@@ -165,11 +166,28 @@ gw() { # Run gradle if found in the current or parent directories
 alias gg='git log --graph --full-history --all --color --pretty=format:"%x1b[31m%h%x09%x1b[32m%d%x1b[0m%x20%s"'
 alias gg2='git log --graph --full-history --all --color --pretty=format:"%x1b[31m%h%x09%x20%x1b[0m%s%x1b[32m%d%x1b[0m"'
 alias gl="git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd) %C(bold blue)<%an>%Creset' --abbrev-commit --date=local"
+alias gl2="git log --pretty=format:'* %Cred%h%Creset - %s %n%w(76,4,4)%b' --abbrev-commit"
+alias gl3="git log --pretty=format:'* %h - %s %n%w(76,4,4)%b' --abbrev-commit"
 alias gra='git remote add'
 alias grr='git remote rm'
 alias grv='git remote -v'
+alias gco='git checkout'
+alias gci='git commit'
+alias gre='git rebase'
+alias grei='git rebase -i'
+alias grec='git rebase --cont'
+alias grea='git rebase --abort'
+alias grea='git rebase --abort'
+alias gpullod='git pull origin dev'
+alias gpullom='git pull origin master'
+alias gpullud='git pull upstream dev'
+alias gpullum='git pull upstream master'
+alias gpushod='git push origin dev'
+alias gpushom='git push origin master'
+alias gpushud='git push upstream dev'
+alias gpushum='git push upstream master'
 
-# Listing-related
+# Core
 alias ls='ls --color=auto'
 alias sl='ls'
 alias l='ls'
@@ -179,14 +197,13 @@ lsd() { ls -F "$@" |grep '/$'  ; }
 lsl() { ls -F "$@" |grep '@$'  ; }
 lsx() { ls -F "$@" |grep '\*$' ; }
 
-# Tree (particularly useful for django)
 alias ta='tree    --charset ascii -a        -I \.git*\|*\.\~*\|*\.pyc'
 alias ta2='tree   --charset ascii -a  -L 2  -I \.git*\|*\.\~*\|*\.pyc'
 alias ta3='tree   --charset ascii -a  -L 3  -I \.git*\|*\.\~*\|*\.pyc'
 
-alias pud='pushd -n "$args" &> /dev/null' # Push dir on stack
-alias pod='popd >& /dev/null'		 # Go back in time
-alias ds="dirs -v"       # Show DIRSTACK with array index
+# alias pud='pushd -n "$args" &> /dev/null' # Push dir on stack
+# alias pod='popd >& /dev/null'		 # Go back in time
+# alias ds="dirs -v"       # Show DIRSTACK with array index
 
 # Directory change functions
 mkcd () {
@@ -201,6 +218,9 @@ function ,,,, () { cd ../../../.. ; }
 # Utilities (grep, basename, dirname)
 alias grep='grep --color'
 alias gri='grep -rI'
+grio() { grep -rIO "$@" 2>/dev/null ; }
+
+alias ag='ag --ignore .venv --ignore tags --ignore TAGS'
 
 # Find
 f() {
@@ -212,9 +232,11 @@ fl() {
     find -L . -name '*'"$name"'*' "$@"
 }
 
+alias d='docker'
+
 # Disk use sorted, process list
-alias dus="du -sh * .* | sort -k1,1h"
-alias psa='ps aux | grep'
+alias dus='du -shm * .[^.]* | sort -n'
+alias psa='ps aux'
 alias pst='pstree -hAcpul'
 
 # Rsync - Unison
@@ -230,9 +252,7 @@ alias t='task'
 alias sls='screen -ls'
 alias sr='screen -r'
 
-# Docker / docker-machine
-alias dm='docker-machine'
-alias dme='eval $(docker-machine env default)'
+# Docker
 alias dr='docker run -ti'
 alias di='docker images'
 
@@ -243,27 +263,17 @@ alias right='DISPLAY=:0.1'
 # Editor related
 alias e="$L_VIM"
 
-# Bash, zsh, vim
-alias vimb="e ~/.bashrc"
+# Bash, zsh, vim RC files
 alias sob='source ~/.bashrc'
-alias vimbs="e ~/.bashrc_stalker"
+alias vimb="e ~/.bashrc"
+alias vimbm="e ~/.bashrc_mac"
+alias vimbs="e ~/.bashrc_slacker"
 alias vimbl="e ~/.bashrc_linux"
 alias vimbg="e ~/.bashrc_slacker"
 alias vimbk="e ~/.bashrc_kollok"
 alias vimz="e ~/.zshrc"
 alias soz="source ~/.zshrc"
 alias vimv="e ~/.vimrc"
-
-# Add absolute symbolic link
-lna() {
-    if [ -z "$1" -o "$#" -gt 2 ] ; then
-	echo "usage: lna [file] [destination]"
-	echo " Creates an absolute symbolic link from relative file pointing to dest"
-    else
-        ln -s "$(readlink -f "$(pwd)/$1")" "$2"
-    fi
-}
-
 
 ############################
 #        BOOKMARKS         #
@@ -292,6 +302,7 @@ alias mpdr="mpdk && mpds"
 alias adencode='~/scripts/android/encode_to_mp4.sh low'
 
 # Other
+alias restore_vim_session='vim $(find . -name ".*.swp" | while read f; do rm "$f"; echo "$f" | sed "s/\\.\\([^/]*\\).swp/\\1/"; done)'
 alias vless='vim -u /usr/share/vim/vim72/macros/less.vim'
 alias myports='netstat -alpe --ip'
 
@@ -299,6 +310,22 @@ alias myports='netstat -alpe --ip'
 #alias pirssi='killall irssi_notify_daemon && irssi_notify_daemon & luit -encoding iso8859-15 ssh chossart2006@perso.iiens.net'
 
 ## Python {{{
+# Virtualenv activate
+alias vv='virtualenv .venv'
+va() {
+    if [[ -d .venv ]]; then
+        . .venv/bin/activate
+        echo "Activated virtualenv from .venv/"
+    elif [[ -d venv ]]; then
+        . venv/bin/activate
+        echo "Activated virtualenv from venv/"
+    else
+        echo "No .venv or venv directory found in cwd."
+        return 1
+    fi
+}
+alias vd=deactivate
+
 alias tip='touch __init__.py'
 
 # Django
@@ -331,6 +358,6 @@ if [ -n "$TERM" ] && [ -x "$(which keychain)" ] && \
 fi
 
 
-#vim:foldmethod:marker
+[[ -f ~/.fzf.bash ]] && source ~/.fzf.bash
 
-export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+#vim:foldmethod:marker
