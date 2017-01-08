@@ -5,6 +5,8 @@ CONFIG
 
 .vim/.netrwhist
 .vim/doc/tags
+.vim/bundle
+.vim/bundle-alt
 
 # Unison files - do not mess up :)
 .unison/*
