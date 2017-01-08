@@ -7,10 +7,13 @@
 " Use autocmd because we want it to be set last.
 autocmd VimEnter * hi EasyMotionTarget ctermbg=none ctermfg=red
 autocmd VimEnter * hi EasyMotionShade  ctermbg=none ctermfg=blue
+map 0 <Plug>(easymotion-prefix)
+let g:EasyMotion_keys='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 "hi link EasyMotionTarget Error
 "hi link EasyMotionShade  LineNr
 
-
+" FuzzyFinder (fzf)
+set rtp+=/usr/local/opt/fzf
 
 " UltiSnips
 let g:UltiSnipsSnippetDir = 'UltiSnips'
@@ -18,6 +21,8 @@ let g:UltiSnipsListSnippets = '<c-x><tab>'
 let g:UltiSnipsJumpForwardTrigger='<tab>'
 let g:UltiSnipsJumpBackwardTrigger='<s-tab>'
 
+" UltiSnips - ft specific
+let g:ultisnips_python_quoting_style='single'
 
 " Space plugin
 nmap <unique> <F1> <Plug>SmartspaceNext
@@ -55,6 +60,12 @@ map <F10> :NERDTreeToggle<cr>
 map <F11> :TagbarToggle<cr>
 let g:tagbar_autoclose = 1
 
+" Markdown
+let g:vim_markdown_folding_disabled = 1
+hi lin htmlH1 Constant
+hi lin htmlH2 Preproc
+hi lin htmlH3 Special
+
 "" Showmarks plugin
 "highlight SignColumn ctermbg=0
 "highlight ShowMarksHLl ctermfg=166 ctermbg=0 guifg=#d75f00
@@ -89,9 +100,19 @@ map <leader>g :GundoToggle<CR>
 "" Ack
 nmap <leader>a <Esc>:Ack!
 
+"" Fugitive
+nnoremap <buffer> <silent> + :<C-U>silent execute <SID>StageToggle(line('.'),line('.')+v:count1-1)<CR>
+xnoremap <buffer> <silent> + :<C-U>silent execute <SID>StageToggle(line("'<"),line("'>"))<CR>
+
 "}}}
 
 " ---| FILETYPE PLUGINS |--- {{{
+
+"" Bash
+let g:is_bash = 1 " Make bash default rather than sh
+
+" Shellcheck
+set makeprg=shellcheck\ -f\ gcc\ %
 
 "" Python
 " Pyflakes
@@ -101,9 +122,19 @@ endif
 let g:pyflakes_use_quickfix = 0
 
 " Sytastic Settings
-" let g:syntastic_python_checkers = ["flake8"]
-let g:syntastic_python_flake8_args = "--max-line-length=160 --ignore=E201,E202,C0103"
-let g:syntastic_quiet_messages = { "type": "style" }
+let g:syntastic_python_checkers = ["flake8"]
+"
+" Pep8:
+" E201    whitespace after ‘(‘
+" E202    whitespace before ‘)’
+" E127    continuation line over-indented for visual indent
+" E128    continuation line under-indented for visual indent
+"
+" PyLint:
+" C0103   Invalid constant/variable name (1 or 2 letter, lowercase constant, ...)
+let g:syntastic_python_flake8_args = "--max-line-length=160 --ignore=C0103"
+
+" let g:syntastic_quiet_messages = { "type": "style" }
 
 " Green test with python
 map <leader>tg :set makeprg=python\ manage.py\ test\|:call MakeGreen()<CR>
@@ -156,5 +187,6 @@ autocmd Filetype java setlocal omnifunc=javacomplete#Complete
 autocmd Filetype java setlocal completefunc=javacomplete#CompleteParamsInfo
 autocmd Filetype java inoremap <buffer> <C-X><C-U> <C-X><C-U><C-P>
 autocmd Filetype java inoremap <buffer> <C-S-Space> <C-X><C-U><C-P> 
+
 
 " }}}
