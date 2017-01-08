@@ -1,11 +1,42 @@
+# See more on https://github.com/honza/vim-snippets/blob/master/UltiSnips/python.snippets\
+
+extends python
+
+# Header for python 3: #!<tab> #!2<tab> or #!3<tab>
+snippet /#!([23])?/ "Shebang" r
+`!p
+python_version_str = match.group(1) or ''
+future_import_maybe = ''
+if python_version_str != '3':
+    future_import_maybe = '\nfrom __future__ import print_function'
+
+snip.rv = '''#!/usr/bin/env python%s
+# -*- coding: utf-8 -*-
+%s''' % (python_version_str, future_import_maybe)
+`
+$0
+endsnippet
+
+# # Header for python 2.x
+# snippet /#!2/ "Shebang" b
+# #!/usr/bin/env python
+#
+# from __future__ import print_function
+# endsnippet
+
 # print variable
 snippet pv "Print variable" b
-print "$1: %s" % $1
+print("$1: %s" % $1)
 endsnippet
 
 # pdb
 snippet pdb "PDB set trace" b
 import pdb; pdb.set_trace()
+endsnippet
+
+# ipdb
+snippet ipdb "IPDB set trace" b
+import ipdb; ipdb.set_trace()
 endsnippet
 
 # Clears all snippets that match ".." - this is to delete the builtin "self."
@@ -14,13 +45,14 @@ clearsnippets ..
 
 # . for self. -- override
 # doesn't expand when there is a word or dot in front
-snippet /(^|(?<!(\w|\.)))\./ "self." !r
+snippet /(^|(?<!(\w|\.)))\./ "self." r
 self.
 endsnippet
 
 # self._foo = foo
-snippet .. "self._foo = foo" b
-self._${1:attribute} = $1
+snippet /\.\./ "self._foo = foo" br
+self._${1:attr} = $1
+$2
 endsnippet
 
 ##########
@@ -133,3 +165,109 @@ write_init_body(args, t[2], snip)
 `
 		$0
 endsnippet
+
+snippet init "__init__ method" b
+def __init__(self$1):`!p
+snip.rv = ""
+snip >> 2
+
+args = get_args(t[1])
+
+write_init_body(args, '', snip)
+`
+    $0
+endsnippet
+
+
+# snippet init "__init__ method" b
+# def __init__(self$1):
+#     $2
+# endsnippet
+
+snippet defc "class method" b
+def ${1:myfunc}(self$2):
+    $3
+endsnippet
+
+
+#
+## Long snippets
+#
+
+
+snippet setuppy "Setup.py template" b
+import os
+import re
+from setuptools import setup, find_packages
+
+here = os.path.abspath(os.path.dirname(__file__))
+readme_content = open(os.path.join(here, 'README.md')).read()
+
+exclude_dirs = ['ez_setup', 'examples', 'tests', 'build', $1]
+
+
+def find_version(basedir='.'):
+    """Find __version__ value from __init__.py files"""
+    version_re = re.compile(r".*__version__ = '(.*?)'", re.S)
+    for root, subdirs, files in os.walk(basedir):
+        subdirs[:] = [d for d in subdirs \
+                      if not d.startswith('.') and d not in exclude_dirs]
+        if '__init__.py' in files:
+            try:
+                with open(os.path.join(root, '__init__.py')) as v_file:
+                    return version_re.match(v_file.read()).group(1)
+            except (IOError, OSError, AttributeError):
+                pass
+    # Crash and burn if no version found
+    raise AttributeError('No version found within project')
+
+
+def get_requirements(requirements='requirements.txt'):
+    from pip.req import parse_requirements
+    # Cool trick to automatically pull in install_requires values directly from
+    # your requirements.txt file but you need to have pip module available
+    try:
+        # Newer versions of pip need a session object when parsing requirements.
+        from pip.download import PipSession
+        install_reqs = parse_requirements(os.path.join(here, requirements),
+                                          session=PipSession())
+    except ImportError:
+        # Must be an older version of pip
+        install_reqs = parse_requirements(os.path.join(here, requirements))
+    # reqs is a list of requirement
+    # e.g. ['django==1.5.1', 'mezzanine==1.4.6']
+    return [str(ir.req) for ir in install_reqs]
+
+setup(name='$2',
+      description='$3',
+      version=find_version(here),
+      long_description=readme_content,
+      classifiers=[
+          'Development Status :: ${4:4 - Beta}',
+          'Environment :: Console',
+          'Intended Audience :: ${5:Programmers}',
+          'License :: ${6:BSD}',
+          'Programming Language :: Python',
+	  'Topic :: ${7:See https://pypi.python.org/pypi?%3Aaction=list_classifiers}',
+      ],
+      keywords='${8:list of keywords}',
+      author='${9:Name Surname}',
+      author_email='${10:name@email.com}',
+      url='${11:http://github.com/...}',
+      license='$6',
+      include_package_data=True,
+      setup_requires=['pytest'],
+      tests_require=get_requirements('test-requirements.txt'),
+      install_requires=get_requirements(),
+      dependency_links=[],
+      packages=find_packages(),
+      entry_points={
+          'console_scripts': [
+              '${12:pkg_script_name} = ${13:foo.main:main}',
+          ],
+      },
+      zip_safe=False,
+      )$14
+endsnippet
+
+
