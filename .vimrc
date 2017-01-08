@@ -54,12 +54,9 @@ if has("gui_running") " GUI mode
 elseif has('gui') " A terminal with GUI support
 	colorscheme ps_color
 	set termencoding=utf-8
-	set ttymouse=xterm2
 else
-	colorscheme molokai
-    set bg=dark
-	set termencoding=utf-8
-	set ttymouse=xterm2
+    colorscheme hybrid
+    set termencoding=utf-8
     if g:PLATFORM =~ "mac"
         set t_ZH=[3m t_ZR=[23m " Set the italics code
     endif
@@ -69,6 +66,9 @@ endif
 set cursorline
 hi CursorLine cterm=NONE term=NONE
 
+" Orgmode multi-star should show only last star
+hi link org_shade_stars NonText
+
 "Omni menu colors
 hi Pmenu guibg=#333333 ctermbg=black
 hi PmenuSel guibg=#555555 guifg=#ffffff
@@ -77,45 +77,52 @@ if (&term =~ 'rxvt') "Vieux hack rxvt (...)
     so ~/.vim/sitaktif/rxvt.vim
 end
 
-" A deplacer au bon endroit - et a corriger aussi /!\
-" A deplacer au bon endroit - et a corriger aussi /!\
-" A deplacer au bon endroit - et a corriger aussi /!\
-if g:PLATFORM =~ 'mac'
-au FileType python set path +=/sw/lib/python2.6/site-packages/Django-1.2.3-py2.6.egg
-"""   " Sets the paths for Vim AND Python. Useful to get pythoncomplete to work
-"""     function! SetPythonEnv()
-""" 	if has('python')
-""" python << EOF
-""" import os
-""" import sys
-""" import vim
-""" for p in sys.path:
-"""     if os.path.isdir(p):
-""" 	vim.command(r"set path+=%s" % (p.replace(" ", r"\ ")))
-""" EOF
-""" 	endif
-""" 
-"""           "" F**KING Python 2.3 on MacVim
-"""           ""python import vim, sys ; vim.command('set path+='+",".join(sys.path))
-"""           ""set path+=/sw/lib/python26.zip,/sw/lib/python2.6,/sw/lib/python2.6/plat-darwin,/sw/lib/python2.6/plat-mac,/sw/lib/python2.6/plat-mac/lib-scriptpackages,/sw/lib/python2.6/lib-tk,/sw/lib/python2.6/lib-old,/sw/lib/python2.6/lib-dynload,/sw/lib/python2.6/site-packages
-""" 	  "set path+=/Library/Python/2.6
-""" 	  "python import vim, sys ; sys.path.extend(vim.eval('split(&path,",")'))
-"""       "else
-"""           "if (g:PLATFORM == 'mac')
-"""               "set path+=/sw/lib/python26.zip,/sw/lib/python2.6,/sw/lib/python2.6/plat-darwin,/sw/lib/python2.6/plat-mac,/sw/lib/python2.6/plat-mac/lib-scriptpackages,/sw/lib/python2.6/lib-tk,/sw/lib/python2.6/lib-old,/sw/lib/python2.6/lib-dynload,/sw/lib/python2.6/site-packages
-"""           "endif
-"""       "endif
-""" 	set previewheight=16
-"""     endfunction
-"""     au FileType python call SetPythonEnv()
-""" endif
-""" 
-""" " A deplacer au bon endroit
-""" if g:PLATFORM =~ 'mac'
-"""   autocmd FileType ocaml,caml,omlet let Tlist_Ctags_Cmd = '~/scripts/linux/octags.sh'
-endif
-
 "}}}
+
+" ---| PLUGIN SETTINGS |--- {{{
+
+" Vundle config
+set runtimepath+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+
+" General plugins
+Plugin 'tpope/vim-surround'
+Plugin 'kana/vim-fakeclip'
+Plugin 'easymotion/vim-easymotion'
+Plugin 'tpope/vim-fugitive'
+Plugin 'SirVer/ultisnips'
+Plugin 'tpope/vim-obsession'
+Plugin 'sitaktif/vim-space'
+Plugin 'git://github.com/majutsushi/tagbar'
+Plugin 'airblade/vim-gitgutter'
+Plugin 'godlygeek/tabular'
+Plugin 'rking/ag.vim'
+Plugin 'rizzatti/dash.vim'
+Plugin 'jceb/vim-orgmode'
+Plugin 'tpope/vim-speeddating' " Increase/decrease date with <C-a>/<C-x>
+Plugin 'tpope/vim-unimpaired'
+
+" Color
+Plugin 'scwood/vim-hybrid'
+
+" FT Plugins
+" Plugin 'scrooloose/syntastic'
+Plugin 'neomake/neomake'
+Plugin 'hynek/vim-python-pep8-indent'
+Plugin 'elixir-lang/vim-elixir'
+Plugin 'kballard/vim-swift'
+Plugin 'plasticboy/vim-markdown'
+Plugin 'kylef/apiblueprint.vim'
+
+" Python
+Plugin 'alfredodeza/pytest.vim'
+Plugin 'python-rope/ropevim'
+Plugin 'davidhalter/jedi-vim'
+
+"  }}}
 
 " ---| GLOBAL SETTINGS |--- {{{
 
@@ -140,6 +147,7 @@ set modelines=5
 set listchars+=tab:>-,trail:·,extends:~,nbsp:-
 set fileformats+=mac
 set nojoinspaces
+set nostartofline "Don't move the cursor to start of line after a command
 
 " Search
 set wrapscan "Continue to top after reaching bottom
@@ -159,7 +167,7 @@ set updatetime=1000 "Update swap (and showmark plugin) every 1 sec
 
 " Windows and buffers
 set splitright " Vsplit at right
-set previewheight=8 "Height of preview menu (Omni-completion)
+set previewheight=20 "Height of preview menu (Omni-completion)
 set hidden "To move between buffers without writing them.  Don't :q! or :qa! frivolously!
 
 " Command mode options
@@ -188,28 +196,21 @@ set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.i
 " TODO: This is a try. See if it is ok
 set tags=tags,./tags,../tags,../../tags
 
-" Statusline (relative to home when possible)
-" function! CurDir()
-"   let curdir = substitute(getcwd(), $HOME, "~", "g")
-"   return curdir
-" endfunction
-"set statusline=\ %n\ %-30.50(%f\ %m%r%w%)\ [%{CurDir()}]\ \ \ %28.60({%Y}\ \ \ l/%L\ (%P)\ \ :%c%)
-
 " Auto-folding and auto-layout (e.g. for vim help files)
+" TODO: do it by filetype
 set foldenable "Automatic folding
-"TODO: do it by filetype
 set foldmethod=marker "Folds automatically between {{{ and }}}
 
 " Mouse
 set mouse=a "Use mouse (all)
-set ttymouse=xterm2 "Mouse dragging in iTerm
+if !has('nvim')
+    set ttymouse=xterm2 "Mouse dragging in iTerm
+endif
 
 "}}}
 
 " ---| MORE COMPLEX FUNCTIONS |--- {{{
 "
-
-
 
 if !exists(":DiffOrig")
 command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
@@ -218,32 +219,35 @@ endif
 
 func! DeleteTrailingWS()
     let lnum = line(".")
+    let cnum = col(".")
     silent! keepjumps %s/\s\+$//ge
-    silent! exe "keepjumps normal " . lnum . "G"
+    silent! keepjumps call cursor(lnum, cnum)
 endfunc
-autocmd BufWrite *.py,*.h,*.hpp,*.c,*.cpp,*.md :call DeleteTrailingWS()
+autocmd BufWrite *.sh,*.java,*.py,*.h,*.hpp,*.c,*.cpp,*.md,*.rst :call DeleteTrailingWS()
 
 "}}}
 
 " ---| MAPPINGS |--- {{{
 
-"" HANDY MAPPINGS 
+"" HANDY MAPPINGS
 
 " Single quote is sufficient (I use backquote for tabnext)
 noremap ' `
-" Much better :) hope it doesn't crash any plugin
-nnoremap Y y$
+
+" Select last pasted text
 nnoremap gp `[v`]
 
 " Next window
 map - <c-w>w
 " Remove search hilights
 map _ :noh<CR>
-" correct this shitty typo on exit :]
-nmap q: :q
+
 " No more 'fu-, gotta make a `!rm ./1` :( '
 cabbr w1 :w!
 cabbr q1 :q!
+command! W w
+command! Q q
+command! S s
 
 " For different keyboard layouts
 
@@ -256,8 +260,6 @@ cabbr q1 :q!
 " map § `
 " map! § `
 
-" For qwerty/azerty pain-in-the-ass typos
-map Q A
 imap   \<non_space_blank\>
 
 
@@ -268,9 +270,9 @@ imap   \<non_space_blank\>
 map <F3> :A<cr>
 " map <F2> to something PREV
 " map <F3> to something NEXT
-map <F4> :tabe 
+map <F4> :tabe
 
-"map <F5> :!% 
+"map <F5> :!%
 
 ""Preview zone F6/7/8
 "map <F6> :pop<cr>
@@ -287,15 +289,7 @@ map <F4> :tabe
 "map <C-F12> :let &completeopt = (&completeopt == "menu" ? "menu,preview" : "menu") <bar> echo &completeopt <cr>
 
 
-"" REDEFINITIONS 
-
-" So that the search result is in the middle of the screen
-nnoremap n nzz
-nnoremap N Nzz
-nnoremap * *zz
-nnoremap # #zz
-nnoremap g* g*zz
-nnoremap g# g#zz
+"" REDEFINITIONS
 
 " Warning:
 " The following may be a bit hardcore for beginners...
@@ -304,17 +298,19 @@ nnoremap g# g#zz
 nnoremap ` :tabnext<cr>
 nnoremap <space> :tabprev<cr>
 
-" ...and between buffers
+" ...and between buffers.
 nnoremap <return> :bn<cr>
 nnoremap <bs> :bp<cr>
 
+" Use arrows to move the screen (not the cursor).
+" Cursor should be moved with hjkl.
 noremap <up> 10<c-y>
 noremap <down> 10<c-e>
 noremap <left> 10zh
 noremap <right> 10zl
 
 
-" Beginners that want to have a good habit 
+" Beginners that want to have a good habit
 " (i.e. use hjkl instead of <left>,<down>,<up>,<right>) can use:
 
 " A good trick to take the hjkl-use habit
@@ -326,26 +322,14 @@ noremap <right> 10zl
 
 " Forgot to sudo ? Hehee :)
 if g:PLATFORM != 'win'
-    command! W w
     command! WW w !sudo tee % > /dev/null
 endif
-
-
-"" Misc (maps using <leader>)
-
-" Highlight word
-" TODO: define the color of the groups below
-"nnoremap <silent> <leader>hh :execute 'match InterestingWord1 /\<<c-r><c-w>\>/'<cr>
-"nnoremap <silent> <leader>h1 :execute 'match InterestingWord1 /\<<c-r><c-w>\>/'<cr>
-"nnoremap <silent> <leader>h2 :execute '2match InterestingWord2 /\<<c-r><c-w>\>/'<cr>
-"nnoremap <silent> <leader>h3 :execute '3match InterestingWord3 /\<<c-r><c-w>\>/'<cr>
 
 " Set paste
 noremap <leader>sp :set paste!<cr>
 
 " Set number
 noremap <leader>sn :set number!<cr>
-noremap <leader>sN :silent! windo set number!<cr>
 
 " Diff
 noremap <leader>vd :diffthis<cr>
@@ -364,6 +348,11 @@ noremap <leader>se :setlocal spell spelllang=en spellcapcheck=<cr>
 noremap <leader>sf :setlocal spell spelllang=fr spellcapcheck=<cr>
 noremap <leader>sd :setlocal spell spelllang=de spellcapcheck=<cr>
 
+" Vim
+noremap <leader>vev :e ~/.vimrc<cr>
+noremap <leader>vsv :so ~/.vimrc<cr>
+exec "map <leader>vht :helptags ".s:config_path."/doc<cr>"
+
 " Search for visually (multiline) selected text
 vnoremap <silent> * :<C-U>
   \let old_reg=getreg('"')<Bar>let old_regtype=getregtype('"')<CR>
@@ -377,8 +366,8 @@ vnoremap <silent> # :<C-U>
   \gV:call setreg('"', old_reg, old_regtype)<CR>
 
 
-" Fold non-search content (super tips !)
-nnoremap <leader>/ :call SitaShowSearchOnly()<cr>
+" Fold non-search content to only display the search (super tip!)
+nnoremap g/ :call SitaShowSearchOnly()<cr>
 function! SitaShowSearchOnly()
     if &foldmethod == "manual"
 	echomsg "Cannot use the functionality with foldmethod == \"manual\"."
@@ -402,14 +391,7 @@ endfunc
 
 " PDF
 "Transforms ´e into é etc.. for cp/paste from bad pdf files
-map <leader>pa :s/´e/é/ge<bar>s/`e/è/ge<bar>s/[ˆ^]e/ê/ge<bar>s/`a/à/ge<bar>s/[ˆ^]o/ô/ge<bar>s/[ˆ^]i/î/ge<cr>
-
-" Vim
-noremap <leader>vpf :echo expand('%')<cr>
-noremap <leader>vev :e ~/.vimrc<cr>
-noremap <leader>vtv :tabnew ~/.vimrc<cr>
-noremap <leader>vsv :so ~/.vimrc<cr>
-exec "map <leader>vht :helptags ".s:config_path."/doc<cr>"
+" map <leader>pa :s/´e/é/ge<bar>s/`e/è/ge<bar>s/[ˆ^]e/ê/ge<bar>s/`a/à/ge<bar>s/[ˆ^]o/ô/ge<bar>s/[ˆ^]i/î/ge<cr>
 
 " Qwerty mappings
 if g:PLATFORM =~ 'mac'
@@ -422,25 +404,12 @@ endif
 " Fix the shift-backspace problem
 noremap!  <bs>
 
-"" COMMAND LINE MAPPINGS
-" TODO: they are not perfect since <esc>b can be annoying when I actually want
-" to press <esc> and b.
-"cnoremap <C-a>  <Home>
-"cnoremap <C-b>  <Left>
-"cnoremap <C-f>  <Right>
-"cnoremap <C-d>  <Delete>
-"cnoremap <M-b>  <S-Left>
-"cnoremap <M-f>  <S-Right>
-"cnoremap <M-d>  <S-right><Delete>
-"cnoremap <Esc>b <S-Left>
-"cnoremap <Esc>f <S-Right>
-"cnoremap <Esc>d <S-right><Delete>
-"cnoremap <C-g>  <C-c>
-
-
 "}}}
 
 " ---| ABBREVIATIONS |--- {{{
+
+" They are not that useful in practice, I found :-)
+
 "}}}
 
 " ---| AUTOCOMMANDS |--- {{{
