@@ -148,10 +148,6 @@ alias cdmm='cd ~/Media/music_new'
 # Git bookmarks begin with cdg
 alias cdgd='cd ~/git/perso_dotfiles'
 
-#
-# THESE ARE FIXED FOREVER (this is a lie)
-#
-
 # gradle
 gw() { # Run gradle if found in the current or parent directories
     for i in . .. ../.. ../../.. ../../../..; do
@@ -306,13 +302,12 @@ alias restore_vim_session='vim $(find . -name ".*.swp" | while read f; do rm "$f
 alias vless='vim -u /usr/share/vim/vim72/macros/less.vim'
 alias myports='netstat -alpe --ip'
 
-# Irssi
-#alias pirssi='killall irssi_notify_daemon && irssi_notify_daemon & luit -encoding iso8859-15 ssh chossart2006@perso.iiens.net'
 
 ## Python {{{
 # Virtualenv activate
-alias vv='virtualenv .venv'
+alias vv='virtualenv .venv && . .venv/bin/activate'
 va() {
+    for d in .venv venv .
     if [[ -d .venv ]]; then
         . .venv/bin/activate
         echo "Activated virtualenv from .venv/"
@@ -334,23 +329,7 @@ alias drs='python manage.py runserver'
 alias dsd='python manage.py syncdb'
 alias dsh='python manage.py shell'
 #}}}
-## Old {{{
 
-# PEC
-#alias ssh_pec='ssh pecprod@thepec.net'
-#alias pec_start='cd pec && python manage.py runserver 0.0.0.0:8000'
-#alias pecdb='mysql -D test -u root -p'
-
-#}}}
-
-## SSH AGENT - use keychain to prompt at login (requires the package..)
-#SSHAGENT=/usr/bin/ssh-agent
-#SSHAGENTARGS="-s"
-#if [ -z "$SSH_AUTH_SOCK" -a -x "$SSHAGENT" ]; then
-#    echo sshagent
-#    eval `$SSHAGENT $SSHAGENTARGS`
-#    trap "kill $SSH_AGENT_PID" 0
-#fi
 if [ -n "$TERM" ] && [ -x "$(which keychain)" ] && \
     [ -f "$HOME/.ssh/id_rsa" ] ; then
     keychain -q $HOME/.ssh/id_rsa
