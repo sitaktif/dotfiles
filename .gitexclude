@@ -5,3 +5,6 @@
 #*#
 *.orig
 *.rej
+
+# Vim Obsession plugin
+Session.vim
