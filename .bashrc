@@ -307,7 +307,6 @@ alias myports='netstat -alpe --ip'
 # Virtualenv activate
 alias vv='virtualenv .venv && . .venv/bin/activate'
 va() {
-    for d in .venv venv .
     if [[ -d .venv ]]; then
         . .venv/bin/activate
         echo "Activated virtualenv from .venv/"
