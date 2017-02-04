@@ -34,6 +34,9 @@ export GIT_PS1_SHOWSTASHSTATE=true # $: something is stashed
 export GIT_PS1_SHOWUPSTREAM="auto" # <: behind upstream, >: ahead upstream, <>: diverged
 L_Z_PROMPT_CMD=${L_Z_PROMPT_CMD:-true}
 
+# then you can add \`jobs_count\` to the end of your PS1 like this
+export PS1="\[\e[32m\]\u\[\e[m\]@\[\e[32m\]\h\[\e[m\]:\[\e[34m\]\w\[\e[m\]\`git_branch\`\`jobs_count\`\n\$ "
+
 # Nice, complete prompt
 function __rc_prompt_command() {
     local EXIT="$?"  # This needs to be first
@@ -42,6 +45,7 @@ function __rc_prompt_command() {
     local C_RED='\[\e[0;31m\]'
     local C_GREEN='\[\e[0;32m\]'
     local C_BLUE='\[\e[01;34m\]'
+    local C_YELLOW='\[\e[01;93m\]'
     local C_USER='\[\e[38;5;${L_PS1_HOST_COLOR}m\]'
     local C_VENV=$C_GREEN
     local C_DATE='\[\e[38;5;166m\]'
@@ -52,7 +56,14 @@ function __rc_prompt_command() {
         PS_EXIT="${C_RED}[$EXIT]${C_RST} "
     fi
 
+    local job_count=$(jobs -l | grep 'Running' | wc -l)
+    local job_count_prompt
+    if [[ $job_count -gt 0 ]]; then
+        job_count_prompt="${C_YELLOW}[${job_count}]${C_RST} "
+    fi
+
     PS1=""
+    PS1+="$job_count_prompt"
     [[ -n $VIRTUAL_ENV ]] && PS1+="${C_VENV}(venv)${C_RST} "
     PS1+="${C_GIT}$(__git_ps1 "(%s) ")${C_USER}\u:${C_RST}"
     PS1+="${C_DATE}$(date +%H:%M)${C_BLUE}${_P_SSH} ${PS_EXIT}${C_BLUE}\w ${C_RST}"
