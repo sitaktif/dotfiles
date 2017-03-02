@@ -5,3 +5,11 @@ set mark-symlinked-directories
 # Bind it to shift-up and shift-down
 "\e[1;2A": history-search-backward
 "\e[1;2B": history-search-forward
+
+# Ctrl-Alt-F / Ctrl-Alt-B. Works on Bash 3.2 (baseline Mac).
+"\e\C-F": vi-fWord
+"\e\C-B": vi-bWord
+
+# Ctrl-left / Ctrl-right. Only works on recent versions of bash/readline.
+"\e[1;5C": shell-forward-word
+"\e[1;5D": shell-backward-word
