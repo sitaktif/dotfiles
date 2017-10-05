@@ -392,6 +392,12 @@ you should place your code here."
   (evil-define-key 'visual evil-surround-mode-map "s" 'evil-substitute)
   (evil-define-key 'visual evil-surround-mode-map "S" 'evil-surround-region)
 
+  ;; Allow surrounding words with backtick (--> `word`) or tilda (--> ``word``)
+  (setq-default evil-surround-pairs-alist (cons '(?` . ("`" . "`"))
+                                                evil-surround-pairs-alist))
+  (setq-default evil-surround-pairs-alist (cons '(?~ . ("``" . "``"))
+                                                evil-surround-pairs-alist))
+
   ;; Clear search highlight with normal mode underscore
   (define-key evil-normal-state-map (kbd "_") 'spacemacs/evil-search-clear-highlight)
   )
@@ -403,6 +409,9 @@ you should place your code here."
 (setq-default dotspacemacs-configuration-layers
               '((colors :variables
                         colors-enable-nyan-cat-progress-bar ,(display-graphic-p))))
+
+;; Define which org files are to be searched when doing agenda-related things like search and such
+(setq org-agenda-files '("~/notes/home.org" "~/notes/tech.org" "~/notes/work.org"))
 
 (defun my/org-mode-hook ()
   "Stop the org-level headers from increasing in height relative to the other text."
