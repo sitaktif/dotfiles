@@ -101,8 +101,8 @@ map <leader>g :GundoToggle<CR>
 nmap <leader>a <Esc>:Ack!
 
 "" Gitgutter
-nmap [c <Plug>GitGutterPrevHunk
-nmap ]c <Plug>GitGutterNextHunk
+nmap [g <Plug>GitGutterPrevHunk
+nmap ]g <Plug>GitGutterNextHunk
 
 "" Fugitive
 nnoremap <buffer> <silent> + :<C-U>silent execute <SID>StageToggle(line('.'),line('.')+v:count1-1)<CR>
