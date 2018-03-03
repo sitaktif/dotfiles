@@ -31,6 +31,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     javascript
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -56,9 +57,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(
-    ;; org-mac-link
-   )
+   dotspacemacs-additional-packages '()
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -143,6 +142,11 @@ values."
                                :powerline-scale 1.1)
    ;; The leader key
    dotspacemacs-leader-key "SPC"
+   ;; The key used for Emacs commands (M-x) (after pressing on the leader key).
+   ;; (default "SPC")
+   dotspacemacs-emacs-command-key "SPC"
+   ;; The key used for Vim Ex commands (default ":")
+   dotspacemacs-ex-command-key ":"
    ;; The leader key accessible in `emacs state' and `insert state'
    ;; (default "M-m")
    dotspacemacs-emacs-leader-key "M-m"
@@ -150,11 +154,8 @@ values."
    ;; pressing `<leader> m`. Set it to `nil` to disable it. (default ",")
    dotspacemacs-major-mode-leader-key ","
    ;; Major mode leader key accessible in `emacs state' and `insert state'.
-   ;; (default "C-M-m)
+   ;; (default "C-M-m")
    dotspacemacs-major-mode-emacs-leader-key "C-M-m"
-   ;; The key used for Emacs commands (M-x) (after pressing on the leader key).
-   ;; (default "SPC")
-   dotspacemacs-emacs-command-key "SPC"
    ;; These variables control whether separate commands are bound in the GUI to
    ;; the key pairs C-i, TAB and C-m, RET.
    ;; Setting it to a non-nil value, allows for separate commands under <C-i>
@@ -248,8 +249,18 @@ values."
    ;; scrolling overrides the default behavior of Emacs which recenters point
    ;; when it reaches the top or bottom of the screen. (default t)
    dotspacemacs-smooth-scrolling t
-   ;; If non nil line numbers are turned on in all `prog-mode' and `text-mode'
-   ;; derivatives. If set to `relative', also turns on relative line numbers.
+   ;; Control line numbers activation.
+   ;; If set to `t' or `relative' line numbers are turned on in all `prog-mode' and
+   ;; `text-mode' derivatives. If set to `relative', line numbers are relative.
+   ;; This variable can also be set to a property list for finer control:
+   ;; '(:relative nil
+   ;;   :disabled-for-modes dired-mode
+   ;;                       doc-view-mode
+   ;;                       markdown-mode
+   ;;                       org-mode
+   ;;                       pdf-view-mode
+   ;;                       text-mode
+   ;;   :size-limit-kb 1000)
    ;; (default nil)
    dotspacemacs-line-numbers nil
    ;; Code folding method. Possible values are `evil' and `origami'.
@@ -305,7 +316,7 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
-  
+
   ;; TIPS
   ;;
   ;; In helm: C-SPC to toggle item, M-a to select all, C-c C-i to copy selection to buffer.
@@ -402,13 +413,25 @@ you should place your code here."
   (define-key evil-normal-state-map (kbd "_") 'spacemacs/evil-search-clear-highlight)
   )
 
+
 ;; PLUGIN SETTINGS
+
+;; All org-mode related configration has to be loaded AFTER the proper non-builtin org was loaded
+(with-eval-after-load 'org
 
 ;; -- Org mode
 
-(setq-default dotspacemacs-configuration-layers
-              '((colors :variables
-                        colors-enable-nyan-cat-progress-bar ,(display-graphic-p))))
+
+;; Motion --
+
+;; When using org-goto, start in insert mode so that typing letters starts the search
+(defadvice org-goto (around make-it-evil activate)
+  (let ((orig-state evil-state)
+        (evil-emacs-state-modes (cons 'org-mode evil-emacs-state-modes)))
+    ad-do-it
+    (evil-change-state orig-state)))
+
+(define-key evil-normal-state-map (kbd "C-c C-g") 'helm-org-agenda-files-headings)
 
 ;; Define which org files are to be searched when doing agenda-related things like search and such
 (setq org-agenda-files '("~/notes/home.org" "~/notes/tech.org" "~/notes/work.org"))
@@ -424,9 +447,18 @@ you should place your code here."
 
 (add-hook 'org-mode-hook 'my/org-mode-hook)
 
+;; When inserting a heading (e.g. with M-Ret), be in insert mode
+(add-hook 'org-insert-heading-hook 'evil-insert-state)
+
+;; When inserting a heading in the middle of a line, don't split the line (insert after)
+(setq org-M-RET-may-split-line nil)
+
+;; fix M-Ret in Spacemacs/Orgmode to insert a heading (https://github.com/syl20bnr/spacemacs/issues/9603)
+(org-defkey org-mode-map [(meta return)] 'org-meta-return)
+
 (defun ded/org-show-next-heading-tidily ()
   "Show next entry, keeping other entries closed."
-  (interactive) 
+  (interactive)
   (if (save-excursion (end-of-line) (outline-invisible-p))
       (progn (org-show-entry) (show-children))
     (outline-next-heading)
@@ -443,7 +475,7 @@ you should place your code here."
 
 (defun ded/org-show-previous-heading-tidily ()
   "Show previous entry, keeping other entries closed."
-  (interactive) 
+  (interactive)
   (let ((pos (point)))
     (outline-previous-heading)
     (unless (and (< (point) pos) (bolp) (org-on-heading-p))
@@ -461,19 +493,28 @@ you should place your code here."
 (setq org-directory (expand-file-name "~/notes"))
 (setq org-default-notes-file (concat org-directory "capture.org"))
 (setq org-refile-targets
-      '(("work.org" :maxlevel . 1)
-        ("home.org" :maxlevel . 1)))
+      '(("work.org" :maxlevel . 2)
+        ("home.org" :maxlevel . 2)))
+(setq org-outline-path-complete-in-steps nil)         ; Refile in a single go
+(setq org-refile-use-outline-path t)                  ; Show full paths for refiling (for helm)
+
 (setq org-archive-location "archive-%s::")
 
 ;; Don't refile only to 1st level titles
 (setq org-refile-use-outline-path "true")
 (setq org-outline-path-complete-in-steps "true")
 
-(add-hook 'org-mode-hook 
+(add-hook 'org-mode-hook
           (lambda ()
             (local-set-key (kbd "<f7>") 'ded/org-show-previous-heading-tidily)
             (local-set-key (kbd "<f8>") 'ded/org-show-next-heading-tidily)
+            ;; Cmd-alt-up and cmd-alt-down for prev/next same-level heading
+            (local-set-key (kbd "M-s-˚") 'org-backward-heading-same-level)
+            (local-set-key (kbd "M-s-˝") 'org-forward-heading-same-level)
 ))
+
+;; Export backends
+'(require 'ox-md nil t)
 
 ;; Languages allowed to be eval'd in org-mode #+BEGIN_SRC/#+END_SRC or #+CALL
 ;; Use C-c C-c or C-c C-x e
@@ -481,6 +522,8 @@ you should place your code here."
  'org-babel-load-languages
  '((emacs-lisp . t)
    (python . t)))
+)
+
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -489,7 +532,10 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-tags-column -100))
+ '(org-tags-column -100)
+ '(package-selected-packages
+   (quote
+    (ghub let-alist org-mime web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor yasnippet multiple-cursors js2-mode js-doc coffee-mode org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-download htmlize gnuplot yapfify ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline smeargle restart-emacs rainbow-mode rainbow-identifiers rainbow-delimiters pyvenv pytest pyenv-mode py-isort popwin pip-requirements persp-mode pcre2el paradox spinner orgit org-plus-contrib org-bullets open-junk-file neotree move-text mmm-mode markdown-toc markdown-mode magit-gitflow macrostep lorem-ipsum live-py-mode linum-relative link-hint info+ indent-guide hydra hy-mode dash-functional hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make projectile helm-gitignore request helm-flx helm-descbinds helm-ag google-translate golden-ratio gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md flycheck-pos-tip pos-tip flycheck pkg-info epl flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit magit-popup git-commit with-editor evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump diminish diff-hl define-word cython-mode column-enforce-mode color-identifiers-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed anaconda-mode pythonic f dash s aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
