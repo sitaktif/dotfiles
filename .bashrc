@@ -66,7 +66,7 @@ function __rc_prompt_command() {
     PS1+="$job_count_prompt"
     [[ -n $VIRTUAL_ENV ]] && PS1+="${C_VENV}(venv)${C_RST} "
     PS1+="${C_GIT}$(__git_ps1 "(%s) ")${C_USER}\u:${C_RST}"
-    PS1+="${C_DATE}$(date +%H:%M)${C_BLUE}${_P_SSH} ${PS_EXIT}${C_BLUE}\w ${C_RST}"
+    PS1+="${C_DATE}$(date +%H:%M:%S)${C_BLUE}${_P_SSH} ${PS_EXIT}${C_BLUE}\w \$${C_RST} "
 
     # Z (autojump like thing) - defined in other .bashrc_xxx
     "$L_Z_PROMPT_CMD" --add "$(command pwd -P 2>/dev/null)" 2>/dev/null
@@ -173,17 +173,39 @@ gw() { # Run gradle if found in the current or parent directories
 alias gg='git log --graph --full-history --all --color --pretty=format:"%x1b[31m%h%x09%x1b[32m%d%x1b[0m%x20%s"'
 alias gg2='git log --graph --full-history --all --color --pretty=format:"%x1b[31m%h%x09%x20%x1b[0m%s%x1b[32m%d%x1b[0m"'
 alias gl="git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd) %C(bold blue)<%an>%Creset' --abbrev-commit --date=local"
-alias gl2="git log --pretty=format:'* %Cred%h%Creset - %s %n%w(76,4,4)%b' --abbrev-commit"
-alias gl3="git log --pretty=format:'* %h - %s %n%w(76,4,4)%b' --abbrev-commit"
+# Edit files in conflict
+alias gec="git diff --name-only | uniq | xargs $EDITOR"
+
+gl2() {
+    # Escape < and > for github markdown
+    git log --pretty=format:'* %Cred%h%Creset - %s %n%w(76,4,4)%b%n' --abbrev-commit "$@" | perl -0 -p -e 's/([<>])/\\\1/g ; s/\n+\*/\n\n*/g'
+}
+gl3() {
+    # Escape < and > for github markdown, no color
+    git log --pretty=format:'* %h - %s %n%w(76,4,4)%b%n' --abbrev-commit "$@" | perl -0 -p -e 's/([<>])/\\\1/g ; s/\n+\*/\n\n*/g'
+}
+
+gpr() {
+    # Create a pull request from the current feature branch
+
+    local github_user=rchossart  # <-- Amend accordingly
+
+    command -v hub >/dev/null 2>&1|| { echo "This requires 'hub' to be installed --> 'brew install hub'"; return 1; }
+    local symbolic_rev=$(git rev-parse --abbrev-ref HEAD)
+    if [[ $symbolic_rev == HEAD ]]; then
+        echo "Cannot create PR in detached HEAD mode." && return 1
+    elif [[ $symbolic_rev =~ ^dev$|^devel$|^master$|^release$ ]]; then
+        echo "Not creating PR from '$symbolic_rev'. Please use a feature branch instead." && return 2
+    fi
+    git push origin "$symbolic_rev" -u
+    hub compare "$github_user:$symbolic_rev"
+}
+
 alias gra='git remote add'
 alias grr='git remote rm'
 alias grv='git remote -v'
-alias gco='git checkout'
-alias gci='git commit'
-alias gre='git rebase'
 alias grei='git rebase -i'
 alias grec='git rebase --cont'
-alias grea='git rebase --abort'
 alias grea='git rebase --abort'
 alias gpullod='git pull origin dev'
 alias gpullom='git pull origin master'
@@ -204,23 +226,17 @@ lsd() { ls -F "$@" |grep '/$'  ; }
 lsl() { ls -F "$@" |grep '@$'  ; }
 lsx() { ls -F "$@" |grep '\*$' ; }
 
-alias ta='tree    --charset ascii -a        -I \.git*\|*\.\~*\|*\.pyc'
-alias ta2='tree   --charset ascii -a  -L 2  -I \.git*\|*\.\~*\|*\.pyc'
-alias ta3='tree   --charset ascii -a  -L 3  -I \.git*\|*\.\~*\|*\.pyc'
-
-# alias pud='pushd -n "$args" &> /dev/null' # Push dir on stack
-# alias pod='popd >& /dev/null'		 # Go back in time
-# alias ds="dirs -v"       # Show DIRSTACK with array index
-
 # Directory change functions
 mkcd () {
     mkdir -p "$*" ; cd "$*"
 }
 
-function , ()    { cd .. ; }
-function ,, ()   { cd ../.. ; }
-function ,,, ()  { cd ../../.. ; }
-function ,,,, () { cd ../../../.. ; }
+function , ()      { cd .. ; }
+function ,, ()     { cd ../.. ; }
+function ,,, ()    { cd ../../.. ; }
+function ,,,, ()   { cd ../../../.. ; }
+function ,,,,, ()  { cd ../../../../.. ; }
+function ,,,,,, () { cd ../../../../../.. ; }
 
 # Utilities (grep, basename, dirname)
 alias grep='grep --color'
@@ -238,8 +254,6 @@ fl() {
     name="$1" ; shift
     find -L . -name '*'"$name"'*' "$@"
 }
-
-alias d='docker'
 
 # Disk use sorted, process list
 alias dus='du -shm * .[^.]* | sort -n'
@@ -260,8 +274,13 @@ alias sls='screen -ls'
 alias sr='screen -r'
 
 # Docker
+alias d='docker'
 alias dr='docker run -ti'
 alias di='docker images'
+dsh() {
+    docker run -ti --rm "$@" bash
+}
+
 
 # Handy prefixes
 alias left='DISPLAY=:0.0'
@@ -318,14 +337,14 @@ alias myports='netstat -alpe --ip'
 # Virtualenv activate
 alias vv='virtualenv .venv && . .venv/bin/activate'
 va() {
-    if [[ -d .venv ]]; then
-        . .venv/bin/activate
-        echo "Activated virtualenv from .venv/"
-    elif [[ -d venv ]]; then
-        . venv/bin/activate
-        echo "Activated virtualenv from venv/"
+    if [[ -d .venv${1:-} ]]; then
+        . .venv${1:-}/bin/activate
+        echo "Activated virtualenv from .venv${1:-}/"
+    elif [[ -d venv${1:-} ]]; then
+        . venv${1:-}/bin/activate
+        echo "Activated virtualenv from venv${1:-}/"
     else
-        echo "No .venv or venv directory found in cwd."
+        echo "No .venv${1:-} or venv${1:-} directory found in cwd."
         return 1
     fi
 }
@@ -333,11 +352,9 @@ alias vd=deactivate
 
 alias tip='touch __init__.py'
 
-# Django
-alias vimdjango="$L_VIM ../{urls,settings}.py models.py views/*.py forms/*.py templates/*.py"
-alias drs='python manage.py runserver'
-alias dsd='python manage.py syncdb'
-alias dsh='python manage.py shell'
+# pytest, no coverage, no warning
+alias pt="CI=1 unbuffer pytest --no-cov --junit-xml='' --disable-pytest-warnings | sed 's/WARNING: Coverage disabled via --no-cov switch!//'"
+
 #}}}
 
 if [ -n "$TERM" ] && [ -x "$(which keychain)" ] && \
