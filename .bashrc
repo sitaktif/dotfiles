@@ -37,6 +37,14 @@ L_Z_PROMPT_CMD=${L_Z_PROMPT_CMD:-true}
 # then you can add \`jobs_count\` to the end of your PS1 like this
 export PS1="\[\e[32m\]\u\[\e[m\]@\[\e[32m\]\h\[\e[m\]:\[\e[34m\]\w\[\e[m\]\`git_branch\`\`jobs_count\`\n\$ "
 
+
+## This is to have the last command's duration
+
+function __rc_set_last_command_start_time {
+  __RC_LAST_COMMAND_START=${__RC_LAST_COMMAND_START:-$SECONDS}
+}
+trap '__rc_set_last_command_start_time' DEBUG
+
 # Nice, complete prompt
 function __rc_prompt_command() {
     local EXIT="$?"  # This needs to be first
@@ -56,17 +64,28 @@ function __rc_prompt_command() {
         PS_EXIT="${C_RED}[$EXIT]${C_RST} "
     fi
 
-    local job_count=$(jobs -l | grep 'Running' | wc -l)
+    local job_count=$(jobs -l | grep 'Running\|Suspended' | wc -l)
     local job_count_prompt
     if [[ $job_count -gt 0 ]]; then
         job_count_prompt="${C_YELLOW}[${job_count}]${C_RST} "
     fi
 
+    # $__RC_LAST_COMMAND_START is set by the DEBUG trap above
+    local last_cmd_time_seconds=$(($SECONDS - $__RC_LAST_COMMAND_START))
+    if [[ $last_cmd_time_seconds -gt 2 ]]; then
+        PS_JOB_TIME="${C_YELLOW}[${last_cmd_time_seconds}s]${C_RST} "
+    else
+        PS_JOB_TIME=""
+    fi
+
+    unset __RC_LAST_COMMAND_START
+
+
     PS1=""
     PS1+="$job_count_prompt"
     [[ -n $VIRTUAL_ENV ]] && PS1+="${C_VENV}(venv)${C_RST} "
     PS1+="${C_GIT}$(__git_ps1 "(%s) ")${C_USER}\u:${C_RST}"
-    PS1+="${C_DATE}$(date +%H:%M:%S)${C_BLUE}${_P_SSH} ${PS_EXIT}${C_BLUE}\w \$${C_RST} "
+    PS1+="${C_DATE}$(date +%H:%M:%S)${C_BLUE}${_P_SSH} ${PS_EXIT}${PS_JOB_TIME}${C_BLUE}\w \$${C_RST} "
 
     # Z (autojump like thing) - defined in other .bashrc_xxx
     "$L_Z_PROMPT_CMD" --add "$(command pwd -P 2>/dev/null)" 2>/dev/null
