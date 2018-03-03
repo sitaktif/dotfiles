@@ -100,6 +100,10 @@ map <leader>g :GundoToggle<CR>
 "" Ack
 nmap <leader>a <Esc>:Ack!
 
+"" Gitgutter
+nmap [c <Plug>GitGutterPrevHunk
+nmap ]c <Plug>GitGutterNextHunk
+
 "" Fugitive
 nnoremap <buffer> <silent> + :<C-U>silent execute <SID>StageToggle(line('.'),line('.')+v:count1-1)<CR>
 xnoremap <buffer> <silent> + :<C-U>silent execute <SID>StageToggle(line("'<"),line("'>"))<CR>

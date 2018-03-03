@@ -17,6 +17,12 @@ snip.rv = '''#!/usr/bin/env python%s
 $0
 endsnippet
 
+# if main
+snippet ifmain "If __name__ == '__main__'" b
+if __name__ == '__main__':
+    ${1:main}()
+endsnippet
+
 # # Header for python 2.x
 # snippet /#!2/ "Shebang" b
 # #!/usr/bin/env python
@@ -25,7 +31,7 @@ endsnippet
 # endsnippet
 
 # print variable
-snippet pv "Print variable" b
+snippet printvar "Print variable" b
 print("$1: %s" % $1)
 endsnippet
 

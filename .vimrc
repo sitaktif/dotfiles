@@ -116,6 +116,7 @@ Plugin 'elixir-lang/vim-elixir'
 Plugin 'kballard/vim-swift'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'kylef/apiblueprint.vim'
+Plugin 'nvie/vim-rst-tables'
 
 " Python
 Plugin 'alfredodeza/pytest.vim'
@@ -304,10 +305,10 @@ nnoremap <bs> :bp<cr>
 
 " Use arrows to move the screen (not the cursor).
 " Cursor should be moved with hjkl.
-noremap <up> 10<c-y>
-noremap <down> 10<c-e>
-noremap <left> 10zh
-noremap <right> 10zl
+" noremap <up> 10<c-y>
+" noremap <down> 10<c-e>
+" noremap <left> 10zh
+" noremap <right> 10zl
 
 
 " Beginners that want to have a good habit

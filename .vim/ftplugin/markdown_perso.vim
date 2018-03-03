@@ -4,7 +4,7 @@ setlocal nocindent
 
 map <buffer> <leader>q gqip
 
-map <buffer> <leader>o :s/\.\s\+\([A-Z]\)/.\r\1/g
+map <buffer> <leader>o :s/\.\s\+\([A-Z]\)/.\r\1/g<cr>
 
 
 set et sw=4 ts=4 sts=4
