@@ -1,0 +1,2 @@
+# To enable the global git hooks:
+git config --global core.hooksPath ~/.githooks
