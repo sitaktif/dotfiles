@@ -421,6 +421,11 @@ you should place your code here."
 
 ;; -- Org mode
 
+;; Source a local orgmode init file (not tracked in Git)
+(if (file-exists-p "~/.spacemacs.org.local")
+    (load-file "~/.spacemacs.org.local")
+)
+
 
 ;; Motion --
 
