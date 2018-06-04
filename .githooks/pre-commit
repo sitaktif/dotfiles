@@ -46,7 +46,7 @@ EOF
 fi
 
 # Diff of the cache, but with no context lines (-U0) to avoid matching pre-existing ones.
-if git diff --cached -U0 $against -- | grep -v '^-' | grep 'FIXME\|XXX'; then
+if git diff --cached -U0 $against -- | grep -v '^-' | grep 'FIXME\|\bXXX\b'; then
     echo 'Detected FIXMEs or XXXs in the diff. Not committing.'
     exit 1
 fi

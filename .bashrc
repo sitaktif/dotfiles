@@ -189,7 +189,7 @@ gw() { # Run gradle if found in the current or parent directories
 }
 
 # git
-alias gg='git log --graph --full-history --all --color --pretty=format:"%x1b[31m%h%x09%x1b[32m%d%x1b[0m%x20%s"'
+alias gg='git log --graph --full-history --all --color --pretty=format:"%x1b[31m%h%x09%C(auto)%d%Creset%x20%s"'
 alias gg2='git log --graph --full-history --all --color --pretty=format:"%x1b[31m%h%x09%x20%x1b[0m%s%x1b[32m%d%x1b[0m"'
 alias gl="git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd) %C(bold blue)<%an>%Creset' --abbrev-commit --date=local"
 # Edit files in conflict

@@ -8,6 +8,7 @@
 [core]
     excludesfile = ~/.gitexclude
     trustctime = false
+    hooksPath = ~/.githooks
 
 [color]
     ui = auto
@@ -29,13 +30,20 @@
 [alias]
     st = status
     ci = commit
+    ciam = commit --amend
     br = branch
     co = checkout
     rb = rebase
     di = diff
     dif = diff
-    dica = diff --cached
     difca = diff --cached
+    sub = submodule
+    cpi = cherry-pick
+
+    # A nice list of branches with dates
+    brs = !git for-each-ref --sort=-committerdate refs/heads/ \
+        --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset)|%(objectname:short)|%(color:green)%(committerdate:relative)%(color:reset)' \
+        | column -ts '|'
 
     out = !git fetch && git log FETCH_HEAD
     in  = !git fetch && git log ..FETCH_HEAD
@@ -76,3 +84,10 @@
 
 [merge "conflict"]
 	driver = false
+[rebase]
+	autosquash = true
+
+# To apply a conf to a subset of repos (super useful)
+#
+# [includeIf "gitdir:~/somedirectory/"]
+#       path = .gitconfig-blahblah
