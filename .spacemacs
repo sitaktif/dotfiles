@@ -409,6 +409,14 @@ you should place your code here."
   (setq-default evil-surround-pairs-alist (cons '(?~ . ("``" . "``"))
                                                 evil-surround-pairs-alist))
 
+  ;; Separate the OS clipboard from the emacs one
+  ;; Use Cmd-C / Cmd-V as shortcuts to use the OS one
+  (setq x-select-enable-clipboard nil)
+  (define-key evil-visual-state-map (kbd "s-c") (kbd "\"+y"))
+  (define-key evil-insert-state-map  (kbd "s-v") (kbd "+"))
+  (define-key evil-ex-completion-map (kbd "s-v") (kbd "+"))
+  (define-key evil-ex-search-keymap  (kbd "s-v") (kbd "+"))
+
   ;; Clear search highlight with normal mode underscore
   (define-key evil-normal-state-map (kbd "_") 'spacemacs/evil-search-clear-highlight)
   )
@@ -451,6 +459,9 @@ you should place your code here."
     (set-face-attribute face nil :weight 'semi-bold :height 1.0)))
 
 (add-hook 'org-mode-hook 'my/org-mode-hook)
+
+;; Cycle with Tab key from anywhere (not just a headline)
+(setq org-cycle-emulate-tab 'whitestart)
 
 ;; When inserting a heading (e.g. with M-Ret), be in insert mode
 (add-hook 'org-insert-heading-hook 'evil-insert-state)
@@ -526,7 +537,55 @@ you should place your code here."
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((emacs-lisp . t)
-   (python . t)))
+   (python . t)
+   (shell . t)))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; function to wrap blocks of text in org templates                       ;;
+;; e.g. latex or src etc                                                  ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun org-begin-template ()
+  "Make a template at point."
+  (interactive)
+  (if (org-at-table-p)
+      (call-interactively 'org-table-rotate-recalc-marks)
+    (let* ((choices '(("s" . "SRC")
+                      ("e" . "EXAMPLE")
+                      ("q" . "QUOTE")
+                      ("v" . "VERSE")
+                      ("c" . "CENTER")
+                      ("l" . "LaTeX")
+                      ("h" . "HTML")
+                      ("a" . "ASCII")))
+           (key
+            (key-description
+             (vector
+              (read-key
+               (concat (propertize "Template type: " 'face 'minibuffer-prompt)
+                       (mapconcat (lambda (choice)
+                                    (concat (propertize (car choice) 'face 'font-lock-type-face)
+                                            ": "
+                                            (cdr choice)))
+                                  choices
+                                  ", ")))))))
+      (let ((result (assoc key choices)))
+        (when result
+          (let ((choice (cdr result)))
+            (cond
+             ((region-active-p)
+              (let ((start (region-beginning))
+                    (end (region-end)))
+                (goto-char end)
+                (insert "#+END_" choice "\n")
+                (goto-char start)
+                (insert "#+BEGIN_" choice "\n")))
+             (t
+              (insert "#+BEGIN_" choice "\n")
+              (save-excursion (insert "#+END_" choice))))))))))
+
+;;bind to key
+(define-key org-mode-map (kbd "C-<") 'org-begin-template)
 )
 
 
