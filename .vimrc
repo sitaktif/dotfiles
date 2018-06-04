@@ -104,6 +104,8 @@ Plugin 'rizzatti/dash.vim'
 Plugin 'jceb/vim-orgmode'
 Plugin 'tpope/vim-speeddating' " Increase/decrease date with <C-a>/<C-x>
 Plugin 'tpope/vim-unimpaired'
+Plugin 'tommcdo/vim-exchange'
+Plugin 'ciaranm/detectindent'
 
 " Color
 Plugin 'scwood/vim-hybrid'
@@ -117,6 +119,9 @@ Plugin 'kballard/vim-swift'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'kylef/apiblueprint.vim'
 Plugin 'nvie/vim-rst-tables'
+Plugin 'honza/vim-snippets'
+Plugin 'pangloss/vim-javascript'
+Plugin 'mxw/vim-jsx'
 
 " Python
 Plugin 'alfredodeza/pytest.vim'
@@ -224,7 +229,7 @@ func! DeleteTrailingWS()
     silent! keepjumps %s/\s\+$//ge
     silent! keepjumps call cursor(lnum, cnum)
 endfunc
-autocmd BufWrite *.sh,*.java,*.py,*.h,*.hpp,*.c,*.cpp,*.md,*.rst :call DeleteTrailingWS()
+autocmd BufWrite *.sh,*.bash,*.java,*.py,*.rb,*.h,*.hpp,*.c,*.cpp,*.md,*.rst :call DeleteTrailingWS()
 
 "}}}
 

@@ -108,6 +108,10 @@ nmap ]g <Plug>GitGutterNextHunk
 nnoremap <buffer> <silent> + :<C-U>silent execute <SID>StageToggle(line('.'),line('.')+v:count1-1)<CR>
 xnoremap <buffer> <silent> + :<C-U>silent execute <SID>StageToggle(line("'<"),line("'>"))<CR>
 
+"" DetectIndent
+autocmd VimEnter * DetectIndent
+
+
 "}}}
 
 " ---| FILETYPE PLUGINS |--- {{{
@@ -119,6 +123,11 @@ let g:is_bash = 1 " Make bash default rather than sh
 set makeprg=shellcheck\ -f\ gcc\ %
 
 "" Python
+
+" vim-snippets
+let g:ultisnips_python_style = "google"
+let g:ultisnips_python_triple_quoting_style = "double"
+
 " Pyflakes
 if !has('python')
     let b:did_pyflakes_plugin = 1
