@@ -111,6 +111,9 @@ xnoremap <buffer> <silent> + :<C-U>silent execute <SID>StageToggle(line("'<"),li
 "" DetectIndent
 autocmd VimEnter * DetectIndent
 
+"" readdir (simpler file explorer)
+let g:loaded_netrwPlugin = 1
+
 
 "}}}
 

@@ -106,6 +106,8 @@ Plugin 'tpope/vim-speeddating' " Increase/decrease date with <C-a>/<C-x>
 Plugin 'tpope/vim-unimpaired'
 Plugin 'tommcdo/vim-exchange'
 Plugin 'ciaranm/detectindent'
+Plugin 'ap/vim-readdir' " Simpler browser
+
 
 " Color
 Plugin 'scwood/vim-hybrid'
