@@ -178,6 +178,11 @@ alias cdmm='cd ~/Media/music_new'
 # Git bookmarks begin with cdg
 alias cdgd='cd ~/git/perso_dotfiles'
 
+alias p=python
+alias pse='python setup.py'
+alias pset='python setup.py test'
+alias psep='python setup.py package'
+
 # gradle
 gw() { # Run gradle if found in the current or parent directories
     for i in . .. ../.. ../../.. ../../../..; do
@@ -197,11 +202,11 @@ alias gec="git diff --name-only | uniq | xargs $EDITOR"
 
 gl2() {
     # Escape < and > for github markdown
-    git log --pretty=format:'* %Cred%h%Creset - %s %n%w(76,4,4)%b%n' --abbrev-commit "$@" | perl -0 -p -e 's/([<>])/\\\1/g ; s/\n+\*/\n\n*/g'
-}
+    git log --pretty=format:'* %Cred%h%Creset - %s %n%w(76,4,4)%b%n' --abbrev-commit "$@" | perl -0 -p -e 's/(^|[^\\])([<>])/\1\\\2/g ; s/(\s*\n)+\*/\n\n*/g'
+  }
 gl3() {
     # Escape < and > for github markdown, no color
-    git log --pretty=format:'* %h - %s %n%w(76,4,4)%b%n' --abbrev-commit "$@" | perl -0 -p -e 's/([<>])/\\\1/g ; s/\n+\*/\n\n*/g'
+    git log --pretty=format:'* %h - %s %n%w(76,4,4)%b%n' --abbrev-commit "$@" | perl -0 -p -e 's/(^|[^\\])([<>])/\1\\\2/g ; s/(\s*\n)+\*/\n\n*/g'
 }
 
 gpr() {
@@ -220,6 +225,7 @@ gpr() {
     hub compare "$github_user:$symbolic_rev"
 }
 
+alias g=git
 alias gra='git remote add'
 alias grr='git remote rm'
 alias grv='git remote -v'
@@ -256,6 +262,14 @@ function ,,, ()    { cd ../../.. ; }
 function ,,,, ()   { cd ../../../.. ; }
 function ,,,,, ()  { cd ../../../../.. ; }
 function ,,,,,, () { cd ../../../../../.. ; }
+
+# cd to the first parent dir containing .git/
+function cdg() {
+    local curdir=$(pwd)
+    while curdir=$(dirname "$curdir"); do
+        [[ -e $curdir/.git ]] && cd "$curdir" && return
+    done
+}
 
 # Utilities (grep, basename, dirname)
 alias grep='grep --color'
@@ -316,8 +330,9 @@ alias vimbs="e ~/.bashrc_slacker"
 alias vimbl="e ~/.bashrc_linux"
 alias vimbg="e ~/.bashrc_slacker"
 alias vimbk="e ~/.bashrc_kollok"
-alias vimz="e ~/.zshrc"
+alias vimg="e ~/.gitconfig"
 alias soz="source ~/.zshrc"
+alias vimz="e ~/.zshrc"
 alias vimv="e ~/.vimrc"
 
 ############################

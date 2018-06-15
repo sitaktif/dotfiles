@@ -7,3 +7,5 @@
 # The original version is saved in .bash_profile.pysave
 PATH="/Library/Frameworks/Python.framework/Versions/3.6/bin:${PATH}"
 export PATH
+
+export TERM=${TERM:-xterm-256color}
