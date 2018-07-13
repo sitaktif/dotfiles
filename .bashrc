@@ -45,6 +45,15 @@ function __rc_set_last_command_start_time {
 }
 trap '__rc_set_last_command_start_time' DEBUG
 
+  # Append to history if it's been a while
+__rc_append_bash_history_maybe() {
+    # $SECONDS represents the # seconds since the start of the session
+    if [[ $(( $SECONDS - ${__RC_LAST_SECONDS:-0} )) -gt 10 ]]; then
+      history -a  # Apprend new history to .bash_history
+    fi
+    __RC_LAST_SECONDS=SECONDS
+}
+
 # Nice, complete prompt
 function __rc_prompt_command() {
     local EXIT="$?"  # This needs to be first
@@ -77,15 +86,15 @@ function __rc_prompt_command() {
     else
         PS_JOB_TIME=""
     fi
-
     unset __RC_LAST_COMMAND_START
-
 
     PS1=""
     PS1+="$job_count_prompt"
     [[ -n $VIRTUAL_ENV ]] && PS1+="${C_VENV}(venv)${C_RST} "
     PS1+="${C_GIT}$(__git_ps1 "(%s) ")${C_USER}\u:${C_RST}"
     PS1+="${C_DATE}$(date +%H:%M:%S)${C_BLUE}${_P_SSH} ${PS_EXIT}${PS_JOB_TIME}${C_BLUE}\w \$${C_RST} "
+
+    __rc_append_bash_history_maybe
 
     # Z (autojump like thing) - defined in other .bashrc_xxx
     "$L_Z_PROMPT_CMD" --add "$(command pwd -P 2>/dev/null)" 2>/dev/null
@@ -108,6 +117,8 @@ function __rc_prompt_command2() {
 
     PS1=""
     PS1+="${C_DATE}$(date +%H:%M) ${PS_EXIT}${C_BLUE}\W \$${C_RST} "
+
+    __rc_append_bash_history_maybe
 
     # Z (autojump like thing) - defined in other .bashrc_xxx
     "$L_Z_PROMPT_CMD" --add "$(command pwd -P 2>/dev/null)" 2>/dev/null
@@ -134,9 +145,10 @@ export EDITOR=vim
 export VISUAL=vim
 
 # Bash
+shopt -s histappend
 export HISTCONTROL=ignoredups
 export HISTFILESIZE=100000
-export HISTSIZE=10000
+export HISTSIZE=100000
 
 # Go
 export GOPATH="$HOME/go"
