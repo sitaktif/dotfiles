@@ -11,6 +11,10 @@
 export L_PS1_HOST_COLOR="46" # Green by default
 export L_PS1_ALREADY_SET=""
 
+# Some tokens and other private stuff
+# - HOMEBREW_GITHUB_API_TOKEN: github token to be used by homebrew (untick all permissions - public only)
+[[ -e ~/.bashrc_private ]] && source ~/.bashrc_private
+
 # Load OS-specific rc files
 #
 if [[ "$(uname)" == 'Darwin' ]]; then # Leopard

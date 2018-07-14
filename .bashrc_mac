@@ -1,7 +1,6 @@
 #!/bin/bash
 
 _this_dir=$(dirname "$(readlink "$BASH_SOURCE")")
-export HOMEBREW_GITHUB_API_TOKEN="5314e6779f3cec5137450c22e430b80c687c5a29"
 
 export L_PS1_HOST_COLOR="161" # Fuschia
 
