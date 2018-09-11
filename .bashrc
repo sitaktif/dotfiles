@@ -100,8 +100,8 @@ function __rc_prompt_command() {
 
     __rc_append_bash_history_maybe
 
-    # Z (autojump like thing) - defined in other .bashrc_xxx
-    "$L_Z_PROMPT_CMD" --add "$(command pwd -P 2>/dev/null)" 2>/dev/null
+    # Z (autojump like thing) - defined in other .bashrc_xxx - replacing with FASD
+    # "$L_Z_PROMPT_CMD" --add "$(command pwd -P 2>/dev/null)" 2>/dev/null
 }
 # Smaller prompt, good for presentations
 function __rc_prompt_command2() {
@@ -124,8 +124,8 @@ function __rc_prompt_command2() {
 
     __rc_append_bash_history_maybe
 
-    # Z (autojump like thing) - defined in other .bashrc_xxx
-    "$L_Z_PROMPT_CMD" --add "$(command pwd -P 2>/dev/null)" 2>/dev/null
+    # Z (autojump like thing) - defined in other .bashrc_xxx - replacing with FASD
+    # "$L_Z_PROMPT_CMD" --add "$(command pwd -P 2>/dev/null)" 2>/dev/null
 }
 
 # stalker: purple - slacker: bordeaux - kollok: orange - blinker: 'skin'
@@ -295,7 +295,7 @@ grio() { grep -rIO "$@" 2>/dev/null ; }
 alias ag='ag --ignore .venv --ignore tags --ignore TAGS'
 
 # Find
-f() {
+ff() {
     name="$1" ; shift
     find . -name '*'"$name"'*' "$@"
 }
@@ -323,13 +323,8 @@ alias sls='screen -ls'
 alias sr='screen -r'
 
 # Docker
-alias d='docker'
 alias dr='docker run -ti'
-alias di='docker images'
-dsh() {
-    docker run -ti --rm "$@" bash
-}
-
+alias drr='docker run -ti --rm'
 
 # Handy prefixes
 alias left='DISPLAY=:0.0'
@@ -337,6 +332,7 @@ alias right='DISPLAY=:0.1'
 
 # Editor related
 alias e="$L_VIM"
+alias did='vim +"normal Go" +"r!date" ~/notes/did.txt'
 
 # Bash, zsh, vim RC files
 alias sob='source ~/.bashrc'
@@ -415,5 +411,11 @@ fi
 
 
 [[ -f ~/.fzf.bash ]] && source ~/.fzf.bash
+
+# Seems that it can be sped up (see https://github.com/clvv/fasd)
+eval "$(fasd --init auto)"
+
+# FASD additional aliases
+# alias v='f -t -e vim -b viminfo'  # This is not working :(((
 
 #vim:foldmethod:marker

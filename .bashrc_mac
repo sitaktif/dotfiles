@@ -27,13 +27,13 @@ if command -v brew >/dev/null 2>&1; then
     L_BREW_PREFIX=/usr/local
 fi
 
-# Z (autojump)
-[[ -f "$L_BREW_PREFIX/etc/profile.d/z.sh" ]] && . "$L_BREW_PREFIX/etc/profile.d/z.sh"
-if command -v _z >/dev/null 2>&1; then
-    L_Z_PROMPT_CMD=_z
-else
-    L_Z_PROMPT_CMD=true
-fi
+# Z (autojump) - replacing with FASD
+# [[ -f "$L_BREW_PREFIX/etc/profile.d/z.sh" ]] && . "$L_BREW_PREFIX/etc/profile.d/z.sh"
+# if command -v _z >/dev/null 2>&1; then
+#     L_Z_PROMPT_CMD=_z
+# else
+#     L_Z_PROMPT_CMD=true
+# fi
 
 # Misc
 export PYTHONPATH="$PYTHONPATH:$HOME/.vim/bundle/rope"

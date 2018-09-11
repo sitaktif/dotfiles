@@ -10,11 +10,16 @@
     trustctime = false
     hooksPath = ~/.githooks
 
+    # Use diff-highlight script if it exists, or just use less. It's pretty awesome that you can do this.
+    # diff-highlight highlights the specific words that change in a diff.
+    pager = "$(dh=/usr/local/share/git-core/contrib/diff-highlight/diff-highlight; [ -x "$dh" ] && echo "$dh" || echo cat) | less"
+
+
 [color]
     ui = auto
 [color "branch"]
     current = blue reverse
-    local = blue
+    local = magenta
     remote = yellow
 [color "diff"]
     meta = yellow bold
@@ -28,9 +33,12 @@
     untracked = cyan
 
 [alias]
+    ce  = config --global --edit         # Open this file with $VISUAL.
+
     st = status
-    ci = commit
-    ciam = commit --amend
+    c = commit
+    ca = commit --amend
+    cf = commit --fixup
     br = branch
     co = checkout
     rb = rebase
@@ -39,6 +47,11 @@
     difca = diff --cached
     sub = submodule
     cpi = cherry-pick
+
+    f = fetch            # Fetch one remote.
+    fa = fetch --all     # Fetch from all the remotes.
+    # Create/update branch from Github PR, `g fp 657 origin` or `g fp` (Defaults: $1=HEAD, $2=upstreamRemote).
+    fp = "! b=${2:-$(git headRemote)}; b=${b:-up}; a=${1:-$(git headBranch)}; git fetch -fu $b pull/$a/head:$a; git checkout $a; git branch -u $b #"
 
     # A nice list of branches with dates
     brs = !git for-each-ref --sort=-committerdate refs/heads/ \
