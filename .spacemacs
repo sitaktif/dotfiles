@@ -31,6 +31,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     html
      javascript
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
@@ -411,11 +412,12 @@ you should place your code here."
 
   ;; Separate the OS clipboard from the emacs one
   ;; Use Cmd-C / Cmd-V as shortcuts to use the OS one
-  (setq x-select-enable-clipboard nil)
-  (define-key evil-visual-state-map (kbd "s-c") (kbd "\"+y"))
-  (define-key evil-insert-state-map  (kbd "s-v") (kbd "+"))
-  (define-key evil-ex-completion-map (kbd "s-v") (kbd "+"))
-  (define-key evil-ex-search-keymap  (kbd "s-v") (kbd "+"))
+  ;; TODO: this is currently disabled because Cmd-v doesn't work eg in <c-c><c-l> (maybe in helm in general)
+  ;; (setq x-select-enable-clipboard nil)
+  ;; (define-key evil-visual-state-map (kbd "s-c") (kbd "\"+y"))
+  ;; (define-key evil-insert-state-map  (kbd "s-v") (kbd "+"))
+  ;; (define-key evil-ex-completion-map (kbd "s-v") (kbd "+"))
+  ;; (define-key evil-ex-search-keymap  (kbd "s-v") (kbd "+"))
 
   ;; Clear search highlight with normal mode underscore
   (define-key evil-normal-state-map (kbd "_") 'spacemacs/evil-search-clear-highlight)
@@ -466,6 +468,12 @@ you should place your code here."
 ;; When inserting a heading (e.g. with M-Ret), be in insert mode
 (add-hook 'org-insert-heading-hook 'evil-insert-state)
 
+;; When inserting headings and new list items, never insert a blank line
+(setq org-blank-before-new-entry '((heading) (plain-list-item)))
+
+;; Don't show empty lines between collapsed trees (unless you have >=20 of them)
+(setq org-cycle-separator-lines 20)
+
 ;; When inserting a heading in the middle of a line, don't split the line (insert after)
 (setq org-M-RET-may-split-line nil)
 
@@ -505,20 +513,33 @@ you should place your code here."
     (save-excursion (org-up-heading-all 10) (recenter 0))
     ))
 
+;; Fold the current heading
+(defun sita/org-fold-current ()
+  "Fold the current item."
+  (if (not (invisible-p (point-at-eol)))
+       (progn
+       (outline-back-to-heading)
+       (outline-hide-subtree)
+       )
+     (progn
+     (outline-back-to-heading)
+     (call-interactively 'outline-up-heading)
+     (outline-hide-subtree)
+     )
+  )
+)
+
 ;; Set paths for org dir and capture/refile files
 (setq org-directory (expand-file-name "~/notes"))
 (setq org-default-notes-file (concat org-directory "capture.org"))
 (setq org-refile-targets
       '(("work.org" :maxlevel . 2)
-        ("home.org" :maxlevel . 2)))
+        ("home.org" :maxlevel . 2)
+        (nil :maxlevel . 2)))
 (setq org-outline-path-complete-in-steps nil)         ; Refile in a single go
 (setq org-refile-use-outline-path t)                  ; Show full paths for refiling (for helm)
 
 (setq org-archive-location "archive-%s::")
-
-;; Don't refile only to 1st level titles
-(setq org-refile-use-outline-path "true")
-(setq org-outline-path-complete-in-steps "true")
 
 (add-hook 'org-mode-hook
           (lambda ()
@@ -527,6 +548,12 @@ you should place your code here."
             ;; Cmd-alt-up and cmd-alt-down for prev/next same-level heading
             (local-set-key (kbd "M-s-˚") 'org-backward-heading-same-level)
             (local-set-key (kbd "M-s-˝") 'org-forward-heading-same-level)
+            ;; <c-c><c-f> to search in current file's headings (<c-c><c-g> aleady does that on agenda files)
+            (local-set-key (kbd "C-c C-f") 'helm-org-in-buffer-headings)
+            (local-set-key (kbd "<C-M-return>") 'org-insert-subheading)
+            ;; a better use of shift-tab: hide headings
+            ;; (local-set-key (kbd "s-<tab>") 'sita/org-fold-current)
+            (defalias 'org-shifttab (lambda () (interactive) (sita/org-fold-current)))
 ))
 
 ;; Export backends
@@ -599,7 +626,7 @@ you should place your code here."
  '(org-tags-column -100)
  '(package-selected-packages
    (quote
-    (ghub let-alist org-mime web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor yasnippet multiple-cursors js2-mode js-doc coffee-mode org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-download htmlize gnuplot yapfify ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline smeargle restart-emacs rainbow-mode rainbow-identifiers rainbow-delimiters pyvenv pytest pyenv-mode py-isort popwin pip-requirements persp-mode pcre2el paradox spinner orgit org-plus-contrib org-bullets open-junk-file neotree move-text mmm-mode markdown-toc markdown-mode magit-gitflow macrostep lorem-ipsum live-py-mode linum-relative link-hint info+ indent-guide hydra hy-mode dash-functional hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make projectile helm-gitignore request helm-flx helm-descbinds helm-ag google-translate golden-ratio gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md flycheck-pos-tip pos-tip flycheck pkg-info epl flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit magit-popup git-commit with-editor evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump diminish diff-hl define-word cython-mode column-enforce-mode color-identifiers-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed anaconda-mode pythonic f dash s aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
+    (web-mode tagedit slim-mode scss-mode sass-mode pug-mode helm-css-scss haml-mode emmet-mode ox-twbs ox-tufte ghub let-alist org-mime web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor yasnippet multiple-cursors js2-mode js-doc coffee-mode org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-download htmlize gnuplot yapfify ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline smeargle restart-emacs rainbow-mode rainbow-identifiers rainbow-delimiters pyvenv pytest pyenv-mode py-isort popwin pip-requirements persp-mode pcre2el paradox spinner orgit org-plus-contrib org-bullets open-junk-file neotree move-text mmm-mode markdown-toc markdown-mode magit-gitflow macrostep lorem-ipsum live-py-mode linum-relative link-hint info+ indent-guide hydra hy-mode dash-functional hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make projectile helm-gitignore request helm-flx helm-descbinds helm-ag google-translate golden-ratio gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md flycheck-pos-tip pos-tip flycheck pkg-info epl flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit magit-popup git-commit with-editor evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump diminish diff-hl define-word cython-mode column-enforce-mode color-identifiers-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed anaconda-mode pythonic f dash s aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
