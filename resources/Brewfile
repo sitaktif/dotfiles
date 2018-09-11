@@ -1,0 +1,9 @@
+cask "Karabiner-elements"
+cask "Spectacle"
+cask "Iterm2"
+cask "Dropbox"
+cask "Firefox"
+cask "LaunchBar"
+
+brew "rg"
+brew "vim", args: ["override-system-vi"]
