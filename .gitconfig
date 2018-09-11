@@ -36,6 +36,7 @@
     ce  = config --global --edit         # Open this file with $VISUAL.
 
     st = status
+    a = add
     c = commit
     ca = commit --amend
     cf = commit --fixup
@@ -100,7 +101,16 @@
 [rebase]
 	autosquash = true
 
-# To apply a conf to a subset of repos (super useful)
-#
-# [includeIf "gitdir:~/somedirectory/"]
-#       path = .gitconfig-blahblah
+[merge]
+	tool = p4mergetool  # p4merge is a nice 3-way merge tool
+[mergetool "p4mergetool"]
+	cmd = /Applications/p4merge.app/Contents/Resources/launchp4merge $PWD/$BASE $PWD/$REMOTE $PWD/$LOCAL $PWD/$MERGED
+	trustExitCode = false
+[mergetool]
+	keepBackup = false
+
+[includeIf "gitdir:~/geo/"]
+      path = .gitconfig-work
+
+[pull]
+	rebase = true  # Rebase by default when doing a pull

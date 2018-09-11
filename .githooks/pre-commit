@@ -46,10 +46,21 @@ EOF
 fi
 
 # Diff of the cache, but with no context lines (-U0) to avoid matching pre-existing ones.
-if git diff --cached -U0 $against -- | grep -v '^-' | grep 'FIXME\|\bXXX\b'; then
+if git diff --cached -U0 $against -- | grep -v '^-' | grep 'FIXME\|\bXXX\b\|TODO(rchossart):'; then
     echo 'Detected FIXMEs or XXXs in the diff. Not committing.'
     exit 1
 fi
+
+# Check that files don't have names that shows they contain credentials
+files=$(git diff --cached --name-only | tr 'A-Z' 'a-z')
+for pattern in "bashrc_private" "credentials" "creds" "password" "passwd" "token" "id_rsa"; do
+  if [[ $files =~ $pattern ]]; then
+    echo "Error: one of the files to be committed looks like it may contain credentials."
+    echo "Matched '$pattern'."
+    echo "Re-run command with --no-verify' to ignore."
+    exit 1
+  fi
+done
 
 # If there are whitespace errors, print the offending file names and fail.
 exec git diff-index --check --cached $against --
