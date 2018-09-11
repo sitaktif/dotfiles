@@ -1,0 +1,43 @@
+#!/bin/bash
+
+THIS_DIR=$(dirname "$0")
+REL_DOT_DIR="git/dotfiles"
+
+linkit() {
+    local relpath=$1
+    local src="$REL_DOT_DIR/config/$relpath"
+    local target=~/"$relpath"
+
+    # Case where the link is set already
+    if [[ -h "$target" ]] && [[ $(readlink "$target") == "$src" ]]; then
+        echo "File $target already linked"
+        return
+    fi
+
+    # Case where a file is present but isn't the expected link
+    if [[ -e "$target" ]]; then
+        echo "File $target exists but isn't linked. Backing up into $target.bak"
+        mv "$target" "$target.bak"
+    fi
+
+    echo "Creating symlink to $target"
+    ln -s "$src" "$target"
+}
+
+# Entry point
+
+(
+    # We will list directories and files from there
+    cd "$THIS_DIR/config"
+
+    mkdir -p ~/.config
+    for relpath in .[^.]* .config/*; do
+        [[ $relpath == .config ]] && continue
+        linkit "$relpath"
+    done
+)
+
+# Config specific actions
+ln -sf ~/.config/Spectable/Shortcuts.json ~/Library/Application\ Support/Spectacle/Shortcuts.json
+
+# vim: et ts=4 sw=4
