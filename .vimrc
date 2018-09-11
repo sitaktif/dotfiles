@@ -14,6 +14,11 @@ filetype plugin on
 filetype indent on
 set background=dark
 
+" Temporary fix to avoid a deprecation warning on 'import imp' in python3
+if has('python3')
+  silent! python3 1
+endif
+
 "}}}
 
 " ---| SYSTEM-DEPENDANT SETTINGS |--- {{{
@@ -107,13 +112,18 @@ Plugin 'tpope/vim-unimpaired'
 Plugin 'tommcdo/vim-exchange'
 Plugin 'ciaranm/detectindent'
 Plugin 'ap/vim-readdir' " Simpler browser
-
+Plugin 'tpope/vim-abolish' " :Subvert (substitute with case preserve) and 'coerce to different casing' with crX: MixedCase (crm), camelCase (crc), snake_case (crs), UPPER_CASE (cru), dash-case (cr-), dot.case (cr.), space case (cr<space>), and Title Case (crt)
+Plugin 'ctrlpvim/ctrlp.vim' " File finder
+Plugin 'terryma/vim-expand-region' " Incremental selection (like ctrl-w in IDEA)
+Plugin 'kana/vim-textobj-user' " requirement for textobj plugins
+Plugin 'kana/vim-textobj-line' " vil --> visual inner line
+Plugin 'mhinz/vim-grepper' " Proper grepping plugin?
 
 " Color
 Plugin 'scwood/vim-hybrid'
 
 " FT Plugins
-" Plugin 'scrooloose/syntastic'
+Plugin 'vim-syntastic/syntastic'
 Plugin 'neomake/neomake'
 Plugin 'hynek/vim-python-pep8-indent'
 Plugin 'elixir-lang/vim-elixir'
@@ -136,10 +146,10 @@ Plugin 'davidhalter/jedi-vim'
 
 " Indentation and tabs
 set autoindent "Indent (based on above line) when adding a line
-set tabstop=8 "A tab is 8 spaces
-set softtabstop=4 "See 4 spaces per tab
-set expandtab
-set shiftwidth=4 "Indent is 4
+set tabstop=2 "A tab is worth 2 spaces
+set softtabstop=2 "See 2 spaces per tab
+set expandtab "Use spaces instead of tabs
+set shiftwidth=2 "Indent is 2
 set shiftround
 set nosmartindent "Cindent is better (it is set in ftplugin)
 set cinkeys-=0# " Otherwise, it prevents '#' from being indented
@@ -220,6 +230,23 @@ endif
 " ---| MORE COMPLEX FUNCTIONS |--- {{{
 "
 
+" Open selected text with native open command, used with `<Leader>o` mappings.
+" This is an operator pending map
+function! OpenUrl(type)
+  if a:type ==# 'v'| execute "normal! `<v`>y"| " If in charwise visual mode, copy selected URL.
+  elseif a:type ==# 'char'| execute "normal! `[v`]y"| " If given a text object URL, copy it.
+  else| return
+  endif
+
+  " This doesn't work with /usr/bin/vim on macOS (doesn't identify as macOS).
+  if has('mac')| let openCmd = 'open'| else| let openCmd = 'xdg-open'| endif
+    silent execute "! " . openCmd . " " . shellescape(@@, 1)| " Escape URL and pass as arg to open command.
+    echo openCmd . " " shellescape(@@, 1)| " Echo what we ran so it's visible.
+endfunction
+
+nnoremap <Leader>o :set operatorfunc=OpenUrl<CR>g@
+vnoremap <Leader>o :<c-u>call OpenUrl(visualmode())<CR>
+
 if !exists(":DiffOrig")
 command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
             \ | wincmd p | diffthis
@@ -246,31 +273,23 @@ noremap ' `
 nnoremap gp `[v`]
 
 " Next window
-map - <c-w>w
+" map - <c-w>w
 " Remove search hilights
-map _ :noh<CR>
+map - :noh<CR>
+" Format each line individually (useful for git commits)
+nmap gQ :g/^[^#]/norm gqq<cr>
 
 " No more 'fu-, gotta make a `!rm ./1` :( '
 cabbr w1 :w!
 cabbr q1 :q!
 command! W w
+command! Wq wq
+command! WQ wq
+command! E e
 command! Q q
-command! S s
 
-" For different keyboard layouts
-
-" TODO: test this:
-" map ù <leader>
-" map ² <leader>
-" map § :e#<cr> " TODO: try with CTRL-6
-
-" Note: use Karabiner (on Mac) to remap the key instead
-" map § `
-" map! § `
-
+" Make it obvious when a non-space-blank is inserted
 imap   \<non_space_blank\>
-
-
 
 "" FUNCTION KEYS (used: 1 4 6 7 8 10 11 12) - TODO
 
@@ -303,8 +322,8 @@ map <F4> :tabe
 " The following may be a bit hardcore for beginners...
 
 " Navigate between tabs
-nnoremap ` :tabnext<cr>
-nnoremap <space> :tabprev<cr>
+" nnoremap ` :tabnext<cr>
+" nnoremap <space> :tabprev<cr>
 
 " ...and between buffers.
 nnoremap <return> :bn<cr>

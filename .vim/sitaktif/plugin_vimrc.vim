@@ -3,6 +3,12 @@
 
 " ---| PLUGINS SETTINGS |--- {{{
 
+" Grepper
+
+" Search for current word
+nmap gs  <plug>(GrepperOperator)
+xmap gs  <plug>(GrepperOperator)
+
 " EasyMotion
 " Use autocmd because we want it to be set last.
 autocmd VimEnter * hi EasyMotionTarget ctermbg=none ctermfg=red
@@ -25,8 +31,8 @@ let g:UltiSnipsJumpBackwardTrigger='<s-tab>'
 let g:ultisnips_python_quoting_style='single'
 
 " Space plugin
-nmap <unique> <F1> <Plug>SmartspaceNext
-nmap <unique> <F2> <Plug>SmartspacePrev
+nmap <unique> <space> <Plug>SmartspaceNext
+nmap <unique> ` <Plug>SmartspacePrev
 "noremap <unique> <S-Space> <Plug>SmartspacePrevnongui
 let g:space_no_second_prev_mapping = 1
 
@@ -114,6 +120,9 @@ autocmd VimEnter * DetectIndent
 "" readdir (simpler file explorer)
 let g:loaded_netrwPlugin = 1
 
+"" detectindent
+let g:detectindent_preferred_expandtab = 1
+let g:detectindent_preferred_indent = 4
 
 "}}}
 
@@ -126,6 +135,9 @@ let g:is_bash = 1 " Make bash default rather than sh
 set makeprg=shellcheck\ -f\ gcc\ %
 
 "" Python
+
+" jedi
+let g:jedi#smart_auto_mappings = 0  " Do not complete 'import' when writing 'from foo<space>'
 
 " vim-snippets
 let g:ultisnips_python_style = "google"
