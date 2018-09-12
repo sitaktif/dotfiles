@@ -87,58 +87,68 @@ end
 " ---| PLUGIN SETTINGS |--- {{{
 
 " Vundle config
-set runtimepath+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+" Specify a directory for plugins
+" - For Neovim: ~/.local/share/nvim/plugged
+" - Avoid using standard Vim directory names like 'plugin'
+call plug#begin('~/.vim/plugged')
+
+" Make sure you use single quotes
+
+" Shorthand notation; fetches https://github.com/junegunn/vim-easy-align
+Plug 'junegunn/vim-easy-align'
 
 " let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
+Plug 'VundleVim/Vundle.vim'
 
 " General plugins
-Plugin 'tpope/vim-surround'
-Plugin 'kana/vim-fakeclip'
-Plugin 'easymotion/vim-easymotion'
-Plugin 'tpope/vim-fugitive'
-Plugin 'SirVer/ultisnips'
-Plugin 'tpope/vim-obsession'
-Plugin 'sitaktif/vim-space'
-Plugin 'git://github.com/majutsushi/tagbar'
-Plugin 'airblade/vim-gitgutter'
-Plugin 'godlygeek/tabular'
-Plugin 'rking/ag.vim'
-Plugin 'rizzatti/dash.vim'
-Plugin 'jceb/vim-orgmode'
-Plugin 'tpope/vim-speeddating' " Increase/decrease date with <C-a>/<C-x>
-Plugin 'tpope/vim-unimpaired'
-Plugin 'tommcdo/vim-exchange'
-Plugin 'ciaranm/detectindent'
-Plugin 'ap/vim-readdir' " Simpler browser
-Plugin 'tpope/vim-abolish' " :Subvert (substitute with case preserve) and 'coerce to different casing' with crX: MixedCase (crm), camelCase (crc), snake_case (crs), UPPER_CASE (cru), dash-case (cr-), dot.case (cr.), space case (cr<space>), and Title Case (crt)
-Plugin 'ctrlpvim/ctrlp.vim' " File finder
-Plugin 'terryma/vim-expand-region' " Incremental selection (like ctrl-w in IDEA)
-Plugin 'kana/vim-textobj-user' " requirement for textobj plugins
-Plugin 'kana/vim-textobj-line' " vil --> visual inner line
-Plugin 'mhinz/vim-grepper' " Proper grepping plugin?
+Plug 'tpope/vim-surround'
+Plug 'kana/vim-fakeclip'
+Plug 'easymotion/vim-easymotion'
+Plug 'tpope/vim-fugitive'
+Plug 'SirVer/ultisnips'
+Plug 'tpope/vim-obsession'
+Plug 'sitaktif/vim-space'
+Plug 'git://github.com/majutsushi/tagbar'
+Plug 'airblade/vim-gitgutter'
+Plug 'godlygeek/tabular'
+Plug 'rking/ag.vim'
+Plug 'rizzatti/dash.vim'
+Plug 'jceb/vim-orgmode'
+Plug 'tpope/vim-speeddating' " Increase/decrease date with <C-a>/<C-x>
+Plug 'tpope/vim-unimpaired'
+Plug 'tommcdo/vim-exchange'
+Plug 'ciaranm/detectindent'
+Plug 'ap/vim-readdir' " Simpler browser
+Plug 'tpope/vim-abolish' " :Subvert (substitute with case preserve) and 'coerce to different casing' with crX: MixedCase (crm), camelCase (crc), snake_case (crs), UPPER_CASE (cru), dash-case (cr-), dot.case (cr.), space case (cr<space>), and Title Case (crt)
+Plug 'ctrlpvim/ctrlp.vim' " File finder
+Plug 'terryma/vim-expand-region' " Incremental selection (like ctrl-w in IDEA)
+Plug 'kana/vim-textobj-user' " requirement for textobj plugins
+Plug 'kana/vim-textobj-line' " vil --> visual inner line
+Plug 'mhinz/vim-grepper' " Proper grepping plugin?
 
 " Color
-Plugin 'scwood/vim-hybrid'
+Plug 'scwood/vim-hybrid'
 
-" FT Plugins
-Plugin 'vim-syntastic/syntastic'
-Plugin 'neomake/neomake'
-Plugin 'hynek/vim-python-pep8-indent'
-Plugin 'elixir-lang/vim-elixir'
-Plugin 'kballard/vim-swift'
-Plugin 'plasticboy/vim-markdown'
-Plugin 'kylef/apiblueprint.vim'
-Plugin 'nvie/vim-rst-tables'
-Plugin 'honza/vim-snippets'
-Plugin 'pangloss/vim-javascript'
-Plugin 'mxw/vim-jsx'
+" FT Plugs
+Plug 'vim-syntastic/syntastic'
+Plug 'neomake/neomake'
+Plug 'hynek/vim-python-pep8-indent'
+Plug 'elixir-lang/vim-elixir'
+Plug 'kballard/vim-swift'
+Plug 'plasticboy/vim-markdown'
+Plug 'kylef/apiblueprint.vim'
+Plug 'nvie/vim-rst-tables'
+Plug 'honza/vim-snippets'
+Plug 'pangloss/vim-javascript'
+Plug 'mxw/vim-jsx'
 
 " Python
-Plugin 'alfredodeza/pytest.vim'
-Plugin 'python-rope/ropevim'
-Plugin 'davidhalter/jedi-vim'
+Plug 'alfredodeza/pytest.vim'
+Plug 'python-rope/ropevim'
+Plug 'davidhalter/jedi-vim'
+
+" Initialize plugin system
+call plug#end()
 
 "  }}}
 
