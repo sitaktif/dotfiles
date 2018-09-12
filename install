@@ -38,6 +38,11 @@ linkit() {
 )
 
 # Config specific actions
+
+# Vim
+vim -c 'PlugInstall | qa'
+
+# Spectacle
 ln -sf ~/.config/Spectable/Shortcuts.json ~/Library/Application\ Support/Spectacle/Shortcuts.json
 
 # vim: et ts=4 sw=4
