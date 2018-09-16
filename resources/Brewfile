@@ -1,9 +1,174 @@
-cask "Karabiner-elements"
-cask "Spectacle"
+tap "homebrew/boneyard"
+tap "homebrew/bundle"
+tap "homebrew/cask"
+tap "homebrew/core"
+tap "homebrew/dupes"
+tap "homebrew/fuse"
+tap "homebrew/services"
+tap "homebrew/versions"
+
+brew "aircrack-ng"
+brew "ansible"
+brew "ant"
+brew "python"
+brew "asciinema"
+brew "gettext"
+brew "autoconf"
+brew "automake"
+brew "bash", link: false
+brew "binutils"
+brew "bison"
+brew "blackbox"
+brew "boost"
+brew "cabal-install"
+brew "cassandra"
+brew "cmake"
+brew "coreutils"
+brew "cscope", link: false
+brew "ctags"
+brew "curl"
+brew "cython"
+brew "elixir"
+brew "entr"
+brew "exiftags"
+brew "expect"
+brew "fasd"
+brew "ffmpeg"
+brew "findutils"
+brew "fswatch"
+brew "fzf"
+brew "mpfr"
+brew "gawk", link: false
+brew "gcc"
+brew "gdb"
+brew "geoip"
+brew "gifsicle"
+brew "git"
+brew "git-flow"
+brew "go"
+brew "gnu-tar"
+brew "gradle"
+brew "grep"
+brew "gron"  # Grep json
+brew "groovy"
+brew "gtk+"
+brew "gzip"
+brew "htop"
+brew "httpie"
+brew "hub"
+brew "iftop"
+brew "libtool", args: ["universal"]
+brew "imagemagick"
+brew "ipython"
+brew "ipython@5"
+brew "ispell"
+brew "jasper", args: ["universal"]
+brew "jemalloc"
+brew "jenkins"
+brew "oniguruma"
+brew "jq"
+brew "jython"
+brew "libarchive"
+brew "libev"
+brew "libusb-compat"
+brew "libgphoto2"
+brew "libicns", args: ["universal"]
+brew "libident"
+brew "libtermkey"
+brew "libuv"
+brew "libvterm"
+brew "libxml2"
+brew "libxslt"
+brew "little-cms2"
+brew "lua"
+brew "luajit"
+brew "m-cli"
+brew "markdown", link: false
+brew "maven"
+brew "mercurial"
+brew "subversion"
+brew "msgpack"
+brew "multimarkdown"
+brew "multitail"
+brew "mysql"
+brew "nanomsg"
+brew "neon"
+brew "unibilium"
+brew "neovim", args: ["HEAD"]
+brew "net-snmp"
+brew "nmap"
+brew "node"
+brew "ntfs-3g"
+brew "nvm"
+brew "ocaml"
+brew "ossp-uuid"
+brew "osxutils"
+brew "p7zip"
+brew "pandoc"
+brew "pigz"
+brew "pmd"
+brew "popt"
+brew "postgresql", restart_service: true
+brew "protobuf"
+brew "pstree"
+brew "psutils"
+brew "pyenv"
+brew "pyenv-virtualenv"
+brew "python"
+brew "python@2"
+brew "rbenv"
+brew "redis"
+brew "rg"
+brew "rpm"
+brew "rpm2cpio"
+brew "ruby"
+brew "ruby-build"
+brew "rust"
+brew "scons"
+brew "shellcheck"
+brew "sphinx"
+brew "swig"
+brew "tcl-tk"
+brew "tig"
+brew "tmux"
+brew "tree"
+brew "unixodbc"
+brew "vim", args: ["override-system-vi", "with-python@2"]
+brew "wget"
+brew "wine"
+brew "wireshark", args: ["with-x"]
+brew "yarn"
+brew "z"
+brew "zlib"
+brew "zstd"
+
+cask "Karabiner-elements"  # Any keyboard shortcut
+cask "Spectacle"   # Move windows around with shortcuts
 cask "Iterm2"
 cask "Dropbox"
 cask "Firefox"
-cask "LaunchBar"
+cask "LaunchBar"   # Spotlight replacement
+cask "chefdk"      # Chef CMS tools
+cask "keepassxc"   # Passwd manager
+cask "macvim"      # Vim with a nice Mac GUI
+cask "meld"        # Three way merge tool (GTK :( )
+cask "qlmarkdown"  # Quicklook (spacebar in Finder) for markdown preview
+cask "qlstephen"   # Quicklook (spacebar in Finder) for extension-less files (README, etc)
+cask "vimr"        # Nice/fast Neovim Gui
 
-brew "rg"
-brew "vim", args: ["override-system-vi"]
+# Emacs-plus / spacemacs
+tap "d12frosted/emacs-plus"
+brew "d12frosted/emacs-plus/emacs-plus", link: false
+
+# See https://github.com/aykamko/tag
+# Maybe start using it?
+# tap "aykamko/tag-ag"
+# brew "aykamko/tag-ag/tag-ag"
+
+# I'm using emacs-plus for spacemacs
+# brew "emacs", args: ["HEAD", "with-cocoa", "with-gnutls"], link: false
+
+# I'm using emacs-plus for spacemacs
+# tap "railwaycat/emacsmacport"
+# brew "railwaycat/emacsmacport/emacs-mac"
+# cask "railwaycat/emacsmacport/emacs-mac"
