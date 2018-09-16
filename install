@@ -1,41 +1,66 @@
 #!/bin/bash
 
+set -eu
+
+# Colors
+BLD=$(tput bold)
+RED=$(tput setaf 1)
+GRN=$(tput setaf 2)
+YLW=$(tput setaf 3)
+BLU=$(tput setaf 4)
+PPL=$(tput setaf 5)
+CYN=$(tput setaf 6)
+WHT=$(tput setaf 7)
+RST=$(tput sgr0)
+
 THIS_DIR=$(dirname "$0")
-REL_DOT_DIR="git/dotfiles"
+REL_DOT_DIR="git/dotfiles/config"  # Replace this with repo path
+
+DRYRUN=1
 
 linkit() {
-    local relpath=$1
-    local src="$REL_DOT_DIR/config/$relpath"
-    local target=~/"$relpath"
+    local rel_target_path=$1
+    local base_link_src=$2
+    local src="$base_link_src/$rel_target_path"
+    local target=~/"$rel_target_path"
 
     # Case where the link is set already
     if [[ -h "$target" ]] && [[ $(readlink "$target") == "$src" ]]; then
-        echo "File $target already linked"
-        return
-    fi
-
-    # Case where a file is present but isn't the expected link
-    if [[ -e "$target" ]]; then
-        echo "File $target exists but isn't linked. Backing up into $target.bak"
+        printf "%48s [${GRN}already linked${RST}]\n" "$target"
+    # Case where a file is present but isn't the expected link, and where we can create a backup
+    elif { [[ -h "$target" ]] || [[ -e "$target" ]] ; } && [[ ! -e "$target.bak" ]]; then
+        printf "%48s [${YLW}wrong link - replacing link and backing up old file into %s.bak${RST}]\n" "$target" "$target"
         mv "$target" "$target.bak"
+        ln -s "$src" "$target"
+    # Case where a file is present but isn't the expected link, but where a backup already exists
+    elif { [[ -h "$target" ]] || [[ -e "$target" ]] ; } && [[ -e "$target.bak" ]]; then
+        printf "%48s [${RED}wrong link and back up already exists in %s.bak${RST} - skipping]\n" "$target" "$target"
+    # Case where the target doesn't exist yet (happy path)
+    else
+        printf "%48s [${GRN}creating link${RST}]\n" "$target"
+        ln -s "$src" "$target"
     fi
+}
 
-    echo "Creating symlink to $target"
-    ln -s "$src" "$target"
+linkall() {
+    (
+        # We will list directories and files from there
+        cd "$THIS_DIR/config"
+
+        mkdir -p ~/.config
+        for rel_target_path in .[^.]*; do
+            [[ $rel_target_path == .config ]] && continue
+            linkit "$rel_target_path" "$REL_DOT_DIR"
+        done
+
+        # Create links inside ~/.config/ (the relative symlinks will start with ../)
+        for rel_target_path in .config/*; do
+            linkit "$rel_target_path" "../$REL_DOT_DIR"
+        done
+    )
 }
 
 # Entry point
-
-(
-    # We will list directories and files from there
-    cd "$THIS_DIR/config"
-
-    mkdir -p ~/.config
-    for relpath in .[^.]* .config/*; do
-        [[ $relpath == .config ]] && continue
-        linkit "$relpath"
-    done
-)
 
 # Config specific actions
 
