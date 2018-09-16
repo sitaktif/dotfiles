@@ -103,9 +103,12 @@
 
 [merge]
 	tool = p4mergetool  # p4merge is a nice 3-way merge tool
+        # tool = meld       # meld is an alternative
 [mergetool "p4mergetool"]
 	cmd = /Applications/p4merge.app/Contents/Resources/launchp4merge $PWD/$BASE $PWD/$REMOTE $PWD/$LOCAL $PWD/$MERGED
 	trustExitCode = false
+[mergetool "meld"]
+        cmd = meld "$LOCAL" "$MERGED" "$REMOTE" --output "$MERGED"
 [mergetool]
 	keepBackup = false
 
