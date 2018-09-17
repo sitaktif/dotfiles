@@ -60,27 +60,25 @@ elseif has('gui') " A terminal with GUI support
 	colorscheme ps_color
 	set termencoding=utf-8
 else
-    colorscheme hybrid
     set termencoding=utf-8
     if g:PLATFORM =~ "mac"
+	" Tell the hybrid colorscheme that we set up iTerm correctly
+	" See https://github.com/w0ng/vim-hybrid
+	let g:hybrid_custom_term_colors = 1
+	colorscheme hybrid
+        hi CursorLine ctermbg=8 guibg=#282a2e  " Make the cursorline better in vim diff
         set t_ZH=[3m t_ZR=[23m " Set the italics code
+    else
+	colorscheme hybrid
     endif
 endif
 
 " Highlight current line, no underline/bold/whatnot
 set cursorline
-hi CursorLine cterm=NONE term=NONE
+" hi CursorLine cterm=NONE term=NONE
 
 " Orgmode multi-star should show only last star
 hi link org_shade_stars NonText
-
-"Omni menu colors
-hi Pmenu guibg=#333333 ctermbg=black
-hi PmenuSel guibg=#555555 guifg=#ffffff
-
-if (&term =~ 'rxvt') "Vieux hack rxvt (...)
-    so ~/.vim/sitaktif/rxvt.vim
-end
 
 "}}}
 
