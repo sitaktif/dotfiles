@@ -1,6 +1,6 @@
 #!/bin/bash
 
-_this_dir=$(dirname "$(readlink "$BASH_SOURCE")")
+_this_dir=$(cd "$(dirname "$(readlink "$BASH_SOURCE")")" && pwd -P)
 
 export L_PS1_HOST_COLOR="161" # Fuschia
 
@@ -44,10 +44,13 @@ _completion_dir=/usr/local/etc/bash_completion.d
 # Docker, Git
 [[ -s $_completion_dir/docker ]] && . "$_completion_dir/docker"
 [[ -s $_completion_dir/git-completion.bash ]] && . "$_completion_dir/git-completion.bash"
-[[ -s $_completion_dir/git-prompt.sh ]] && . "$_completion_dir/git-prompt.sh"
 
 # A copy of the git prompt is in the resources/ dir
-[[ -s $_this_dir/resources/bash/git-prompt.sh ]] && . "$_this_dir/resources/bash/git-prompt.sh"
+if [[ -s $_completion_dir/git-prompt.sh ]];then
+  . "$_completion_dir/git-prompt.sh"
+elif [[ -s $_this_dir/resources/bash/git-prompt.sh ]]; then
+  . "$_this_dir/resources/bash/git-prompt.sh"
+fi
 
 # Gradle
 export GRADLE_HOME=/usr/local/Cellar/gradle/2.12/libexec
