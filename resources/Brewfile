@@ -2,14 +2,10 @@ tap "homebrew/boneyard"
 tap "homebrew/bundle"
 tap "homebrew/cask"
 tap "homebrew/core"
-tap "homebrew/dupes"
-tap "homebrew/fuse"
 tap "homebrew/services"
-tap "homebrew/versions"
 
 brew "aircrack-ng"
 brew "ansible"
-brew "ant"
 brew "python"
 brew "asciinema"
 brew "gettext"
@@ -47,10 +43,8 @@ brew "git"
 brew "git-flow"
 brew "go"
 brew "gnu-tar"
-brew "gradle"
 brew "grep"
 brew "gron"  # Grep json
-brew "groovy"
 brew "gtk+"
 brew "gzip"
 brew "htop"
@@ -64,7 +58,6 @@ brew "ipython@5"
 brew "ispell"
 brew "jasper", args: ["universal"]
 brew "jemalloc"
-brew "jenkins"
 brew "oniguruma"
 brew "jq"
 brew "jython"
@@ -84,7 +77,6 @@ brew "lua"
 brew "luajit"
 brew "m-cli"
 brew "markdown", link: false
-brew "maven"
 brew "mercurial"
 brew "subversion"
 brew "msgpack"
@@ -94,11 +86,10 @@ brew "mysql"
 brew "nanomsg"
 brew "neon"
 brew "unibilium"
-brew "neovim", args: ["HEAD"]
+brew "neovim"
 brew "net-snmp"
 brew "nmap"
 brew "node"
-brew "ntfs-3g"
 brew "nvm"
 brew "ocaml"
 brew "ossp-uuid"
@@ -106,7 +97,6 @@ brew "osxutils"
 brew "p7zip"
 brew "pandoc"
 brew "pigz"
-brew "pmd"
 brew "popt"
 brew "postgresql", restart_service: true
 brew "protobuf"
@@ -148,13 +138,24 @@ cask "Iterm2"
 cask "Dropbox"
 cask "Firefox"
 cask "LaunchBar"   # Spotlight replacement
-cask "chefdk"      # Chef CMS tools
 cask "keepassxc"   # Passwd manager
 cask "macvim"      # Vim with a nice Mac GUI
 cask "meld"        # Three way merge tool (GTK :( )
 cask "qlmarkdown"  # Quicklook (spacebar in Finder) for markdown preview
 cask "qlstephen"   # Quicklook (spacebar in Finder) for extension-less files (README, etc)
 cask "vimr"        # Nice/fast Neovim Gui
+
+# Fuse stuff
+cask "osxfuse"
+brew "ntfs-3g"
+
+# JDK-related things
+cask "java"
+brew "groovy"
+brew "ant"
+brew "maven"
+brew "gradle"
+brew "pmd"
 
 # Emacs-plus / spacemacs
 tap "d12frosted/emacs-plus"
