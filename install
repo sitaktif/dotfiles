@@ -63,11 +63,30 @@ linkall() {
 # Entry point
 
 # Config specific actions
+xcode-select -p >/dev/null 2>&1
+if [[ $? == 2 ]]; then
+  echo "* Installing xcode command line tools (git, ...)"
+  xcode-select --install
+fi
 
-# Vim
+if ! command -v brew >/dev/null 2>&1; then
+  echo "* Installing brew"
+  echo "Go to https://brew.sh/ and manually install brew..."
+  open "https://brew.sh/"
+  echo "press enter to continue..."
+  read
+fi
+
+echo "* Installing / updating software using brew"
+brew bundle install --file=$(dirname ${BASH_SOURCE[0]})/resources/Brewfile
+
+echo "* Symlinking dotfiles"
+linkall
+
+echo "* Installing vim plugins"
 vim -c 'PlugInstall | qa'
 
-# Spectacle
+echo "* Adding Spectacle config symlink"
 ln -sf ~/.config/Spectable/Shortcuts.json ~/Library/Application\ Support/Spectacle/Shortcuts.json
 
 # vim: et ts=4 sw=4
