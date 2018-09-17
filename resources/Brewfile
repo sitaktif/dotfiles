@@ -132,10 +132,12 @@ brew "z"
 brew "zlib"
 brew "zstd"
 
+cask "caffeine"
 cask "Karabiner-elements"  # Any keyboard shortcut
 cask "Spectacle"   # Move windows around with shortcuts
 cask "Iterm2"
 cask "Dropbox"
+cask "google-chrome"
 cask "Firefox"
 cask "LaunchBar"   # Spotlight replacement
 cask "keepassxc"   # Passwd manager
@@ -174,10 +176,7 @@ brew "d12frosted/emacs-plus/emacs-plus", link: false
 # brew "railwaycat/emacsmacport/emacs-mac"
 # cask "railwaycat/emacsmacport/emacs-mac"
 
-mas "Caffeine", id: 411246225
-mas "Dash", id: 449589707
 mas "feedly", id: 865500966
-mas "GarageBand", id: 408980954
 mas "iMovie", id: 408981434
 mas "Keynote", id: 409183694
 mas "Musicnotes", id: 1025073421
