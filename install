@@ -80,6 +80,28 @@ defaults_set_dict_val() {
     #fi
 }
 
+# If you get:
+#   defaults read foo bar -> 1
+#   defaults read-type foo bar -> Type is integer
+# Then you should set with:
+#   defaults_set_val foo bar -int 1
+defaults_set_val() {
+  local domain key val_type val currentVal;
+  domain="$1"
+  key="$2"
+  val_type="$3"
+  val="$4"
+  shift 4
+  [[ "$#" != 0 ]] && printf "Wrong number of args" && return 1
+  currentVal="$(defaults read "$domain" "$key")"
+
+  if [[ "$currentVal" == "$val" ]]; then
+    return 0
+  fi
+
+  defaults write "$domain" "$key" "$val_type" "$val"
+}
+
 set_mac_prefs() {
     echo "* Setting keyboard/trackpad preferences"
 
@@ -126,6 +148,20 @@ set_mac_prefs() {
 
     defaults_set_dict_val 'com.apple.ist.Radar7' NSUserKeyEquivalents '\033Utilities\033Mark as Duplicate' '@^$d'
     defaults_set_dict_val 'com.apple.ist.Radar7' NSUserKeyEquivalents '\033View\033Open in Browser' '@~b'
+
+    echo "* Setting misc Mac preferences"
+
+    # System Preferences -> Keyboard -> Shortcuts -> Full Keyboard Access
+    # Full Keyboard Access: In Windows and Dialogs, press Tab to move keyboard
+    # focus between:
+    #   0: Text Boxes and Lists only
+    #   2: All controls
+    # Set it to 2 because that's much nicer (you can close confirmation prompts
+    # with the keyboard, Enter to press the blue one, tab to select between them,
+    # space to press the Tab-selected one. If there are underlined letters, hold
+    # Option and press the letter to choose that option.
+    defaults_set_val -g AppleKeyboardUIMode -int 2
+
 
     #  # Examples from gibfahn
     #  
