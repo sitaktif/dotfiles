@@ -26,18 +26,18 @@ linkit() {
 
     # Case where the link is set already
     if [[ -h "$target" ]] && [[ $(readlink "$target") == "$src" ]]; then
-        printf "%48s [${GRN}already linked${RST}]\n" "$target"
+        printf "%-48s [${GRN}already linked${RST}]\n" "$target"
     # Case where a file is present but isn't the expected link, and where we can create a backup
     elif { [[ -h "$target" ]] || [[ -e "$target" ]] ; } && [[ ! -e "$target.bak" ]]; then
-        printf "%48s [${YLW}wrong link - replacing link and backing up old file into %s.bak${RST}]\n" "$target" "$target"
+        printf "%-48s [${YLW}wrong link - replacing link and backing up old file into %s.bak${RST}]\n" "$target" "$target"
         mv "$target" "$target.bak"
         ln -s "$src" "$target"
     # Case where a file is present but isn't the expected link, but where a backup already exists
     elif { [[ -h "$target" ]] || [[ -e "$target" ]] ; } && [[ -e "$target.bak" ]]; then
-        printf "%48s [${RED}wrong link and back up already exists in %s.bak${RST} - skipping]\n" "$target" "$target"
+        printf "%-48s [${RED}wrong link and back up already exists in %s.bak${RST} - skipping]\n" "$target" "$target"
     # Case where the target doesn't exist yet (happy path)
     else
-        printf "%48s [${GRN}creating link${RST}]\n" "$target"
+        printf "%-48s [${GRN}creating link${RST}]\n" "$target"
         ln -s "$src" "$target"
     fi
 }
