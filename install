@@ -257,6 +257,6 @@ echo "* Installing vim plugins"
 vim -c 'PlugInstall | qa'
 
 echo "* Adding Spectacle config symlink"
-ln -sf ~/.config/Spectable/Shortcuts.json ~/Library/Application\ Support/Spectacle/Shortcuts.json
+ln -sf ~/.config/Spectacle/Shortcuts.json ~/Library/Application\ Support/Spectacle/Shortcuts.json
 
 # vim: et ts=4 sw=4
