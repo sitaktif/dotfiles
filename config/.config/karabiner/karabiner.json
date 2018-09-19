@@ -177,7 +177,7 @@
                         ]
                     },
                     {
-                        "description": "Open specific apps using shortcuts (^⌥⌘ something) - z:iTerm, f:finder, e:emacs, v:vim, d:idea, s:safari, c:chrome",
+                        "description": "Open specific apps using shortcuts (^⌥⌘ something) - z:iTerm, f:finder, e:emacs, v:vim, d:idea, s:safari, c:chrome, x:firefox, a:things",
                         "manipulators": [
                             {
                                 "from": {
@@ -322,6 +322,48 @@
                                 "to": [
                                     {
                                         "shell_command": "open -a 'Google Chrome'"
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "key_code": "a",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "control",
+                                            "command",
+                                            "option"
+                                        ],
+                                        "optional": [
+                                            "shift"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "shell_command": "open -a Things.app"
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "key_code": "x",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "control",
+                                            "command",
+                                            "option"
+                                        ],
+                                        "optional": [
+                                            "shift"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "shell_command": "open -a Firefox.app"
                                     }
                                 ],
                                 "type": "basic"
