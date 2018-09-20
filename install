@@ -16,7 +16,17 @@ RST=$(tput sgr0)
 THIS_DIR=$(dirname "$0")
 REL_DOT_DIR="git/dotfiles/config"  # Replace this with repo path
 
-DRYRUN=1
+INSTALL=true
+
+parse_args() {
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --no-install|--link)
+                INSTALL=false
+                shift ;;
+        esac
+    done
+}
 
 linkit() {
     local rel_target_path=$1
@@ -60,24 +70,56 @@ linkall() {
     )
 }
 
+defaults_dict_haskey() {
+    local domain=$1
+    local key=$2
+    local dict_key=$3
+    defaults read "$domain" "$key" | sed -n 's/"\{0,1\}\([^"]*\)"\{0,1\} = .*/\1/p' | grep -qF "$dict_key"
+}
+
+defaults_dict_get() {
+    local domain=$1
+    local key=$2
+    local dict_key=$3
+    # read | add key quote in case it's only one word | grep key | show key
+    defaults read "$domain" "$key" |
+        sed -n 's/^[[:space:]]*"\{0,1\}\([^"]*\)"\{0,1\} = \(.*\)/"\1" = \2/p' |
+        grep -F "\"$dict_key\"" |
+        sed -n 's/[[:space:]]*"\{0,1\}[^"]*"\{0,1\}[[:space:]]*=[[:space:]]*"\{0,1\}\([^"]*\)"\{0,1\};/\1/p' |
+        sed 's/\\\\/\\/g'
+}
+
 # Set the value to the macOS "defaults" dict if not set yet
 defaults_set_dict_val() {
     local domain=$1
     local key=$2
     local dict_key=$3
     local dict_val=$4
+
     if ! defaults read com.apple.universalaccess com.apple.custommenu.apps | grep -Fq "$domain"; then
         defaults write com.apple.universalaccess com.apple.custommenu.apps -array-add "$domain"
     fi
+
     # Create the dict value if it doesn't exist
     if ! defaults read "$domain" "$key" >/dev/null 2>&1; then
         defaults write "$domain" "$key" -dict
     fi
+
     # Set the value
-    #if ! defaults read "$domain" "$key" | grep -Fq "$dict_key"; then
-        echo "'$domain'.'$key': added '$dict_key' --> '$dict_val'"
+    if ! defaults_dict_haskey "$domain" "$key" "$dict_key"; then
+        printf "%-32s %-32s -> [$YLW%s$RST]\n" "'$domain'" "'$key'" "added '$dict_key' --> '$dict_val'"
         defaults write "$domain" "$key" -dict-add "$dict_key" "$dict_val"
-    #fi
+        return
+    fi
+
+    local dict_oldval
+    dict_oldval=$(defaults_dict_get "$domain" "$key" "$dict_key")
+    if [[ "$dict_oldval" != "$dict_val" ]]; then
+        printf "%-32s %-32s -> [$YLW%s$RST]\n" "'$domain'" "'$key'" "changed '$dict_key' from '$dict_oldval' to '$dict_val'"
+        defaults write "$domain" "$key" -dict-add "$dict_key" "$dict_val"
+    else
+        printf "%-32s %-32s -> [$GRN%s$RST]\n" "'$domain'" "'$key'" "'$dict_key' already set to '$dict_val'"
+    fi
 }
 
 # If you get:
@@ -142,6 +184,7 @@ set_mac_prefs() {
     defaults_set_dict_val 'com.apple.Safari' NSUserKeyEquivalents '\033File\033Export as PDF...' '@~p'
     defaults_set_dict_val 'com.apple.Safari' NSUserKeyEquivalents '\033Window\033Show Next Tab' '@~\U2192'
     defaults_set_dict_val 'com.apple.Safari' NSUserKeyEquivalents '\033Window\033Show Previous Tab' '@~\U2190'
+    defaults_set_dict_val 'com.apple.Safari' NSUserKeyEquivalents '\033Edit\033Undo Close Tab' '@$t'
 
     defaults_set_dict_val 'com.apple.iChat' NSUserKeyEquivalents '\033Window\033Select Next Conversation' '@~\U2193'
     defaults_set_dict_val 'com.apple.iChat' NSUserKeyEquivalents '\033Window\033Select Previous Conversation' '@~\U2191'
@@ -161,6 +204,12 @@ set_mac_prefs() {
     # space to press the Tab-selected one. If there are underlined letters, hold
     # Option and press the letter to choose that option.
     defaults_set_val -g AppleKeyboardUIMode -int 2
+
+    echo "* Setting iTerm preferences"
+    # Specify the preferences directory
+    defaults write com.googlecode.iterm2.plist PrefsCustomFolder -string "~/.config/iTerm2"
+    # Tell iTerm2 to use the custom preferences in the directory
+    defaults write com.googlecode.iterm2.plist LoadPrefsFromCustomFolder -bool true
 
 
     #  # Examples from gibfahn
@@ -262,37 +311,42 @@ set_mac_prefs() {
 
 }
 
+main() {
+    parse_args "$@"
 
-# Entry point
+    # Config specific actions
+    xcode-select -p >/dev/null 2>&1
+    if [[ $? == 2 ]]; then
+        echo "* Installing xcode command line tools (git, ...)"
+        xcode-select --install
+    fi
 
-# Config specific actions
-xcode-select -p >/dev/null 2>&1
-if [[ $? == 2 ]]; then
-  echo "* Installing xcode command line tools (git, ...)"
-  xcode-select --install
-fi
+    if [[ $INSTALL == true ]]; then
+        echo "* Setting mac preferences (keyboard shortcuts) with 'defaults'"
+        set_mac_prefs
 
-echo "* Setting mac preferences (keyboard shortcuts) with 'defaults'"
-set_mac_prefs
+        if ! command -v brew >/dev/null 2>&1; then
+            echo "* Installing brew"
+            echo "Go to https://brew.sh/ and manually install brew..."
+            open "https://brew.sh/"
+            echo "press enter to continue..."
+            read -r
+        fi
 
-if ! command -v brew >/dev/null 2>&1; then
-  echo "* Installing brew"
-  echo "Go to https://brew.sh/ and manually install brew..."
-  open "https://brew.sh/"
-  echo "press enter to continue..."
-  read
-fi
+        echo "* Installing / updating software using brew"
+        brew bundle install --file=$(dirname ${BASH_SOURCE[0]})/resources/Brewfile
 
-echo "* Installing / updating software using brew"
-brew bundle install --file=$(dirname ${BASH_SOURCE[0]})/resources/Brewfile
+        echo "* Installing vim plugins"
+        vim -c 'PlugInstall | qa'
+    fi
 
-echo "* Symlinking dotfiles"
-linkall
+    echo "* Symlinking dotfiles"
+    linkall
 
-echo "* Installing vim plugins"
-vim -c 'PlugInstall | qa'
+    echo "* Adding Spectacle config symlink"
+    ln -sf ~/.config/Spectacle/Shortcuts.json ~/Library/Application\ Support/Spectacle/Shortcuts.json
+}
 
-echo "* Adding Spectacle config symlink"
-ln -sf ~/.config/Spectacle/Shortcuts.json ~/Library/Application\ Support/Spectacle/Shortcuts.json
+main "$@"
 
-# vim: et ts=4 sw=4
+# vim: et ts=4 sw=4 sts=4
