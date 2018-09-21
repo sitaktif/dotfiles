@@ -1,6 +1,10 @@
 #!/bin/bash
 
-_this_dir=$(cd "$(dirname "$(readlink "$BASH_SOURCE")")" && pwd -P)
+my_relpath() {
+  local path=$1
+  local relto=$2
+  [[ $path == /* ]] && echo "$path" || echo "$relto/${path#./}"
+}
 
 export L_PS1_HOST_COLOR="161" # Fuschia
 
@@ -45,11 +49,13 @@ _completion_dir=/usr/local/etc/bash_completion.d
 [[ -s $_completion_dir/docker ]] && . "$_completion_dir/docker"
 [[ -s $_completion_dir/git-completion.bash ]] && . "$_completion_dir/git-completion.bash"
 
+_this_realdir=$(cd "$(dirname "$(my_relpath "$(readlink "$BASH_SOURCE")" "$(dirname "$BASH_SOURCE")")")" && pwd -P)
+
 # A copy of the git prompt is in the resources/ dir
 if [[ -s $_completion_dir/git-prompt.sh ]];then
   . "$_completion_dir/git-prompt.sh"
-elif [[ -s $_this_dir/resources/bash/git-prompt.sh ]]; then
-  . "$_this_dir/resources/bash/git-prompt.sh"
+elif [[ -s $_this_realdir/../resources/bash/git-prompt.sh ]]; then
+  . "$_this_realdir/../resources/bash/git-prompt.sh"
 fi
 
 # Gradle
