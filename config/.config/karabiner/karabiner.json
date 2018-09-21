@@ -258,7 +258,7 @@
                                 },
                                 "to": [
                                     {
-                                        "shell_command": "open -a VimR.app"
+                                        "shell_command": "open -a MacVim.app"
                                     }
                                 ],
                                 "type": "basic"
