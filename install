@@ -186,8 +186,17 @@ set_mac_prefs() {
     defaults_set_dict_val 'com.apple.Safari' NSUserKeyEquivalents '\033Window\033Show Previous Tab' '@~\U2190'
     defaults_set_dict_val 'com.apple.Safari' NSUserKeyEquivalents '\033Edit\033Undo Close Tab' '@$t'
 
-    defaults_set_dict_val 'com.apple.iChat' NSUserKeyEquivalents '\033Window\033Select Next Conversation' '@~\U2193'
-    defaults_set_dict_val 'com.apple.iChat' NSUserKeyEquivalents '\033Window\033Select Previous Conversation' '@~\U2191'
+    # Cmd-alt-arrows
+    # defaults_set_dict_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033Window\033Select Next Conversation' '@~\U2193'
+    # defaults_set_dict_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033Window\033Select Previous Conversation' '@~\U2191'
+    # defaults_set_dict_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033View\033Show Spaces' '@~\U2190'
+    # defaults_set_dict_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033View\033Show People' '@~\U2192'
+
+    # Cmd-alt-hjkl
+    defaults_set_dict_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033Window\033Select Next Conversation' '@~j'
+    defaults_set_dict_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033Window\033Select Previous Conversation' '@~k'
+    defaults_set_dict_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033View\033Show Spaces' '@~h'
+    defaults_set_dict_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033View\033Show People' '@~l'
 
     defaults_set_dict_val 'com.apple.ist.Radar7' NSUserKeyEquivalents '\033Utilities\033Mark as Duplicate' '@^$d'
     defaults_set_dict_val 'com.apple.ist.Radar7' NSUserKeyEquivalents '\033View\033Open in Browser' '@~b'
@@ -345,6 +354,21 @@ main() {
 
     echo "* Adding Spectacle config symlink"
     ln -sf ~/.config/Spectacle/Shortcuts.json ~/Library/Application\ Support/Spectacle/Shortcuts.json
+
+    echo "* Adding python2 packages"
+    pip2 install --upgrade neovim
+
+    echo "* Adding python3 packages"
+    pip3 install --upgrade neovim
+
+    echo "* Adding ruby gems"
+    gem install neovim
+
+    echo "* Adding npm packages"
+    npm install -g neovim
+
+    echo "* Adding iCloud symlink"
+    ln -sTf ~/'Library/Mobile Documents/com~apple~CloudDocs' ~/iCloud
 }
 
 main "$@"
