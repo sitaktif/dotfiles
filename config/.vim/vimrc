@@ -24,20 +24,19 @@ endif
 " ---| SYSTEM-DEPENDANT SETTINGS |--- {{{
 
 " Platform
-let s:path = expand('<sfile>:p:h')
-let s:config_path = s:path . '/.vim'
+let s:config_dir = expand('<sfile>:p:h')
 if has('macunix') || system('uname -o') =~? '^darwin'
     let g:PLATFORM = 'mac'
 elseif has('win32unix')
     let g:PLATFORM = 'cygwin'
 elseif has('win32') || has('win64')
     let g:PLATFORM = 'win'
-    let s:config_path = s:path . '/vimfiles'
+    let s:config_dir = s:path . '/vimfiles'
 else
     let g:PLATFORM = 'other'
 endif
 
-if has("gui_running") " GUI mode
+if has("gui_running") || has("gui_vimr") " GUI mode
     let &guicursor = &guicursor . ",a:blinkon0"
     set guioptions-=e "No gui-like tabs
     set guioptions-=T "No toolbar
@@ -47,14 +46,16 @@ if has("gui_running") " GUI mode
     set guioptions+=c "Console dialogs (no popup)
     "set guioptions+=a "Gui visual w/ mouse (yank to "*)
 
-    colorscheme molokai
+    colorscheme hybrid
 
-    if g:PLATFORM =~ "win"
-        set guifont=Terminus:h12
-    elseif g:PLATFORM =~ "mac"
-        set guifont=
-    else
-        set guifont=Terminus\ 12
+    if has("gui_running")
+	if g:PLATFORM =~ "win"
+	    set guifont=Terminus:h12
+	elseif g:PLATFORM =~ "mac"
+	    set guifont=
+	else
+	    set guifont=Terminus\ 12
+	endif
     endif
 elseif has('gui') " A terminal with GUI support
 	colorscheme ps_color
@@ -144,6 +145,10 @@ Plug 'mxw/vim-jsx'
 Plug 'alfredodeza/pytest.vim'
 Plug 'python-rope/ropevim'
 Plug 'davidhalter/jedi-vim'
+
+if isdirectory('/usr/local/opt/fzf')
+  Plug '/usr/local/opt/fzf'
+endif
 
 " Initialize plugin system
 call plug#end()
@@ -386,7 +391,7 @@ noremap <leader>sd :setlocal spell spelllang=de spellcapcheck=<cr>
 " Vim
 noremap <leader>vev :e ~/.vimrc<cr>
 noremap <leader>vsv :so ~/.vimrc<cr>
-exec "map <leader>vht :helptags ".s:config_path."/doc<cr>"
+exec "map <leader>vht :helptags ".s:config_dir."/doc<cr>"
 
 " Search for visually (multiline) selected text
 vnoremap <silent> * :<C-U>
@@ -499,10 +504,10 @@ com! XMLClean 1,$!xmllint --format -
 " ---| INCLUDES |--- {{{
 
 " Plugin-dependant settings
-exec 'source ' . s:config_path . '/sitaktif/plugin_vimrc.vim'
+exec 'source ' . s:config_dir . '/sitaktif/plugin_vimrc.vim'
 
 " Autocorrections
-exec 'source ' . s:config_path . '/sitaktif/autocorrect_fr_vimrc.vim'
-exec 'source ' . s:config_path . '/sitaktif/autocorrect_en_vimrc.vim'
+exec 'source ' . s:config_dir . '/sitaktif/autocorrect_fr_vimrc.vim'
+exec 'source ' . s:config_dir . '/sitaktif/autocorrect_en_vimrc.vim'
 
 "}}}
