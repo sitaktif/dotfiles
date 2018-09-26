@@ -367,7 +367,7 @@ main() {
     ln -sf ~/.config/Spectacle/Shortcuts.json ~/Library/Application\ Support/Spectacle/Shortcuts.json
 
     echo "* Adding python2 packages"
-    pip2 install --upgrade neovim
+    pip2 install --upgrade setuptools virtualenv neovim
 
     echo "* Adding python3 packages"
     pip3 install --upgrade neovim
