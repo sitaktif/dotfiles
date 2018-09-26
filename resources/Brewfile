@@ -145,6 +145,8 @@ cask "macvim"      # Vim with a nice Mac GUI
 cask "meld"        # Three way merge tool (GTK :( )
 cask "qlmarkdown"  # Quicklook (spacebar in Finder) for markdown preview
 cask "qlstephen"   # Quicklook (spacebar in Finder) for extension-less files (README, etc)
+cask "spotify"
+cask "vagrant"
 cask "vimr"        # Nice/fast Neovim Gui
 
 # Fuse stuff
