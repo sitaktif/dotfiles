@@ -90,7 +90,7 @@ defaults_dict_get() {
 }
 
 # Set the value to the macOS "defaults" dict if not set yet
-defaults_set_dict_val() {
+defaults_dict_set_val() {
     local domain=$1
     local key=$2
     local dict_key=$3
@@ -126,22 +126,22 @@ defaults_set_dict_val() {
 #   defaults read foo bar -> 1
 #   defaults read-type foo bar -> Type is integer
 # Then you should set with:
-#   defaults_set_val foo bar -int 1
-defaults_set_val() {
-  local domain key val_type val currentVal;
-  domain="$1"
-  key="$2"
-  val_type="$3"
-  val="$4"
-  shift 4
-  [[ "$#" != 0 ]] && printf "Wrong number of args" && return 1
-  currentVal="$(defaults read "$domain" "$key")"
+#   defaults_write foo bar -int 1
+defaults_write() {
+    domain="$1"
+    key="$2"
+    val_type="$3"
+    val="$4"
 
-  if [[ "$currentVal" == "$val" ]]; then
-    return 0
-  fi
+    current_val="$(defaults read "$domain" "$key" 2>/dev/null)"
 
-  defaults write "$domain" "$key" "$val_type" "$val"
+    if [[ "$current_val" == "$val" ]]; then
+        printf "%-32s %-32s -> [$GRN%s$RST]\n" "'$domain'" "'$key'" "already set to '$val'"
+        return 0
+    fi
+
+    printf "%-32s %-32s -> [$YLW%s$RST]\n" "'$domain'" "'$key'" "changed from '$current_val' to '$val'"
+    defaults write "$domain" "$key" "$val_type" "$val"
 }
 
 set_mac_prefs() {
@@ -155,53 +155,64 @@ set_mac_prefs() {
     # @command, ~option, ^ctrl, $shift
 
     # Global ('Apple Global Domain')
-    defaults_set_dict_val NSGlobalDomain NSUserKeyEquivalents 'Hide Others' '@~^$7'
-    defaults_set_dict_val NSGlobalDomain NSUserKeyEquivalents 'Minimise' '@~^$9'
-    defaults_set_dict_val NSGlobalDomain NSUserKeyEquivalents 'Minimise All' '@~^$8'
-    defaults_set_dict_val NSGlobalDomain NSUserKeyEquivalents 'Minimize' '@~^$-'
-    defaults_set_dict_val NSGlobalDomain NSUserKeyEquivalents 'Minimize All' '@~^$0'
-    defaults_set_dict_val NSGlobalDomain NSUserKeyEquivalents 'Merge All Windows' '@~^/'
+    defaults_dict_set_val NSGlobalDomain NSUserKeyEquivalents 'Hide Others' '@~^$7'
+    defaults_dict_set_val NSGlobalDomain NSUserKeyEquivalents 'Minimise' '@~^$9'
+    defaults_dict_set_val NSGlobalDomain NSUserKeyEquivalents 'Minimise All' '@~^$8'
+    defaults_dict_set_val NSGlobalDomain NSUserKeyEquivalents 'Minimize' '@~^$-'
+    defaults_dict_set_val NSGlobalDomain NSUserKeyEquivalents 'Minimize All' '@~^$0'
+    defaults_dict_set_val NSGlobalDomain NSUserKeyEquivalents 'Merge All Windows' '@~^/'
 
     # Keynote
-    defaults_set_dict_val 'com.apple.iWork.Keynote' NSUserKeyEquivalents '\033Arrange\033Align Objects\033Bottom' '@~\U2193'
-    defaults_set_dict_val 'com.apple.iWork.Keynote' NSUserKeyEquivalents '\033Arrange\033Align Objects\033Left' '@~\U2190'
-    defaults_set_dict_val 'com.apple.iWork.Keynote' NSUserKeyEquivalents '\033Arrange\033Align Objects\033Right' '@~\U2192'
-    defaults_set_dict_val 'com.apple.iWork.Keynote' NSUserKeyEquivalents '\033Arrange\033Align Objects\033Top' '@~\U2191'
-    defaults_set_dict_val 'com.apple.iWork.Keynote' NSUserKeyEquivalents 'Play Slideshow' '@~o'
+    defaults_dict_set_val 'com.apple.iWork.Keynote' NSUserKeyEquivalents '\033Arrange\033Align Objects\033Bottom' '@~\U2193'
+    defaults_dict_set_val 'com.apple.iWork.Keynote' NSUserKeyEquivalents '\033Arrange\033Align Objects\033Left' '@~\U2190'
+    defaults_dict_set_val 'com.apple.iWork.Keynote' NSUserKeyEquivalents '\033Arrange\033Align Objects\033Right' '@~\U2192'
+    defaults_dict_set_val 'com.apple.iWork.Keynote' NSUserKeyEquivalents '\033Arrange\033Align Objects\033Top' '@~\U2191'
+    defaults_dict_set_val 'com.apple.iWork.Keynote' NSUserKeyEquivalents 'Play Slideshow' '@~o'
 
     # Numbers
-    defaults_set_dict_val 'com.apple.iWork.Numbers' NSUserKeyEquivalents 'Delete Column' '@~$-'
-    defaults_set_dict_val 'com.apple.iWork.Numbers' NSUserKeyEquivalents 'Delete Columns' '@~$-'
-    defaults_set_dict_val 'com.apple.iWork.Numbers' NSUserKeyEquivalents 'Delete Row' '@~-'
-    defaults_set_dict_val 'com.apple.iWork.Numbers' NSUserKeyEquivalents 'Delete Rows' '@~-'
+    defaults_dict_set_val 'com.apple.iWork.Numbers' NSUserKeyEquivalents 'Delete Column' '@~$-'
+    defaults_dict_set_val 'com.apple.iWork.Numbers' NSUserKeyEquivalents 'Delete Columns' '@~$-'
+    defaults_dict_set_val 'com.apple.iWork.Numbers' NSUserKeyEquivalents 'Delete Row' '@~-'
+    defaults_dict_set_val 'com.apple.iWork.Numbers' NSUserKeyEquivalents 'Delete Rows' '@~-'
 
-    defaults_set_dict_val 'com.apple.Notes' NSUserKeyEquivalents '\033Format\033Font\033Remove Style' '@$t'
-    defaults_set_dict_val 'com.apple.Notes' NSUserKeyEquivalents '\033Format\033Title' '@$i'
+    defaults_dict_set_val 'com.apple.Notes' NSUserKeyEquivalents '\033Format\033Font\033Remove Style' '@$t'
+    defaults_dict_set_val 'com.apple.Notes' NSUserKeyEquivalents '\033Format\033Title' '@$i'
 
-    defaults_set_dict_val 'com.apple.mail' NSUserKeyEquivalents '\033Message\033Mark as Read' '@^$d'
-    defaults_set_dict_val 'com.apple.mail' NSUserKeyEquivalents '\033Message\033Mark as Unread' '@^$d'
+    defaults_dict_set_val 'com.apple.mail' NSUserKeyEquivalents '\033Message\033Mark as Read' '@^$d'
+    defaults_dict_set_val 'com.apple.mail' NSUserKeyEquivalents '\033Message\033Mark as Unread' '@^$d'
 
-    defaults_set_dict_val 'com.apple.Safari' NSUserKeyEquivalents '\033File\033Export as PDF...' '@~p'
-    defaults_set_dict_val 'com.apple.Safari' NSUserKeyEquivalents '\033Window\033Show Next Tab' '@~\U2192'
-    defaults_set_dict_val 'com.apple.Safari' NSUserKeyEquivalents '\033Window\033Show Previous Tab' '@~\U2190'
-    defaults_set_dict_val 'com.apple.Safari' NSUserKeyEquivalents '\033Edit\033Undo Close Tab' '@$t'
+    defaults_dict_set_val 'com.apple.Safari' NSUserKeyEquivalents '\033File\033Export as PDF...' '@~p'
+    defaults_dict_set_val 'com.apple.Safari' NSUserKeyEquivalents '\033Window\033Show Next Tab' '@~l'
+    defaults_dict_set_val 'com.apple.Safari' NSUserKeyEquivalents '\033Window\033Show Previous Tab' '@~h'
+    # defaults_dict_set_val 'com.apple.Safari' NSUserKeyEquivalents '\033Window\033Show Next Tab' '@~\U2192'
+    # defaults_dict_set_val 'com.apple.Safari' NSUserKeyEquivalents '\033Window\033Show Previous Tab' '@~\U2190'
+    defaults_dict_set_val 'com.apple.Safari' NSUserKeyEquivalents '\033Edit\033Undo Close Tab' '@$t'
 
     # Cmd-alt-arrows
-    # defaults_set_dict_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033Window\033Select Next Conversation' '@~\U2193'
-    # defaults_set_dict_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033Window\033Select Previous Conversation' '@~\U2191'
-    # defaults_set_dict_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033View\033Show Spaces' '@~\U2190'
-    # defaults_set_dict_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033View\033Show People' '@~\U2192'
+    # defaults_dict_set_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033Window\033Select Next Conversation' '@~\U2193'
+    # defaults_dict_set_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033Window\033Select Previous Conversation' '@~\U2191'
+    # defaults_dict_set_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033View\033Show Spaces' '@~\U2190'
+    # defaults_dict_set_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033View\033Show People' '@~\U2192'
+
+    defaults_dict_set_val 'com.apple.iChat' NSUserKeyEquivalents '\033Window\033Select Next Conversation' '@~j'
+    defaults_dict_set_val 'com.apple.iChat' NSUserKeyEquivalents '\033Window\033Select Previous Conversation' '@~k'
 
     # Cmd-alt-hjkl
-    defaults_set_dict_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033Window\033Select Next Conversation' '@~j'
-    defaults_set_dict_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033Window\033Select Previous Conversation' '@~k'
-    defaults_set_dict_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033View\033Show Spaces' '@~h'
-    defaults_set_dict_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033View\033Show People' '@~l'
+    defaults_dict_set_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033Window\033Select Next Conversation' '@~j'
+    defaults_dict_set_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033Window\033Select Previous Conversation' '@~k'
+    defaults_dict_set_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033View\033Show Spaces' '@~h'
+    defaults_dict_set_val 'com.apple.ist.chat' NSUserKeyEquivalents '\033View\033Show People' '@~l'
 
-    defaults_set_dict_val 'com.apple.ist.Radar7' NSUserKeyEquivalents '\033Utilities\033Mark as Duplicate' '@^$d'
-    defaults_set_dict_val 'com.apple.ist.Radar7' NSUserKeyEquivalents '\033View\033Open in Browser' '@~b'
+    defaults_dict_set_val 'com.apple.ist.Radar7' NSUserKeyEquivalents '\033Utilities\033Mark as Duplicate' '@^$d'
+    defaults_dict_set_val 'com.apple.ist.Radar7' NSUserKeyEquivalents '\033View\033Open in Browser' '@~b'
 
     echo "* Setting misc Mac preferences"
+
+  # Set up fastest key repeat rate (needs relogin).
+  defaults_write NSGlobalDomain KeyRepeat -int 1
+
+  # Sets a low time before key starts repeating.
+  defaults_write NSGlobalDomain InitialKeyRepeat -int 13
 
     # System Preferences -> Keyboard -> Shortcuts -> Full Keyboard Access
     # Full Keyboard Access: In Windows and Dialogs, press Tab to move keyboard
@@ -212,7 +223,7 @@ set_mac_prefs() {
     # with the keyboard, Enter to press the blue one, tab to select between them,
     # space to press the Tab-selected one. If there are underlined letters, hold
     # Option and press the letter to choose that option.
-    defaults_set_val -g AppleKeyboardUIMode -int 2
+    defaults_write NSGlobalDomain AppleKeyboardUIMode -int 2
 
     echo "* Setting iTerm preferences"
     # Specify the preferences directory
