@@ -159,10 +159,10 @@ call plug#end()
 
 " Indentation and tabs
 set autoindent "Indent (based on above line) when adding a line
-set tabstop=2 "A tab is worth 2 spaces
-set softtabstop=2 "See 2 spaces per tab
+set tabstop=4 "A tab is worth 2 spaces
+set softtabstop=4 "See 2 spaces per tab
 set expandtab "Use spaces instead of tabs
-set shiftwidth=2 "Indent is 2
+set shiftwidth=4 "Indent is 2
 set shiftround
 set nosmartindent "Cindent is better (it is set in ftplugin)
 set cinkeys-=0# " Otherwise, it prevents '#' from being indented
