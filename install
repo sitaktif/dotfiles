@@ -230,6 +230,11 @@ set_mac_prefs() {
     # Option and press the letter to choose that option.
     defaults_write NSGlobalDomain AppleKeyboardUIMode -int 2 &
 
+    # Ctrl-wheel to zoom
+    defaults_write com.apple.AppleMultitouchTrackpad HIDScrollZoomModifierMask -int 262144
+    defaults_write com.apple.driver.AppleBluetoothMultitouch.trackpad HIDScrollZoomModifierMask -int 262144
+    defaults_write com.apple.universalaccess closeViewScrollWheelToggle -int 1
+
     # Wait for defaults to be written down
     wait
 
