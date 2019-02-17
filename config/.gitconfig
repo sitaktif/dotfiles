@@ -37,21 +37,34 @@
 
     st = status
     a = add
-    c = commit
+    ci = commit
     ca = commit --amend
     cf = commit --fixup
     br = branch
     co = checkout
     rb = rebase
+    s = show
+    d = diff
     di = diff
     dif = diff
+    dc = diff --cached
     difca = diff --cached
     sub = submodule
     cpi = cherry-pick
+    p = push
 
     f = fetch            # Fetch one remote.
     fa = fetch --all     # Fetch from all the remotes.
-    # Create/update branch from Github PR, `g fp 657 origin` or `g fp` (Defaults: $1=HEAD, $2=upstreamRemote).
+
+
+    # Handy aliases
+    headUpstream = rev-parse --abbrev-ref --symbolic-full-name @{u} # Upstream of current branch, e.g. origin/master.
+    headRemote = "!git rev-parse --abbrev-ref --symbolic-full-name @{u} | cut -d '/' -f 1" # e.g. origin.
+    headBranch = symbolic-ref --short HEAD # e.g. master.
+    remoteOrg = "!git remote get-url $1 | awk -F ':|/' '{print $(NF-1)}' #" # Github org for remote. `g remoteOrg up` -> gibfahn.
+    defaultBranch = "!git symbolic-ref --short refs/remotes/$1/HEAD | sed \"s|^$1/||\" #" # Default branch for remote. `g defaultBranch up` -> master
+
+    # Create/update branch from Github PR, `g fp 657 origin`, `g fp 657` or `g fp` (Defaults: $1=<current branch>, $2=upstreamRemote).
     fp = "! b=${2:-$(git headRemote)}; b=${b:-up}; a=${1:-$(git headBranch)}; git fetch -fu $b pull/$a/head:$a; git checkout $a; git branch -u $b #"
 
     # A nice list of branches with dates
@@ -84,36 +97,43 @@
     lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
 
 [credential]
-	helper = osxkeychain
+    helper = osxkeychain
 [rerere]
-	enabled = true
+    enabled = true
 [push]
-	default = simple
+    default = simple
 
 [merge "ours"]
-	driver = true
+    driver = true
 
 [merge "theirs"]
-	driver = mv %B %A
+    driver = mv %B %A
 
 [merge "conflict"]
-	driver = false
+    driver = false
 [rebase]
-	autosquash = true
+    autosquash = true
 
 [merge]
-	tool = p4mergetool  # p4merge is a nice 3-way merge tool
-        # tool = meld       # meld is an alternative
+    conflictstyle = diff3    # Show common ancestor in diffs (initially confusing, but very helpful).
+    tool = p4mergetool  # p4merge is a nice 3-way merge tool
+	# tool = meld       # meld is an alternative
 [mergetool "p4mergetool"]
-	cmd = /Applications/p4merge.app/Contents/Resources/launchp4merge $PWD/$BASE $PWD/$REMOTE $PWD/$LOCAL $PWD/$MERGED
-	trustExitCode = false
+    cmd = /Applications/p4merge.app/Contents/Resources/launchp4merge $PWD/$BASE $PWD/$REMOTE $PWD/$LOCAL $PWD/$MERGED
+    trustExitCode = false
 [mergetool "meld"]
-        cmd = meld "$LOCAL" "$MERGED" "$REMOTE" --output "$MERGED"
+    cmd = meld "$LOCAL" "$MERGED" "$REMOTE" --output "$MERGED"
 [mergetool]
-	keepBackup = false
+    keepBackup = false
 
 [includeIf "gitdir:~/geo/"]
-      path = .gitconfig-work
+    path = .gitconfig-work
 
 [pull]
-	rebase = true  # Rebase by default when doing a pull
+    rebase = true  # Rebase by default when doing a pull
+[bash]
+    showDirtyState = false
+[commit]
+    verbose = true
+[submodule]
+    fetchJobs = 6
