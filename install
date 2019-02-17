@@ -217,7 +217,10 @@ set_mac_prefs() {
     defaults_write NSGlobalDomain KeyRepeat -int 1 &
 
     # Sets a low time before key starts repeating.
-    defaults_write NSGlobalDomain InitialKeyRepeat -int 13 &
+    defaults_write NSGlobalDomain InitialKeyRepeat -int 15 &
+
+    # Disable the "accent menu" when long-pressing a key
+    defaults_write NSGlobalDomain ApplePressAndHoldEnabled -int 0 &
 
     # System Preferences -> Keyboard -> Shortcuts -> Full Keyboard Access
     # Full Keyboard Access: In Windows and Dialogs, press Tab to move keyboard
@@ -234,6 +237,7 @@ set_mac_prefs() {
     defaults_write com.apple.AppleMultitouchTrackpad HIDScrollZoomModifierMask -int 262144
     defaults_write com.apple.driver.AppleBluetoothMultitouch.trackpad HIDScrollZoomModifierMask -int 262144
     defaults_write com.apple.universalaccess closeViewScrollWheelToggle -int 1
+    defaults_write com.apple.universalaccess closeViewPanningMode -int 1
 
     # Wait for defaults to be written down
     wait
@@ -348,6 +352,8 @@ main() {
     parse_args "$@"
 
     # Config specific actions
+    # Note: this will unfortunately return 0 after an OS Upgrade, in which case
+    # "xcode-select --install" has to be run manually.
     xcode-select -p >/dev/null 2>&1
     if [[ $? == 2 ]]; then
         echo "* Installing xcode command line tools (git, ...)"
@@ -380,10 +386,10 @@ main() {
     ln -sf ~/.config/Spectacle/Shortcuts.json ~/Library/Application\ Support/Spectacle/Shortcuts.json
 
     echo "* Adding python2 packages"
-    pip2 install --upgrade setuptools virtualenv neovim
+    pip2 install --upgrade setuptools virtualenv neovim ropevim
 
     echo "* Adding python3 packages"
-    pip3 install --upgrade neovim
+    pip3 install --upgrade neovim ropevim
 
     echo "* Adding ruby gems"
     gem install neovim
@@ -393,6 +399,10 @@ main() {
 
     echo "* Adding iCloud symlink"
     ln -sTf ~/'Library/Mobile Documents/com~apple~CloudDocs' ~/iCloud
+
+    echo "* Follow the following tutorial if your display sucks"
+    echo "https://www.mathewinkson.com/2013/03/force-rgb-mode-in-mac-os-x-to-fix-the-picture-quality-of-an-external-monitor"
+    echo "The script to generate the right calibration is under resources/patch-screen.rb"
 }
 
 main "$@"

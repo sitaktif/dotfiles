@@ -133,7 +133,7 @@ brew "z"
 brew "zlib"
 brew "zstd"
 
-cask "caffeine"
+cask "homebrew/cask-fonts/font-terminus"
 cask "Karabiner-elements"  # Any keyboard shortcut
 cask "Spectacle"   # Move windows around with shortcuts
 cask "Iterm2"
@@ -149,6 +149,8 @@ cask "qlstephen"   # Quicklook (spacebar in Finder) for extension-less files (RE
 cask "spotify"
 cask "vagrant"
 cask "vimr"        # Nice/fast Neovim Gui
+cask "time-out"
+cask "copyq"
 
 # Fuse stuff
 cask "osxfuse"
