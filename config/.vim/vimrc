@@ -3,20 +3,16 @@
 "Removes vi-compatibility (mandatory !)
 set nocp
 
-" Pathogen conf
-filetype off
-call pathogen#runtime_append_all_bundles()
-call pathogen#helptags()
-
 " File types and coloration have to be set here
 syntax on
 filetype plugin on
 filetype indent on
 set background=dark
+set termencoding=utf-8
 
 " Temporary fix to avoid a deprecation warning on 'import imp' in python3
 if has('python3')
-  silent! python3 1
+    silent! python3 1
 endif
 
 "}}}
@@ -37,6 +33,7 @@ else
 endif
 
 if has("gui_running") || has("gui_vimr") " GUI mode
+    colorscheme hybrid
     let &guicursor = &guicursor . ",a:blinkon0"
     set guioptions-=e "No gui-like tabs
     set guioptions-=T "No toolbar
@@ -45,32 +42,18 @@ if has("gui_running") || has("gui_vimr") " GUI mode
     set guioptions-=L "No scroolbar (left)
     set guioptions+=c "Console dialogs (no popup)
     "set guioptions+=a "Gui visual w/ mouse (yank to "*)
-
-    colorscheme hybrid
-
-    if has("gui_running")
-	if g:PLATFORM =~ "win"
-	    set guifont=Terminus:h12
-	elseif g:PLATFORM =~ "mac"
-	    set guifont=
-	else
-	    set guifont=Terminus\ 12
-	endif
-    endif
 elseif has('gui') " A terminal with GUI support
-	colorscheme ps_color
-	set termencoding=utf-8
+    colorscheme ps_color
 else
-    set termencoding=utf-8
     if g:PLATFORM =~ "mac"
-	" Tell the hybrid colorscheme that we set up iTerm correctly
-	" See https://github.com/w0ng/vim-hybrid
-	let g:hybrid_custom_term_colors = 1
-	colorscheme hybrid
+        " Tell the hybrid colorscheme that we set up iTerm correctly
+        " See https://github.com/w0ng/vim-hybrid
+        let g:hybrid_custom_term_colors = 1
+        colorscheme hybrid
         hi CursorLine ctermbg=8 guibg=#282a2e  " Make the cursorline better in vim diff
         set t_ZH=[3m t_ZR=[23m " Set the italics code
     else
-	colorscheme hybrid
+        colorscheme hybrid
     endif
 endif
 
@@ -91,46 +74,64 @@ hi link org_shade_stars NonText
 " - Avoid using standard Vim directory names like 'plugin'
 call plug#begin('~/.vim/plugged')
 
-" Make sure you use single quotes
-
-" Shorthand notation; fetches https://github.com/junegunn/vim-easy-align
-Plug 'junegunn/vim-easy-align'
-
-" let Vundle manage Vundle, required
-Plug 'VundleVim/Vundle.vim'
-
 " General plugins
+
+if has("nvim")                                      " NeoVim specific settings.
+  Plug 'autozimu/LanguageClient-neovim', { 'branch': 'next', 'do': 'bash install.sh', } " LSP Support (:h LanguageClient).
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' } " Asynchronous completion framework for neovim/Vim8 (used in LanguageClient).
+else
+  Plug 'autozimu/LanguageClient-neovim', { 'branch': 'next', 'do': 'bash install.sh', } " LSP Support (:h LanguageClient).
+  Plug 'Shougo/deoplete.nvim'                       " Same as neovim one but without UpdateRemotePlugins.
+  Plug 'roxma/nvim-yarp'                            " nvim compatibility plugin for vim used by deoplete.
+  Plug 'roxma/vim-hug-neovim-rpc'                   " nvim compatibility plugin for vim used by deoplete.
+endif
+
+Plug 'scrooloose/nerdcommenter'
 Plug 'tpope/vim-surround'
 Plug 'kana/vim-fakeclip'
 Plug 'easymotion/vim-easymotion'
 Plug 'tpope/vim-fugitive'
 Plug 'SirVer/ultisnips'
 Plug 'tpope/vim-obsession'
-Plug 'sitaktif/vim-space'
 Plug 'git://github.com/majutsushi/tagbar'
 Plug 'airblade/vim-gitgutter'
-Plug 'godlygeek/tabular'
+Plug 'godlygeek/tabular'  " Needed for plasticboy/vim-markdown
 Plug 'rking/ag.vim'
 Plug 'rizzatti/dash.vim'
 Plug 'jceb/vim-orgmode'
 Plug 'tpope/vim-speeddating' " Increase/decrease date with <C-a>/<C-x>
 Plug 'tpope/vim-unimpaired'
+Plug 'tpope/vim-repeat'
 Plug 'tommcdo/vim-exchange'
 Plug 'ciaranm/detectindent'
 Plug 'ap/vim-readdir' " Simpler browser
 Plug 'tpope/vim-abolish' " :Subvert (substitute with case preserve) and 'coerce to different casing' with crX: MixedCase (crm), camelCase (crc), snake_case (crs), UPPER_CASE (cru), dash-case (cr-), dot.case (cr.), space case (cr<space>), and Title Case (crt)
-Plug 'ctrlpvim/ctrlp.vim' " File finder
 Plug 'terryma/vim-expand-region' " Incremental selection (like ctrl-w in IDEA)
 Plug 'kana/vim-textobj-user' " requirement for textobj plugins
 Plug 'kana/vim-textobj-line' " vil --> visual inner line
-Plug 'mhinz/vim-grepper' " Proper grepping plugin?
+Plug 'takac/vim-hardtime' " Disable key repeat.
+Plug 'junegunn/fzf'
+Plug 'junegunn/fzf.vim'
+Plug 'junegunn/gv.vim'
+Plug 'junegunn/vim-easy-align'
+Plug 'justinmk/vim-sneak' " multiline f-motion with two letters
+Plug 'sjl/gundo.vim' " Interactive undo tree
+Plug 'michaeljsmith/vim-indent-object' " ii object for 'inner indent' (useful for python)
+Plug 'vim-scripts/taglist.vim'
+Plug 'qpkorr/vim-bufkill'
+Plug 'vim-scripts/a.vim'
+Plug 'fidian/hexmode'
+if exists('##TextYankPost')
+  Plug 'machakann/vim-highlightedyank'
+  let g:highlightedyank_highlight_duration = 100
+endif
 
 " Color
 Plug 'scwood/vim-hybrid'
 
 " FT Plugs
 Plug 'vim-syntastic/syntastic'
-Plug 'neomake/neomake'
+" Plug 'neomake/neomake'
 Plug 'hynek/vim-python-pep8-indent'
 Plug 'elixir-lang/vim-elixir'
 Plug 'kballard/vim-swift'
@@ -140,15 +141,12 @@ Plug 'nvie/vim-rst-tables'
 Plug 'honza/vim-snippets'
 Plug 'pangloss/vim-javascript'
 Plug 'mxw/vim-jsx'
+Plug 'rust-lang/rust.vim'
 
 " Python
 Plug 'alfredodeza/pytest.vim'
 Plug 'python-rope/ropevim'
-Plug 'davidhalter/jedi-vim'
-
-if isdirectory('/usr/local/opt/fzf')
-  Plug '/usr/local/opt/fzf'
-endif
+Plug 'nvie/vim-flake8'
 
 " Initialize plugin system
 call plug#end()
@@ -175,7 +173,7 @@ set linebreak "Break lines at words, not chars
 set scrolloff=4 "When moving vertical, start scrolling 4 lines before reaching bottom
 set modeline "Vim mini-confs near end of file
 set modelines=5
-set listchars+=tab:>-,trail:·,extends:~,nbsp:-
+set list listchars=tab:»·,trail:·,nbsp:·            " Display extra whitespace.
 set fileformats+=mac
 set nojoinspaces
 set nostartofline "Don't move the cursor to start of line after a command
@@ -198,10 +196,20 @@ set updatetime=1000 "Update swap (and showmark plugin) every 1 sec
 
 " Windows and buffers
 set splitright " Vsplit at right
-set previewheight=20 "Height of preview menu (Omni-completion)
 set hidden "To move between buffers without writing them.  Don't :q! or :qa! frivolously!
 
-" Command mode options
+" Allow using <C-W>+++++++++++++++ to make a window bigger, etc.
+nmap              <C-W>>     <C-W>><SID>ws|         " Adds mappings to make Ctrl-W -/+/</>
+nmap              <C-W><     <C-W><<SID>ws|         " ↳ repeatable, so you can press Ctrl-W
+nnoremap <script> <SID>ws>   <C-W>><SID>ws|         " ↳ and then hold > to increase width,
+nnoremap <script> <SID>ws<   <C-W><<SID>ws|         " ↳ or hold - to decrease height.
+nmap              <C-W>+     <C-W>+<SID>ws|         " ↳ Note that +,<, and > need the shift key.
+nmap              <C-W>-     <C-W>-<SID>ws|         " ↳ Use <Leader> < or > for bigger
+nnoremap <script> <SID>ws+   <C-W>+<SID>ws|         " ↳ modifications, and this for smaller
+nnoremap <script> <SID>ws-   <C-W>-<SID>ws|         " ↳ tweaks.
+nmap              <SID>ws    <Nop>
+
+"  Command mode options
 set wildmenu "Completions view in ex mode (super useful !)
 set wildignore=*.o,*.obj,*.bak,*.exe,*.pyc,*.ps,*.pdf,*.cmo,*.cmi,*.cmx "Don't complete bin files
 set cmdheight=1 "Command line height
@@ -212,7 +220,7 @@ if (v:version >= 700)
     set statusline=%F%m%r%h%w\%=[%4l/%-4L\ %3v/%-3{len(getline('.'))}]\ [%p%%]
     silent! call fugitive#statusline() " We have to call it first in order to test existence
     if exists('*fugitive#statusline')
-	set statusline=%F%m%r%h%w\ %{fugitive#statusline()}\ \%=\ [%4l/%-4L\ %3v/%-3{len(getline('.'))}]\ [%p%%]
+        set statusline=%F%m%r%h%w\ %{fugitive#statusline()}\ \%=\ [%4l/%-4L\ %3v/%-3{len(getline('.'))}]\ [%p%%]
     endif
 endif
 set ruler "Show line,col in statusbar
@@ -220,12 +228,20 @@ set number "Show lines
 set showmode "Show mode in status (insertion, visual...)
 set showcmd "Show beginning of normal commands (try d and see at bottom-right)
 
+" Grep / find options
+set path=.,/usr/include,,**                         " Add ** to search path for gf, etc.
+if executable("rg")
+  set grepprg=rg\ -S\ --vimgrep\ --no-heading       " Use ripgrep for file searching.
+  set grepformat=%f:%l:%c:%m,%f:%l:%m
+endif
+
 " Suffixes that get lower priority when doing tab completion for filenames.
 " These are files we are not likely to want to edit or read.
 set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc,.job
 
 " TODO: This is a try. See if it is ok
 set tags=tags,./tags,../tags,../../tags
+set previewheight=20 " Make the preview window 20 lines high
 
 " Auto-folding and auto-layout (e.g. for vim help files)
 " TODO: do it by filetype
@@ -285,101 +301,54 @@ noremap ' `
 " Select last pasted text
 nnoremap gp `[v`]
 
-" Next window
-" map - <c-w>w
-" Remove search hilights
-map - :noh<CR>
-" Format each line individually (useful for git commits)
-nmap gQ :g/^[^#]/norm gqq<cr>
+noremap <C-l> :noh<CR>|redraw!| " Remove search hilights
+
 
 " No more 'fu-, gotta make a `!rm ./1` :( '
 cabbr w1 :w!
 cabbr q1 :q!
-command! W w
-command! Wq wq
-command! WQ wq
-command! E e
-command! Q q
+command! -bang W w
+command! -bang Wq wq
+command! -bang WQ wq
+command! -bang E e
+command! -bang Q q
+command! -bang Qa qa
+
+" Forgot to sudo?
+if g:PLATFORM != 'win'
+    command! WW w !sudo tee % > /dev/null
+endif
 
 " Make it obvious when a non-space-blank is inserted
 imap   \<non_space_blank\>
 
-"" FUNCTION KEYS (used: 1 4 6 7 8 10 11 12) - TODO
-
-" Tabs
-map <F3> :A<cr>
-" map <F2> to something PREV
-" map <F3> to something NEXT
-map <F4> :tabe
-
-"map <F5> :!%
-
-""Preview zone F6/7/8
-"map <F6> :pop<cr>
-"map <F7> :tag<cr>
-"map <F8> :pc<cr>
-""Quickfix zone Shift + F6/7/8
-"map <S-F6> :cp<cr>
-"map <S-F7> :cn<cr>
-"map <S-F8> :ccl<cr>
-
-"" Tags update
-"map <F12> :!ctags -R .<CR><CR>
-"" Toggle 'preview' in omni-completion
-"map <C-F12> :let &completeopt = (&completeopt == "menu" ? "menu,preview" : "menu") <bar> echo &completeopt <cr>
-
+" Execute current file
+map <F9> :!%
 
 "" REDEFINITIONS
 
-" Warning:
-" The following may be a bit hardcore for beginners...
-
-" Navigate between tabs
-" nnoremap ` :tabnext<cr>
-" nnoremap <space> :tabprev<cr>
-
-" ...and between buffers.
+" Navigate between buffers.
 nnoremap <return> :bn<cr>
 nnoremap <bs> :bp<cr>
 
-" Use arrows to move the screen (not the cursor).
-" Cursor should be moved with hjkl.
-" noremap <up> 10<c-y>
-" noremap <down> 10<c-e>
-" noremap <left> 10zh
-" noremap <right> 10zl
-
-
 " Beginners that want to have a good habit
 " (i.e. use hjkl instead of <left>,<down>,<up>,<right>) can use:
-
-" A good trick to take the hjkl-use habit
 "nmap <left> :echo "Left is 'h' !"<cr>
 "nmap <down> :echo "Down is 'j' !"<cr>
 "nmap <up> :echo "Up is 'k' !"<cr>
 "nmap <right> :echo "Right is 'l' !"<cr>
 
-
-" Forgot to sudo ? Hehee :)
-if g:PLATFORM != 'win'
-    command! WW w !sudo tee % > /dev/null
-endif
-
-" Set paste
-noremap <leader>sp :set paste!<cr>
-
-" Set number
-noremap <leader>sn :set number!<cr>
-
 " Diff
-noremap <leader>vd :diffthis<cr>
-noremap <leader>vD :windo diffthis<cr>
-noremap <leader>vo :diffoff<cr>
-noremap <leader>vO :windo diffoff<cr>
+noremap <leader>dt :diffthis<cr>
+noremap <leader>wdt :windo diffthis<cr>
+noremap <leader>do :diffoff<cr>
+noremap <leader>wdo :windo diffoff<cr>
 
-" Set list and wrap
+" Various options
 noremap <leader>sl :set list!<cr>
 noremap <leader>sw :set wrap!<cr>
+noremap <leader>sp :set paste!<cr>
+noremap <leader>sn :set number!<cr>
 
 " Spell checking
 noremap <leader>st :setlocal spell! spelllang=en spellcapcheck=<cr>
@@ -389,11 +358,10 @@ noremap <leader>sf :setlocal spell spelllang=fr spellcapcheck=<cr>
 noremap <leader>sd :setlocal spell spelllang=de spellcapcheck=<cr>
 
 " Vim
-noremap <leader>vev :e ~/.vimrc<cr>
-noremap <leader>vsv :so ~/.vimrc<cr>
-exec "map <leader>vht :helptags ".s:config_dir."/doc<cr>"
+noremap <leader>vev :e ~/.vim/vimrc<cr>
+noremap <leader>vsv :so ~/.vim/vimrc<cr>
 
-" Search for visually (multiline) selected text
+" Search for visually (multiline) selected text with * and #
 vnoremap <silent> * :<C-U>
   \let old_reg=getreg('"')<Bar>let old_regtype=getregtype('"')<CR>
   \gvy/<C-R><C-R>=substitute(
@@ -406,34 +374,7 @@ vnoremap <silent> # :<C-U>
   \gV:call setreg('"', old_reg, old_regtype)<CR>
 
 
-" Fold non-search content to only display the search (super tip!)
-nnoremap g/ :call SitaShowSearchOnly()<cr>
-function! SitaShowSearchOnly()
-    if &foldmethod == "manual"
-	echomsg "Cannot use the functionality with foldmethod == \"manual\"."
-	echomsg "Change your settings first (set foldmethod=marker for example)"
-	return
-    endif
-    if exists("b:bak_foldmethod") && exists("b:bak_foldexpr")
-	exec("setlocal foldmethod=".b:bak_foldmethod." foldexpr=".b:bak_foldexpr)
-	exec("setlocal foldlevel=".b:bak_foldlevel." foldcolumn=".b:bak_foldcolumn)
-	unlet b:bak_foldmethod b:bak_foldexpr
-	unlet b:bak_foldlevel b:bak_foldcolumn
-    else
-	let b:bak_foldlevel=&foldlevel
-	let b:bak_foldcolumn=&foldcolumn
-	let b:bak_foldmethod=&foldmethod
-	let b:bak_foldexpr=&foldexpr
-	setlocal foldexpr=(getline(v:lnum)=~@/)?0:(getline(v:lnum-2)=~@/)\|\|(getline(v:lnum+2)=~@/)?1:2 foldmethod=expr foldlevel=0 foldcolumn=2
-    endif
-endfunc
-
-
-" PDF
-"Transforms ´e into é etc.. for cp/paste from bad pdf files
-" map <leader>pa :s/´e/é/ge<bar>s/`e/è/ge<bar>s/[ˆ^]e/ê/ge<bar>s/`a/à/ge<bar>s/[ˆ^]o/ô/ge<bar>s/[ˆ^]i/î/ge<cr>
-
-" Qwerty mappings
+" Some accentuated letters
 if g:PLATFORM =~ 'mac'
     noremap! ß é
     noremap! ∂ ê
@@ -441,7 +382,7 @@ if g:PLATFORM =~ 'mac'
     noremap! µ ù
 endif
 
-" Fix the shift-backspace problem
+" Fix shift-backspace in some terminals
 noremap!  <bs>
 
 "}}}
@@ -455,8 +396,7 @@ noremap!  <bs>
 " ---| AUTOCOMMANDS |--- {{{
 
 " Keyword dictionary completion with syntax
-autocmd FileType * exec('setlocal dict+='.$VIMRUNTIME.'/syntax/'.expand('<amatch>').'.vim')
-
+" autocmd FileType * exec('setlocal dict+='.$VIMRUNTIME.'/syntax/'.expand('<amatch>').'.vim')
 
 " always jump back to the last position when re-entering a file
 if has("autocmd")
@@ -468,43 +408,209 @@ endif
 
 "}}}
 
-" ---| FILETYPE |--- {{{
-" Small confs only. Big ones are in ~/.vim/ftplugin
+" ---| PLUGINS |--- {{{
 
-" Python
-au FileType python set omnifunc=pythoncomplete#Complete
+" Sneak vim
+nmap              f <Plug>Sneak_f|                  " Use sneak for f (multiline+highlight).
+nmap              F <Plug>Sneak_F|                  " ↳             F
+nmap              t <Plug>Sneak_t|                  " ↳             t
+nmap              T <Plug>Sneak_T|                  " ↳             T
 
-" Javascript
-autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
+let g:sneak#label = 1 " Enable label mode (like easymotion)
+let g:sneak#s_next = 1 " Allow s/S to go to the next/prev sneak value
 
-" CSS [Works so good :)]
-autocmd FileType css set omnifunc=csscomplete#CompleteCSS
+" deoplete (async autocomplete)
+let g:deoplete#enable_at_startup = 1
 
-" PHP
-autocmd FileType php set omnifunc=phpcomplete#CompletePHP
+" Complete with <C-space>
+" Note: the function was initially created for <tab>
+inoremap <silent><expr> <C-Space>
+    \ pumvisible() ? "\<C-n>" :
+    \ <SID>check_back_space() ? "\<TAB>" :
+    \ deoplete#mappings#manual_complete()
+function! s:check_back_space() abort "{{{
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~ '\s'
+endfunction"}}}
 
-" Vim files
-autocmd FileType vim map <buffer> <f5> :so %<cr>
+" LanguageServer (https://github.com/autozimu/LanguageClient-neovim)
+let g:LanguageClient_serverCommands = {
+    \ 'python': ['/usr/local/bin/pyls'],
+    \ 'rust':   ['rls'],
+    \ 'go':     ['/Users/rchossart/go/bin/go-langserver'],
+    \ }
 
-" HTML
+let g:LanguageClient_diagnosticsList = "Location" " Don't overwrite quickfix list with linter/checker output.
+
+nnoremap <F5> :call LanguageClient_contextMenu()<CR>
+" Or map each action separately
+nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
+nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
+nnoremap <silent> <F6> :call LanguageClient#textDocument_rename()<CR><Paste>
+
+"" FZF (FuzzyFinder)
+set rtp+=/usr/local/opt/fzf
+
+nnoremap <c-p> :Files<cr>
+nnoremap <c-n> :Buffers<cr>
+nnoremap <c-q> :History<cr>
+nnoremap <c-s> :Rg<cr>
+
+" FZF - Ripgrep
+" Use bang (!) to search gitignored files.
+" Use '?' to display a preview of the file in fzf.
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --color=always --smart-case '.
+  \   (<bang>0 ? '-u ' : '').shellescape(<q-args>), 1,
+  \   fzf#vim#with_preview('right:50%:hidden', '?'),
+  \   <bang>0)
+command! RG Rg
+
+function! s:fzf_build_quickfix_list(lines)
+  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
+  copen
+  cc
+endfunction
+
+function! s:fzf_build_location_list(lines)
+  call setloclist(map(copy(a:lines), '{ "filename": v:val }'))
+  lopen
+  lc
+endfunction
+
+let g:fzf_action = {
+  \ 'ctrl-q': function('s:fzf_build_quickfix_list'),
+  \ 'ctrl-l': function('s:fzf_build_location_list'),
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
+
+" UltiSnips
+let g:UltiSnipsSnippetDir = 'UltiSnips'
+let g:UltiSnipsListSnippets = '<c-x><tab>'
+let g:UltiSnipsJumpForwardTrigger='<tab>'
+let g:UltiSnipsJumpBackwardTrigger='<s-tab>'
+
+" UltiSnips - ft specific
+let g:ultisnips_python_quoting_style='single'
+
+" Taglist plugin
+let Tlist_Use_Right_Window = 1
+let Tlist_Exit_OnlyWindow = 1
+let Tlist_Enable_Fold_Column = 0
+"
+"let Tlist_Compact_Format = 1
+let Tlist_Display_Prototype = 1
+let Tlist_File_Fold_Auto_Close = 1 " Only display current file
+let Tlist_Inc_Winwidth = 1
+let Tlist_WinWidth = 48
+"
+" Taglist OCaml language
+let g:tlist_ocaml_settings = 'ocaml;m:module;t:type;d:definition'
+let g:tlist_omlet_settings = 'ocaml;m:module;t:type;d:definition'
+
+"Panel with list of functions, vars...
+map <F11> :TagbarToggle<cr>
+let g:tagbar_autoclose = 1
+
+" Markdown
+let g:vim_markdown_folding_disabled = 1
+hi lin htmlH1 Constant
+hi lin htmlH2 Preproc
+hi lin htmlH3 Special
+
+"" Gundo plugin - undo tree :)
+map <leader>g :GundoToggle<CR>
+
+"" DetectIndent
+let g:detectindent_preferred_expandtab = 1
+let g:detectindent_preferred_indent = 4
+autocmd VimEnter * DetectIndent
+
+"" readdir (simpler file explorer)
+let g:loaded_netrwPlugin = 1
+
+"}}}
+
+" ---| FILETYPE PLUGINS |--- {{{
+
+"" GIT
+
+nmap [g <Plug>GitGutterPrevHunk| " Next hunk with GitGutter
+nmap ]g <Plug>GitGutterNextHunk| " Previous hunk with GitGutter
+
+"" Fugitive
+"nnoremap <buffer> <silent> + :<C-U>silent execute <SID>StageToggle(line('.'),line('.')+v:count1-1)<CR>
+"xnoremap <buffer> <silent> + :<C-U>silent execute <SID>StageToggle(line("'<"),line("'>"))<CR>
+
+" Format each line individually (useful for git commits)
+autocmd BufReadPre COMMIT_EDITMSG nnoremap gQ :g/^[^#]/norm gqq<cr>
+
+" GV (simple git vizualizer, needs fugitive)
+autocmd! FileType GV nmap <buffer> <c-n> ]]o
+autocmd  FileType GV nmap <buffer> <c-p> [[o
+
+"" Vim files
+autocmd FileType vim noremap <buffer> <f5> :so %<cr>
+autocmd FileType vim vnoremap <buffer> <f5> :<c-u>exe join(getline("'<","'>"),'<bar>')<cr>
+
+"" HTML
 "Jump to end of tag
-autocmd FileType html,htmldjango,xml,xhtml imap <c-l> <esc>l%a
-
-" Mutt (mail client)
-au BufRead /tmp/mutt-* set tw=72 spell
+autocmd FileType html,htmldjango,xml,xhtml imap <buffer> <c-l> <esc>l%a
 
 " Shell / Bash
-au FileType sh set iskeyword-=.
+autocmd FileType sh set iskeyword-=.
 
 " XML
 com! XMLClean 1,$!xmllint --format -
 
+"" Bash
+let g:is_bash = 1 " Make bash default rather than sh
+
+" Shellcheck
+autocmd FileType sh set makeprg=shellcheck\ -f\ gcc\ %
+
+"" Python
+
+" jedi
+let g:jedi#smart_auto_mappings = 0  " Do not complete 'import' when writing 'from foo<space>'
+
+" vim-snippets
+let g:ultisnips_python_style = "google"
+let g:ultisnips_python_triple_quoting_style = "double"
+
+" Pyflakes
+if !has('python')
+    let b:did_pyflakes_plugin = 1
+endif
+"let g:pyflakes_use_quickfix = 0
+
+" Sytastic Settings
+let g:syntastic_python_checkers = ["flake8"]
+"
+" Pep8:
+" E201    whitespace after ‘(‘
+" E202    whitespace before ‘)’
+" E127    continuation line over-indented for visual indent
+" E128    continuation line under-indented for visual indent
+"
+" PyLint:
+" C0103   Invalid constant/variable name (1 or 2 letter, lowercase constant, ...)
+let g:syntastic_python_flake8_args = "--max-line-length=160 --ignore=C0103"
+
+" PyTest - Execute the tests
+autocmd FileType python nnoremap <buffer> <silent> <Leader>tf <Esc>:Pytest file<CR>
+autocmd FileType python nnoremap <buffer> <silent> <Leader>tc <Esc>:Pytest class<CR>
+autocmd FileType python nnoremap <buffer> <silent> <Leader>tm <Esc>:Pytest method<CR>
+" PyTest - Cycle through test errors
+autocmd FileType python nnoremap <buffer> <silent> <Leader>tn <Esc>:Pytest next<CR>
+autocmd FileType python nnoremap <buffer> <silent> <Leader>tp <Esc>:Pytest previous<CR>
+autocmd FileType python nnoremap <buffer> <silent> <Leader>te <Esc>:Pytest error<CR>
+
 "}}}
 
 " ---| INCLUDES |--- {{{
-
-" Plugin-dependant settings
-exec 'source ' . s:config_dir . '/sitaktif/plugin_vimrc.vim'
 
 " Autocorrections
 exec 'source ' . s:config_dir . '/sitaktif/autocorrect_fr_vimrc.vim'
