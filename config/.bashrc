@@ -32,10 +32,10 @@ fi
 #           PROMPT            #
 ###############################
 
-export GIT_PS1_SHOWDIRTYSTATE=true # *: unstaged changes, +: staged changes
-export GIT_PS1_SHOWSTASHSTATE=true # $: something is stashed
+# export GIT_PS1_SHOWDIRTYSTATE=true # *: unstaged changes, +: staged changes
+# export GIT_PS1_SHOWSTASHSTATE=true # $: something is stashed
 # export GIT_PS1_SHOWUNTRACKEDFILES=true # %: untracked files exist
-export GIT_PS1_SHOWUPSTREAM="auto" # <: behind upstream, >: ahead upstream, <>: diverged
+# export GIT_PS1_SHOWUPSTREAM="auto" # <: behind upstream, >: ahead upstream, <>: diverged
 L_Z_PROMPT_CMD=${L_Z_PROMPT_CMD:-true}
 
 # then you can add \`jobs_count\` to the end of your PS1 like this
@@ -45,39 +45,45 @@ export PS1="\[\e[32m\]\u\[\e[m\]@\[\e[32m\]\h\[\e[m\]:\[\e[34m\]\w\[\e[m\]\`git_
 ## This is to have the last command's duration
 
 function __rc_set_last_command_start_time {
-  __RC_LAST_COMMAND_START=${__RC_LAST_COMMAND_START:-$SECONDS}
+    __RC_LAST_COMMAND_START=${__RC_LAST_COMMAND_START:-$SECONDS}
 }
 trap '__rc_set_last_command_start_time' DEBUG
 
-  # Append to history if it's been a while
+# Append to history if it's been a while
 __rc_append_bash_history_maybe() {
     # $SECONDS represents the # seconds since the start of the session
-    if [[ $(( $SECONDS - ${__RC_LAST_SECONDS:-0} )) -gt 10 ]]; then
-      history -a  # Apprend new history to .bash_history
+    if [[ $(( $SECONDS - ${__RC_LAST_HISTORY_SECONDS:-0} )) -gt 10 ]]; then
+        history -a  # Apprend new history to .bash_history
+        __RC_LAST_HISTORY_SECONDS=$SECONDS
     fi
-    __RC_LAST_SECONDS=SECONDS
 }
+
+C_RST='\[\e[0m\]'
+C_RED='\[\e[0;31m\]'
+C_BLUE='\[\e[01;34m\]'
+C_USER='\[\e[38;5;${L_PS1_HOST_COLOR}m\]'
+C_DATE='\[\e[38;5;166m\]'
+C_GIT='\[\e[38;5;63m\]'
+C_GREEN='\[\e[0;32m\]'
+C_YELLOW='\[\e[01;93m\]'
+C_VENV=$C_GREEN
+
 
 # Nice, complete prompt
 function __rc_prompt_command() {
     local EXIT="$?"  # This needs to be first
-
-    local C_RST='\[\e[0m\]'
-    local C_RED='\[\e[0;31m\]'
-    local C_GREEN='\[\e[0;32m\]'
-    local C_BLUE='\[\e[01;34m\]'
-    local C_YELLOW='\[\e[01;93m\]'
-    local C_USER='\[\e[38;5;${L_PS1_HOST_COLOR}m\]'
-    local C_VENV=$C_GREEN
-    local C_DATE='\[\e[38;5;166m\]'
-    local C_GIT='\[\e[38;5;63m\]'
 
     local PS_EXIT=""
     if [[ $EXIT != 0 ]]; then
         PS_EXIT="${C_RED}[$EXIT]${C_RST} "
     fi
 
-    local job_count=$(jobs -l | grep 'Running\|Suspended' | wc -l)
+    # Avoid using pipes since subprocesses are expensive
+    local -i job_count=0
+    for i in $(jobs); do
+      [[ $i == Running || $i == Sleeping ]] && job_count+=1
+    done
+
     local job_count_prompt
     if [[ $job_count -gt 0 ]]; then
         job_count_prompt="${C_YELLOW}[${job_count}]${C_RST} "
@@ -107,13 +113,6 @@ function __rc_prompt_command() {
 function __rc_prompt_command2() {
     local EXIT="$?"  # This needs to be first
 
-    local C_RST='\[\e[0m\]'
-    local C_RED='\[\e[0;31m\]'
-    local C_BLUE='\[\e[01;34m\]'
-    local C_USER='\[\e[38;5;${L_PS1_HOST_COLOR}m\]'
-    local C_DATE='\[\e[38;5;166m\]'
-    local C_GIT='\[\e[38;5;63m\]'
-
     local PS_EXIT=""
     if [[ $EXIT != 0 ]]; then
         PS_EXIT="${C_RED}[$EXIT]${C_RST} "
@@ -142,7 +141,7 @@ alias prompt_simple='export PROMPT_COMMAND=__rc_prompt_command2'
 ###############################
 
 # Binaries in home
-export PATH=~/bin/local:~/bin:~/bin/scripts:$PATH
+export PATH=~/bin/local:~/bin:~/bin/scripts:${GOPATH:-$USER/go}/bin:$PATH
 
 # General
 export EDITOR=vim
@@ -168,8 +167,10 @@ export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
 # --ignore-case: smartcase search, --LONG-PROMPT: verbose prompt, --RAW-CONTROL-CHARS: show colors,
 # --HILITE-UNREAD: highlight first unread line moving, --tabs=4: tab is 4 spaces,
 # --window=-4: keep 4 lines overlapping when scrolling with the space key
-export LESS='--tabs=4 --ignore-case --RAW-CONTROL-CHARS --quit-if-one-screen --status-column --LONG-PROMPT --HILITE-UNREAD --window=-4'
+export LESS='--tabs=4 --ignore-case --quit-if-one-screen --RAW-CONTROL-CHARS --status-column --LONG-PROMPT --HILITE-UNREAD --window=-4'
 
+# Pager
+export PAGER=less
 
 # Go
 export GOPATH="$HOME/go"
@@ -362,7 +363,7 @@ alias vimbk="e ~/.bashrc_kollok"
 alias vimg="e ~/.gitconfig"
 alias soz="source ~/.zshrc"
 alias vimz="e ~/.zshrc"
-alias vimv="e ~/.vimrc"
+alias vimv="e ~/.vim/vimrc"
 
 ############################
 #        BOOKMARKS         #
@@ -394,6 +395,104 @@ alias adencode='~/scripts/android/encode_to_mp4.sh low'
 alias restore_vim_session='vim $(find . -name ".*.swp" | while read f; do rm "$f"; echo "$f" | sed "s/\\.\\([^/]*\\).swp/\\1/"; done)'
 alias vless='vim -u /usr/share/vim/vim72/macros/less.vim'
 alias myports='netstat -alpe --ip'
+
+
+############################
+#        FUNCTIONS         #
+############################
+
+
+## Fuzzy-finder (fzf) - see https://junegunn.kr/2016/07/fzf-git/
+
+# multi-selection, 60% height (default 40%),
+FZF_DEFAULT_OPTS='--multi --height=60% --bind ctrl-t:toggle-all,alt-j:jump,alt-k:jump-accept'
+
+# No worky?
+# --no-hscroll
+# --bind ctrl-v:toggle-preview --preview-window down:3:hidden
+
+# Open results of rg in vim, with fzf filtering
+# TODO: add one that uses fzf to choose the files
+alias re='$EDITOR -q <($(fc -ln -1) --vimgrep)'
+
+
+### FZF - Awesome git previews
+
+## FZF aliases / functions
+
+# Fzf local git repos
+gp() {
+	local dir
+	dir=$(find ~/git ~/src ~/geo -mindepth 1 -maxdepth 1 -type d |
+		fzf "$@")
+	[[ -n "$dir" ]] && cd "$dir"
+}
+
+## FZF completions
+#
+# See https://github.com/junegunn/fzf/wiki/Examples-(completion)
+
+# Custom fuzzy completion for "z" command
+#   e.g. z **<TAB>
+_fzf_complete_z() {
+	FZF_COMPLETION_TRIGGER='' FZF_COMPLETION_OPTS="$FZF_COMPLETION_OPTS --tac --no-sort" \
+		_fzf_complete --reverse "$@" < <(_z -l 2>&1)
+	COMPREPLY=$(sed -E 's/[^ ]*[[:space:]]+//' <<< "$COMPREPLY")
+
+	# Need to add the following (doing it at the end of this file
+	# to override z completion)
+	# if [[ -n "$BASH" ]]; then
+	# 	complete -F _fzf_complete_z -o default -o bashdefault z
+	# fi
+}
+
+
+## FZF key bindings
+
+# Fzf git files (unstaged).
+_gib_git_f() {
+	git -c color.status=always status --short |
+		fzf --height 50% "$@" --border -m --ansi --nth 2..,.. \
+		--preview '(git diff --color=always -- {-1} | sed 1,4d; cat {-1}) | head -500' | cut -c4- | sed 's/.* -> //'
+}
+# Fzf git branches.
+_gib_git_b() {
+	git branch -a --color=always --sort=committerdate --sort=-refname:rstrip=2 | grep -v '/HEAD\s' |
+		fzf --height 50% "$@" --border --ansi --multi --tac --preview-window right:70% \
+		--preview 'git log --oneline --graph --date=short --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1) | head -'$LINES | sed 's/^..//' | cut -d' ' -f1 | sed 's#^remotes/##'
+}
+# Fzf git tags.
+_gib_git_t() {
+	git tag --sort -version:refname |
+		fzf --height 50% "$@" --border --multi --preview-window right:70% \
+		--preview 'git show --color=always {} | head -'$LINES
+}
+# Fzf git commits.
+_gib_git_h() {
+	git log --date=short --format="%C(green)%C(bold)%cd %C(auto)%h%d %s (%an)" --graph --color=always |
+		fzf --height 50% "$@" --border --ansi --no-sort --reverse --multi --bind 'ctrl-s:toggle-sort' \
+		--header 'Press CTRL-S to toggle sort' \
+		--preview 'grep -o "[a-f0-9]\{7,\}" <<< {} | xargs git show --color=always | head -'$LINES | grep -o "[a-f0-9]\{7,\}"
+}
+# Fzf git remotes.
+_gib_git_r() {
+	git remote -v | awk '{print $1 "\t" $2}' | uniq |
+		fzf --height 50% "$@" --border --tac \
+		--preview 'git log --oneline --graph --date=short --pretty="format:%C(auto)%cd %h%d %s" {1} | head -200' |
+		cut -d$'\t' -f1
+}
+# More fzf helpers.
+#_gib_join-lines() { local item; while read item; do echo -n "${(q)item} "; done; }
+bind-git-helper() {
+local c
+bind '"\er": redraw-current-line'
+for c in $@; do
+	eval "bind '\"\C-g\C-$c\": \"\$(_gib_git_$c)\e\C-e\er\"'"
+done
+}
+
+bind-git-helper f b t h r
+unset -f bind-git-helper
 
 
 ## Python {{{
@@ -429,10 +528,36 @@ fi
 
 [[ -f ~/.fzf.bash ]] && source ~/.fzf.bash
 
-# Seems that it can be sped up (see https://github.com/clvv/fasd)
-eval "$(fasd --init auto)"
+# Load z (jump to directories, see `man z`) if brew is installed and z is too
+if command -v brew >/dev/null 2>&1; then
+	# Load rupa's z if installed
+	[ -f $(brew --prefix)/etc/profile.d/z.sh ] && source $(brew --prefix)/etc/profile.d/z.sh
+fi
 
+# Add the fuzzyfinder completion
+if [[ -n "$BASH" ]]; then
+	complete -r z
+	complete -F _fzf_complete_z -o default -o bashdefault z
+fi
+
+# FASD is like z with more features but my conclusion is it's way too slow
+# (it "skips" prompts when I keep enter pressed)
+#
+# # Slower version
+# # eval "$(fasd --init auto)"
+#
+# # Faster version... but actaully the bash-hook that prepends stuff to BASH_PROMPT is still SUPER slow (too many pipes/process calls)
+# fasd_cache="$HOME/.fasd-init-bash"
+# if [ "$(command -v fasd)" -nt "$fasd_cache" -o ! -s "$fasd_cache" ]; then
+#   fasd --init posix-alias bash-hook bash-ccomp bash-ccomp-install >| "$fasd_cache"
+# fi
+# source "$fasd_cache"
+# unset fasd_cache
+#
 # FASD additional aliases
 # alias v='f -t -e vim -b viminfo'  # This is not working :(((
 
 #vim:foldmethod:marker
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"

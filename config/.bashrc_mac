@@ -66,11 +66,7 @@ export PATH=$GRADLE_HOME/bin:$PROTOBUF_HOME/bin:$PATH
 # Bash
 [[ -z $TERM ]] && export TERM=xterm-256color
 
-if [[ -n $DISPLAY || -z $SSH_CONNECTION ]]; then
-    export L_VIM="vimr" # graphical
-else
-    export L_VIM="vim" # terminal
-fi 
+export L_VIM="nvim"
 
 
 ###############################
