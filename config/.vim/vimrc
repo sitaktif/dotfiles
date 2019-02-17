@@ -301,10 +301,10 @@ noremap ' `
 " Select last pasted text
 nnoremap gp `[v`]
 
-noremap <C-l> :noh<CR>|redraw!| " Remove search hilights
+" Remove search hilights
+noremap <C-l> :noh<CR><C-l>
 
-
-" No more 'fu-, gotta make a `!rm ./1` :( '
+" Common typos when saving/editing
 cabbr w1 :w!
 cabbr q1 :q!
 command! -bang W w
