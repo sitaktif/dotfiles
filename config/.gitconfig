@@ -37,9 +37,14 @@
 
     st = status
     a = add
+    ad = add
+    c = commit
     ci = commit
     ca = commit --amend
+    caca = commit --amend -a -C HEAD
     cf = commit --fixup
+    cfh = commit --fixup
+    cfha = commit --fixup HEAD --all
     br = branch
     co = checkout
     rb = rebase
@@ -137,3 +142,9 @@
     verbose = true
 [submodule]
     fetchJobs = 6
+[interactive]
+    singleKey = true
+[status]
+    showStash = true
+[stash]
+    showPatch = true

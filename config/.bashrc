@@ -193,7 +193,44 @@ fi
 #           ALIASES           #
 ###############################
 
-# Summary: cd, ls, t[a] (tree), mkcd, ,, (cd ..), e (edit), f, g gi gr gri (grep), lna, sr, sls
+# Wrapper that creates a completion function on the fly for aliases that contain arguments.
+#
+# For aliases that don't take arguments you can directly set the completion function with e.g. 
+# complete -o default -F _git g   # Assuming 'g' is the alias and '_git' is
+# the completion function.
+#
+# A convention for completion is to prefix with '_', for example completion for
+# 'git' is '_git' and completion for 'git log' is '_git_log'.
+#
+# To find out what the completer function is called: complete -p <cmd>
+# (although sometimes the above doesn't work because e.g. fzf wraps around it).
+#
+# Usage (here '_my_git_remote_rm' is an arbitrary identifier):
+#
+# make-completion-wrapper _git _my_git_remote_rm git remote rm  # Create the compl func
+# complete -F _my_git_remote_rm grr                             # Assign to alias
+#
+make_completion_wrapper() {
+    local comp_function_name="$1"
+    local function_name="$2"
+    local arg_count=$(($#-3))
+    shift 2
+    # shellcheck disable=SC2124
+    local function="
+        function $function_name {
+            ((COMP_CWORD+=$arg_count))
+            COMP_WORDS=( \"$@\" \${COMP_WORDS[@]:1} )
+            \"$comp_function_name\"
+            return 0
+        }"
+    eval "$function"
+    # echo "$function_name"
+    # echo "$function"
+    
+    # Not quite working yet...
+    # make_completion_wrapper _git_remote _my_git_remote_rm git-remote rm
+    # complete -o default -F _my_git_remote_rm grr
+}
 
 ## Bookmarks
 alias cdjf='cd ~/git/site_espira/jf'
@@ -228,9 +265,12 @@ gw() { # Run gradle if found in the current or parent directories
 }
 
 # git
-alias gg='git log --graph --full-history --all --color --pretty=format:"%x1b[31m%h%x09%C(auto)%d%Creset%x20%s"'
-alias gg2='git log --graph --full-history --all --color --pretty=format:"%x1b[31m%h%x09%x20%x1b[0m%s%x1b[32m%d%x1b[0m"'
+alias gg='git log --graph --color --pretty=format:"%x1b[31m%h%x09%C(auto)%d%Creset%x20%s"'
+alias gg2='git log --graph --color --pretty=format:"%x1b[31m%h%x09%x20%x1b[0m%s%x1b[32m%d%x1b[0m"'
+alias gga='git log --graph --full-history --all --color --pretty=format:"%x1b[31m%h%x09%C(auto)%d%Creset%x20%s"'
+alias gga2='git log --graph --full-history --all --color --pretty=format:"%x1b[31m%h%x09%x20%x1b[0m%s%x1b[32m%d%x1b[0m"'
 alias gl="git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd) %C(bold blue)<%an>%Creset' --abbrev-commit --date=local"
+alias gap="git add -p"
 # Edit files in conflict
 alias gec="git diff --name-only | uniq | xargs $EDITOR"
 
@@ -263,17 +303,19 @@ alias g=git
 alias gra='git remote add'
 alias grr='git remote rm'
 alias grv='git remote -v'
-alias grei='git rebase -i'
 alias grec='git rebase --cont'
 alias grea='git rebase --abort'
 alias gpullod='git pull origin dev'
 alias gpullom='git pull origin master'
-alias gpullud='git pull upstream dev'
-alias gpullum='git pull upstream master'
+alias gpullud='git pull up dev'
+alias gpullum='git pull up master'
 alias gpushod='git push origin dev'
 alias gpushom='git push origin master'
-alias gpushud='git push upstream dev'
-alias gpushum='git push upstream master'
+alias gpushud='git push up dev'
+alias gpushum='git push up master'
+
+# Completion for aliases
+complete -o default -F _git g
 
 # Core
 alias ls='ls --color=auto'
@@ -290,12 +332,12 @@ mkcd () {
     mkdir -p "$*" ; cd "$*"
 }
 
-function , ()      { cd .. ; }
-function ,, ()     { cd ../.. ; }
-function ,,, ()    { cd ../../.. ; }
-function ,,,, ()   { cd ../../../.. ; }
-function ,,,,, ()  { cd ../../../../.. ; }
-function ,,,,,, () { cd ../../../../../.. ; }
+alias ,='cd ..'
+alias ,,='cd ../..'
+alias ,,,='cd ../../..'
+alias ,,,,='cd ../../../..'
+alias ,,,,,='cd ../../../../..'
+alias ,,,,,,='cd ../../../../../..'
 
 # cd to the first parent dir containing .git/
 function cdg() {
@@ -350,6 +392,8 @@ alias right='DISPLAY=:0.1'
 
 # Editor related
 alias e="$L_VIM"
+# TODO(rchossart): need to prefix this with condition of existence of fzf
+complete -F _fzf_file_completion -o default -o bashdefault e
 alias did='vim +"normal Go" +"r!date" ~/notes/did.txt'
 
 # Bash, zsh, vim RC files
@@ -405,7 +449,7 @@ alias myports='netstat -alpe --ip'
 ## Fuzzy-finder (fzf) - see https://junegunn.kr/2016/07/fzf-git/
 
 # multi-selection, 60% height (default 40%),
-FZF_DEFAULT_OPTS='--multi --height=60% --bind ctrl-t:toggle-all,alt-j:jump,alt-k:jump-accept'
+export FZF_DEFAULT_OPTS='--multi --height=60% --bind ctrl-t:toggle-all,alt-j:jump,alt-k:jump-accept'
 
 # No worky?
 # --no-hscroll
@@ -483,12 +527,13 @@ _gib_git_r() {
 }
 # More fzf helpers.
 #_gib_join-lines() { local item; while read item; do echo -n "${(q)item} "; done; }
+# TODO: the eval is breaking syntax
 bind-git-helper() {
-local c
-bind '"\er": redraw-current-line'
-for c in $@; do
-	eval "bind '\"\C-g\C-$c\": \"\$(_gib_git_$c)\e\C-e\er\"'"
-done
+    local c
+    bind '"\er": redraw-current-line'
+    for c in "$@"; do
+        eval "bind '\"\\C-g\\C-$c\": \"\$(_gib_git_$c)\\e\\C-e\\er\" '"
+    done
 }
 
 bind-git-helper f b t h r
@@ -557,7 +602,7 @@ fi
 # FASD additional aliases
 # alias v='f -t -e vim -b viminfo'  # This is not working :(((
 
-#vim:foldmethod:marker
-
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
+
+# vim: foldmethod=marker sw=4 ts=4 sts=4 et

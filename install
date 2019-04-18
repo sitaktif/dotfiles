@@ -248,6 +248,8 @@ set_mac_prefs() {
     # Tell iTerm2 to use the custom preferences in the directory
     defaults_write com.googlecode.iterm2.plist LoadPrefsFromCustomFolder -int 1
 
+    # Show and hide docker super quickly
+    defaults write com.apple.dock autohide-time-modifier -float 0.12
 
     #  # Examples from gibfahn
     #  

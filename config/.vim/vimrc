@@ -76,16 +76,16 @@ call plug#begin('~/.vim/plugged')
 
 " General plugins
 
+Plug 'autozimu/LanguageClient-neovim', { 'branch': 'next', 'do': 'bash install.sh', } " LSP Support (:h LanguageClient).
 if has("nvim")                                      " NeoVim specific settings.
-  Plug 'autozimu/LanguageClient-neovim', { 'branch': 'next', 'do': 'bash install.sh', } " LSP Support (:h LanguageClient).
   Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' } " Asynchronous completion framework for neovim/Vim8 (used in LanguageClient).
 else
-  Plug 'autozimu/LanguageClient-neovim', { 'branch': 'next', 'do': 'bash install.sh', } " LSP Support (:h LanguageClient).
   Plug 'Shougo/deoplete.nvim'                       " Same as neovim one but without UpdateRemotePlugins.
   Plug 'roxma/nvim-yarp'                            " nvim compatibility plugin for vim used by deoplete.
   Plug 'roxma/vim-hug-neovim-rpc'                   " nvim compatibility plugin for vim used by deoplete.
 endif
 
+Plug 'Shougo/echodoc.vim'                                    " Complete func signatures in cmd
 Plug 'scrooloose/nerdcommenter'
 Plug 'tpope/vim-surround'
 Plug 'kana/vim-fakeclip'
@@ -132,6 +132,7 @@ Plug 'scwood/vim-hybrid'
 " FT Plugs
 Plug 'vim-syntastic/syntastic'
 " Plug 'neomake/neomake'
+Plug 'kassio/neoterm'
 Plug 'hynek/vim-python-pep8-indent'
 Plug 'elixir-lang/vim-elixir'
 Plug 'kballard/vim-swift'
@@ -163,8 +164,11 @@ set expandtab "Use spaces instead of tabs
 set shiftwidth=4 "Indent is 2
 set shiftround
 set nosmartindent "Cindent is better (it is set in ftplugin)
-set cinkeys-=0# " Otherwise, it prevents '#' from being indented
-set indentkeys-=0#
+
+" Don't change indentation when inserting # as first char.
+" Some filetype plugins override this so make it an autocmd.
+autocmd BufNewFile,BufReadPost * set indentkeys-=0#
+autocmd BufNewFile,BufReadPost * set cinkeys-=0#
 
 " Editing layout
 set formatoptions+=ln "See :h 'formatoptions' :)
@@ -225,7 +229,7 @@ if (v:version >= 700)
 endif
 set ruler "Show line,col in statusbar
 set number "Show lines
-set showmode "Show mode in status (insertion, visual...)
+set noshowmode  " Do not show --INSERT-- etc., needed for the echodoc plugin.
 set showcmd "Show beginning of normal commands (try d and see at bottom-right)
 
 " Grep / find options
@@ -235,13 +239,17 @@ if executable("rg")
   set grepformat=%f:%l:%c:%m,%f:%l:%m
 endif
 
+" Match the quickfix error format too. This allows editing the quickfix window
+" by doing ':set modifiable' on it, deleting items and running ':cgetbuffer'.
+set errorformat+=,%f\|%l\ col\ %c\|%m
+
 " Suffixes that get lower priority when doing tab completion for filenames.
 " These are files we are not likely to want to edit or read.
 set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc,.job
 
 " TODO: This is a try. See if it is ok
 set tags=tags,./tags,../tags,../../tags
-set previewheight=20 " Make the preview window 20 lines high
+set previewheight=15 " Make the preview window 15 lines high (default is 12)
 
 " Auto-folding and auto-layout (e.g. for vim help files)
 " TODO: do it by filetype
@@ -258,6 +266,12 @@ endif
 
 " ---| MORE COMPLEX FUNCTIONS |--- {{{
 "
+
+" Run a command and interpret the output in the quickfix window
+command! -nargs=+ -complete=file CRun cexpr system(<q-args>)
+
+" Run a command and interpret the output in the location window
+command! -nargs=+ -complete=file LRun lexpr system(<q-args>)
 
 " Open selected text with native open command, used with `<Leader>o` mappings.
 " This is an operator pending map
@@ -304,7 +318,11 @@ nnoremap gp `[v`]
 " Remove search hilights
 noremap <C-l> :noh<CR><C-l>
 
+" I don't really use ex mode (maybe I should but the current mapping is crap)
+nnoremap Q :pclose <bar> :cclose <bar> lclose <bar> helpclose <bar> nohlsearch <cr>
+
 " Common typos when saving/editing
+nnoremap q: :q
 cabbr w1 :w!
 cabbr q1 :q!
 command! -bang W w
@@ -338,6 +356,12 @@ nnoremap <bs> :bp<cr>
 "nmap <up> :echo "Up is 'k' !"<cr>
 "nmap <right> :echo "Right is 'l' !"<cr>
 
+" Copy paste
+nnoremap <Leader>y "+y|                    " Copy to clipboard (normal mode).
+nnoremap <Leader>Y :%y+<CR>|               " Copy file to clipboard (normal mode).
+nnoremap <Leader>p "+p|                    " Paste from clipboard after cursor.
+nnoremap <Leader>P "+P|                    " Paste from clipboard before cursor.
+
 " Diff
 noremap <leader>dt :diffthis<cr>
 noremap <leader>wdt :windo diffthis<cr>
@@ -360,6 +384,51 @@ noremap <leader>sd :setlocal spell spelllang=de spellcapcheck=<cr>
 " Vim
 noremap <leader>vev :e ~/.vim/vimrc<cr>
 noremap <leader>vsv :so ~/.vim/vimrc<cr>
+
+" Cleanup
+nnoremap <leader>S :%s/\s\+$//<cr>
+
+" Git
+" TODO: create a function that takes all the pending changes to commit and put
+" them into the quickfix window
+function! GitDiffQuickfix(...)
+  " Get the commit hash if it was specified
+  " let commit = a:0 == 0 ? '' : a:1
+
+  " Get the result of git show in a list
+  let git_diff_changes = split(system('git diff --unified=0 HEAD | grep -E "^(\+\+\+|@@)"'), '\n')
+
+  " Create the dictionnaries used to populate the quickfix list
+  let list = []
+  let file = ''
+  let line_nr = 0
+  for change in git_diff_changes
+    if match(change, '^+++ b/') != -1
+      let file = substitute(change, '^+++ b/', '', '')
+      let line_nr = 0
+    elseif match(change, '^@@ [^+]\++[0-9]\+') != -1
+      let line_nr = substitute(change, '^@@ [^+]\++\([0-9]\+\).*', '\1', '')
+    else
+      echoerr 'GitDiffQuickfix did not expect line: ' . change
+      return
+    endif
+
+    " Add the quickfix item if we have full info
+    if line_nr > 0
+      if file == ''
+        echoerr 'GitDiffQuickfix did not expect "line_nr" to be set but "file" to be unset'
+      else
+        let dic = {'filename': file, "lnum": line_nr}
+        call add(list, dic)
+      endif
+    endif
+  endfor
+
+  " Populate the qf list
+  call setqflist(list)
+  copen
+  cfirst
+endfunction
 
 " Search for visually (multiline) selected text with * and #
 vnoremap <silent> * :<C-U>
@@ -410,6 +479,9 @@ endif
 
 " ---| PLUGINS |--- {{{
 
+" Neoterm
+let g:neoterm_default_mod='belowright'
+
 " Sneak vim
 nmap              f <Plug>Sneak_f|                  " Use sneak for f (multiline+highlight).
 nmap              F <Plug>Sneak_F|                  " ↳             F
@@ -419,8 +491,47 @@ nmap              T <Plug>Sneak_T|                  " ↳             T
 let g:sneak#label = 1 " Enable label mode (like easymotion)
 let g:sneak#s_next = 1 " Allow s/S to go to the next/prev sneak value
 
+" echodoc (cmdline function signature completion)
+let g:echodoc#enable_at_startup = 1
+let g:echodoc#events = ['CompleteDone']
+"let g:echodoc#events = ['CompleteDone', 'BufWritePost']
+if has('nvim-0.3.2') | let g:echodoc#type = 'virtual' | endif
+set cmdheight=2
+
+" LanguageServer (https://github.com/autozimu/LanguageClient-neovim)
+
+let g:LanguageClient_serverCommands = {
+    \ 'python': ['/usr/local/bin/pyls'],
+    \ 'rust':   ['rls'],
+    \ 'go':     ['/Users/rchossart/go/bin/go-langserver'],
+    \ }
+if executable('bash-language-server')
+  let g:LanguageClient_serverCommands['sh'] = ['bash-language-server', 'start']
+endif
+
+let g:LanguageClient_useVirtualText = 0  " Do not use the 'virtual' area on the right to display diagnostics.
+let g:LanguageClient_diagnosticsList = "Location" " Don't overwrite quickfix list with linter/checker output.
+
+nnoremap <F5> :call LanguageClient_contextMenu()<CR>
+" Or map each action separately
+nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
+nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
+nnoremap <silent> <F6> :call LanguageClient#textDocument_rename()<CR><Paste>
+
 " deoplete (async autocomplete)
 let g:deoplete#enable_at_startup = 1
+call deoplete#custom#source('_', 'max_menu_width', 0)
+call deoplete#custom#source('_', 'max_info_width', 0)
+call deoplete#custom#source('LanguageClient', 'max_info_width', 0)
+call deoplete#custom#source('_', 'max_kind_width', 0)
+call deoplete#custom#source('_', 'max_abbr_width', 0)
+
+" Silence the ins-completion-menu messages in the command line
+" such as '-- XXX completion (YYY)', 'match 1 of 2', 'The only match', etc.
+if has("patch-7.4.314")
+  set shortmess+=c
+endif
+
 
 " Complete with <C-space>
 " Note: the function was initially created for <tab>
@@ -433,39 +544,100 @@ function! s:check_back_space() abort "{{{
     return !col || getline('.')[col - 1]  =~ '\s'
 endfunction"}}}
 
-" LanguageServer (https://github.com/autozimu/LanguageClient-neovim)
-let g:LanguageClient_serverCommands = {
-    \ 'python': ['/usr/local/bin/pyls'],
-    \ 'rust':   ['rls'],
-    \ 'go':     ['/Users/rchossart/go/bin/go-langserver'],
-    \ }
-
-let g:LanguageClient_diagnosticsList = "Location" " Don't overwrite quickfix list with linter/checker output.
-
-nnoremap <F5> :call LanguageClient_contextMenu()<CR>
-" Or map each action separately
-nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
-nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
-nnoremap <silent> <F6> :call LanguageClient#textDocument_rename()<CR><Paste>
-
 "" FZF (FuzzyFinder)
 set rtp+=/usr/local/opt/fzf
+
+" Enable per-command history.
+" CTRL-N and CTRL-P will be automatically bound to next-history and
+" previous-history instead of down and up. If you don't like the change,
+" explicitly bind the keys to down and up in your $FZF_DEFAULT_OPTS.
+"
+" TODO(rchossart): I want to keep ctrl-n/ctrl-p for up/down and remap
+" next-history/previous-history but I'm seeing some weird behaviours. Let's
+" dig further later.
+" let g:fzf_history_dir = '~/.local/share/fzf-history'
 
 nnoremap <c-p> :Files<cr>
 nnoremap <c-n> :Buffers<cr>
 nnoremap <c-q> :History<cr>
-nnoremap <c-s> :Rg<cr>
 
 " FZF - Ripgrep
 " Use bang (!) to search gitignored files.
 " Use '?' to display a preview of the file in fzf.
-command! -bang -nargs=* Rg
-  \ call fzf#vim#grep(
-  \   'rg --column --line-number --no-heading --color=always --smart-case '.
-  \   (<bang>0 ? '-u ' : '').shellescape(<q-args>), 1,
-  \   fzf#vim#with_preview('right:50%:hidden', '?'),
-  \   <bang>0)
-command! RG Rg
+" TODO(rchossart): are we overloading the meaning of <bang> here since we pass
+" it to fzf#vim#with_preview? --> ANSWER: yes, <bang> also does fullscreen FZF...
+" "
+" Perform a ripgrep search and put the results in fzf. Use '?' to toggle preview.
+" rg_regex (str): the rg search regex
+" rg_opts (list[str]): a list of options to pass to rg
+" fzf_opts (list[str]): a list of options to pass to fzf. E.g. ['--query', 'foo']
+" fzf_fullscreen (bool/int): 1 to run in fullscreen, 0 otherwise
+function! s:fzf_rg(rg_query, rg_opts, fzf_opts, fzf_fullscreen)
+  call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --color=always --smart-case '.join(a:rg_opts).' '.shellescape(a:rg_query),
+  \   1,
+  \   fzf#vim#with_preview({'options': a:fzf_opts}, 'right:50%:hidden', '?'),
+  \   a:fzf_fullscreen)
+endf
+
+" Why is this not a built-in Vim script function?!
+" Credits to xolox@Stackoverflow
+" https://stackoverflow.com/questions/1533565/how-to-get-visually-selected-text-in-vimscript
+function! s:get_visual_selection()
+    let [line_start, column_start] = getpos("'<")[1:2]
+    let [line_end, column_end] = getpos("'>")[1:2]
+    let lines = getline(line_start, line_end)
+    if len(lines) == 0
+        return ''
+    endif
+    let lines[-1] = lines[-1][: column_end - (&selection == 'inclusive' ? 1 : 2)]
+    let lines[0] = lines[0][column_start - 1:]
+    return join(lines, "\n")
+endfunction
+
+" RipGrep files
+command! -bang -nargs=* Rg call s:fzf_rg(<q-args>, [''], ['--select-1'], <bang>0)
+command! -bang -nargs=* RgVisual call s:fzf_rg(s:get_visual_selection(), [''], [], <bang>0)
+command! -bang -nargs=* RG Rg
+
+" RipGrep All files including git ignored ones and hidden files
+command! -bang -nargs=* Rga call s:fzf_rg(<q-args>, ['-uu'], ['--select-1'], <bang>0)
+command! -bang -nargs=* RgaVisual call s:fzf_rg(s:get_visual_selection(), ['-u'], [], <bang>0)
+command! -bang -nargs=* RGA Rga
+
+" TODO(rchossart): use the higher level function
+" Search current selection with Rg in FZF with <c-s>
+nnoremap <c-s> :Rg<space>
+nnoremap g<c-s> :Rga<cr>
+vnoremap <C-s> :<C-u>RgVisual<cr>
+vnoremap g<C-s> :<C-u>RgaVisual<cr>
+
+" TODO(rchossart): these work; I'm just in the process of creating a common
+" function (s:fzf_rg above) to avoid too much repetition.
+"
+" command! -bang -nargs=* Rg
+"   \ call fzf#vim#grep(
+"   \   'rg --column --line-number --no-heading --color=always --smart-case '.
+"   \   (<bang>0 ? '-u ' : '').shellescape(<q-args>), 1,
+"   \   fzf#vim#with_preview('right:50%:hidden', '?'),
+"   \   <bang>0)
+" command! RG Rg
+" 
+" command! -bang -nargs=* RgCurrentWord
+"   \ call fzf#vim#grep(
+"   \   'rg --column --line-number --no-heading --color=always --smart-case '.
+"   \   (<bang>0 ? '-u ' : '').shellescape(<q-args>), 1,
+"   \   fzf#vim#with_preview({'options': ['--query', expand('<cword>')]}, 'right:50%:hidden', '?'),
+"   \   <bang>0)
+" 
+" 
+" command! -bang -nargs=* RgVisualSelection
+"   \ call fzf#vim#grep(
+"   \   'rg --column --line-number --no-heading --color=always --smart-case '.
+"   \   (<bang>0 ? '-u ' : '').shellescape(<q-args>), 1,
+"   \   fzf#vim#with_preview({'options': ['--query', s:get_visual_selection()]}, 'right:50%:hidden', '?'),
+"   \   <bang>0)
+
 
 function! s:fzf_build_quickfix_list(lines)
   call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
@@ -474,11 +646,13 @@ function! s:fzf_build_quickfix_list(lines)
 endfunction
 
 function! s:fzf_build_location_list(lines)
-  call setloclist(map(copy(a:lines), '{ "filename": v:val }'))
+  call setloclist(win_getid(), map(copy(a:lines), '{ "filename": v:val }'))
   lopen
   lc
 endfunction
 
+" Actions when editing the stuff in Vim - corresponds to vim commands, not FZF
+" commands.
 let g:fzf_action = {
   \ 'ctrl-q': function('s:fzf_build_quickfix_list'),
   \ 'ctrl-l': function('s:fzf_build_location_list'),
@@ -545,7 +719,7 @@ nmap ]g <Plug>GitGutterNextHunk| " Previous hunk with GitGutter
 "xnoremap <buffer> <silent> + :<C-U>silent execute <SID>StageToggle(line("'<"),line("'>"))<CR>
 
 " Format each line individually (useful for git commits)
-autocmd BufReadPre COMMIT_EDITMSG nnoremap gQ :g/^[^#]/norm gqq<cr>
+autocmd BufReadPre COMMIT_EDITMSG nnoremap gQ :g/^[^#]/norm gqq<cr>gg:noh<cr>
 
 " GV (simple git vizualizer, needs fugitive)
 autocmd! FileType GV nmap <buffer> <c-n> ]]o
@@ -572,6 +746,9 @@ let g:is_bash = 1 " Make bash default rather than sh
 autocmd FileType sh set makeprg=shellcheck\ -f\ gcc\ %
 
 "" Python
+
+" Requirements.txt
+autocmd BufReadPost requirements*.txt set comments=b:#
 
 " jedi
 let g:jedi#smart_auto_mappings = 0  " Do not complete 'import' when writing 'from foo<space>'
@@ -607,6 +784,11 @@ autocmd FileType python nnoremap <buffer> <silent> <Leader>tm <Esc>:Pytest metho
 autocmd FileType python nnoremap <buffer> <silent> <Leader>tn <Esc>:Pytest next<CR>
 autocmd FileType python nnoremap <buffer> <silent> <Leader>tp <Esc>:Pytest previous<CR>
 autocmd FileType python nnoremap <buffer> <silent> <Leader>te <Esc>:Pytest error<CR>
+
+"" Rust
+
+autocmd FileType rust noremap <F10> :!cargo run --release<cr>
+autocmd FileType rust if get(g:, 'neoterm_loaded', 0) | noremap <C-e><F10> :T cargo run --release<cr> | endif
 
 "}}}
 

@@ -185,14 +185,26 @@ write_init_body(args, '', snip)
 endsnippet
 
 
-# snippet init "__init__ method" b
-# def __init__(self$1):
-#     $2
-# endsnippet
+# New Method
 
 snippet defc "class method" b
 def ${1:myfunc}(self$2):
     $3
+endsnippet
+
+snippet defi "Define init method"
+	def __init__(self, ${1:args}):
+		${0}
+endsnippet
+
+snippet defm "Define instance method"
+	def ${1:mname}(self, ${2:arg}):
+		${0}
+endsnippet
+
+snippet defmain
+	def main():
+		${0}
 endsnippet
 
 
@@ -275,5 +287,3 @@ setup(name='$2',
       zip_safe=False,
       )$14
 endsnippet
-
-
