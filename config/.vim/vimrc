@@ -85,7 +85,8 @@ else
   Plug 'roxma/vim-hug-neovim-rpc'                   " nvim compatibility plugin for vim used by deoplete.
 endif
 
-Plug 'Shougo/echodoc.vim'                                    " Complete func signatures in cmd
+Plug 'itchyny/lightline.vim'                        " Nice looking status bar
+Plug 'Shougo/echodoc.vim'                           " Complete func signatures in cmd
 Plug 'scrooloose/nerdcommenter'
 Plug 'tpope/vim-surround'
 Plug 'kana/vim-fakeclip'
@@ -479,10 +480,38 @@ endif
 
 " ---| PLUGINS |--- {{{
 
-" Neoterm
+"" Lightline - status line
+
+" Display the file path (not just the basename)
+let g:lightline = {
+\   'component_function': {
+\     'filename': 'LightLineFilename'
+\   }
+\ }
+function! LightLineFilename()
+  return fnamemodify(expand('%'), ':~:.')
+endfunction
+
+let g:lightline.active = {
+\ 'left': [ [ 'mode', 'paste' ],
+\           [ 'readonly', 'filename', 'modified' ] ],
+\ 'right': [ [ 'lineinfo' ],
+\            [ 'percent' ],
+\            [ 'fileformat', 'fileencoding', 'filetype' ] ] }
+let g:lightline.inactive = {
+\ 'left': [ [ 'filename' ] ],
+\ 'right': [ [ 'lineinfo' ],
+\            [ 'percent' ] ] }
+let g:lightline.tabline = {
+\ 'left': [ [ 'tabs' ] ],
+\ 'right': [ [ 'close' ] ] }
+
+
+"" Neoterm
 let g:neoterm_default_mod='belowright'
 
-" Sneak vim
+
+"" Sneak vim
 nmap              f <Plug>Sneak_f|                  " Use sneak for f (multiline+highlight).
 nmap              F <Plug>Sneak_F|                  " ↳             F
 nmap              t <Plug>Sneak_t|                  " ↳             t
@@ -491,12 +520,14 @@ nmap              T <Plug>Sneak_T|                  " ↳             T
 let g:sneak#label = 1 " Enable label mode (like easymotion)
 let g:sneak#s_next = 1 " Allow s/S to go to the next/prev sneak value
 
+
 " echodoc (cmdline function signature completion)
 let g:echodoc#enable_at_startup = 1
 let g:echodoc#events = ['CompleteDone']
 "let g:echodoc#events = ['CompleteDone', 'BufWritePost']
 if has('nvim-0.3.2') | let g:echodoc#type = 'virtual' | endif
 set cmdheight=2
+
 
 " LanguageServer (https://github.com/autozimu/LanguageClient-neovim)
 
