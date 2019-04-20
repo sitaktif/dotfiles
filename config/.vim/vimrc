@@ -671,21 +671,34 @@ vnoremap g<C-s> :<C-u>RgaVisual<cr>
 
 
 function! s:fzf_build_quickfix_list(lines)
-  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
-  copen
-  cc
+  if len(a:lines) == 0
+    return
+  elseif len(a:lines) == 1
+    execute('edit ' . get(a:lines, 0))
+  else
+    call setqflist(map(copy(a:lines), '{ "filename": v:val , "lnum": 1, "col": 1 }'))
+    copen
+    cc
+  endif
 endfunction
 
 function! s:fzf_build_location_list(lines)
-  call setloclist(win_getid(), map(copy(a:lines), '{ "filename": v:val }'))
-  lopen
-  lc
+  if len(a:lines) == 0
+    return
+  elseif len(a:lines) == 1
+    execute('edit ' . get(a:lines, 0))
+  else
+    call setloclist(win_getid(), map(copy(a:lines), '{ "filename": v:val , "lnum": 1, "col": 1 }'))
+    lopen
+    lc
+  endif
 endfunction
 
 " Actions when editing the stuff in Vim - corresponds to vim commands, not FZF
 " commands.
 let g:fzf_action = {
   \ 'ctrl-q': function('s:fzf_build_quickfix_list'),
+  \ 'enter': function('s:fzf_build_quickfix_list'),
   \ 'ctrl-l': function('s:fzf_build_location_list'),
   \ 'ctrl-t': 'tab split',
   \ 'ctrl-x': 'split',
