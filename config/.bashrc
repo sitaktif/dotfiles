@@ -384,6 +384,13 @@ alias right='DISPLAY=:0.1'
 
 # Editor related
 alias e="$L_VIM"
+
+# Incentive to use 'e' to edit stuff
+alias vim="echo 'Use e for neovim or rvim for regular vim'"
+
+# Regular vim
+alias rvim='command vim'  # The 'command' builtin ensures we don't resolve functions/aliases
+
 # TODO(rchossart): need to prefix this with condition of existence of fzf
 complete -F _fzf_file_completion -o default -o bashdefault e
 alias did='vim +"normal Go" +"r!date" ~/notes/did.txt'
@@ -401,31 +408,14 @@ alias soz="source ~/.zshrc"
 alias vimz="e ~/.zshrc"
 alias vimv="e ~/.vim/vimrc"
 
+alias k=kubectl
+
+alias c=cargo
+alias cr='cargo run'
+
 ############################
 #        BOOKMARKS         #
 ############################
-
-# SSH
-alias k='ssh sitaktif@kollok.org'
-alias k2='ssh sitaktif@uk.kollok.org -p443'
-alias sshs='ssh stalker'
-alias sshg='ssh gamer'
-alias sshm='ssh mickey'
-alias sshp='ssh chossart2006@perso.iiens.net'
-alias sshp2='ssh -p 443 chossart2006@perso.iiens.net'
-alias sshr='ssh -l rchossart'
-alias ssha='ssh rchossart@theisland.acunu.com' # Ssh Acunu VPN
-
-# Lftp
-alias jjftp='lftp jeanjolly@ftp4.phpnet.org'
-
-# MPD
-alias mpds="mpd --no-daemon &"
-alias mpdk="mpd --kill"
-alias mpdr="mpdk && mpds"
-
-# AndroiD
-alias adencode='~/scripts/android/encode_to_mp4.sh low'
 
 # Other
 alias restore_vim_session='vim $(find . -name ".*.swp" | while read f; do rm "$f"; echo "$f" | sed "s/\\.\\([^/]*\\).swp/\\1/"; done)'
