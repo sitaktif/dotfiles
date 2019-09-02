@@ -411,7 +411,7 @@ alias vimv="e ~/.vim/vimrc"
 alias k=kubectl
 
 alias c=cargo
-alias cr='cargo run'
+alias cb='cargo build'
 
 ############################
 #        BOOKMARKS         #
@@ -431,7 +431,7 @@ alias myports='netstat -alpe --ip'
 ## Fuzzy-finder (fzf) - see https://junegunn.kr/2016/07/fzf-git/
 
 # multi-selection, 60% height (default 40%),
-export FZF_DEFAULT_OPTS='--multi --height=60% --bind ctrl-t:toggle-all,alt-j:jump,alt-k:jump-accept'
+export FZF_DEFAULT_OPTS='--multi --height=60% --bind ctrl-t:toggle-all,alt-j:jump,alt-k:jump-accept,alt-p:toggle-preview'
 
 # No worky?
 # --no-hscroll
@@ -449,7 +449,7 @@ alias re='$EDITOR -q <($(fc -ln -1) --vimgrep)'
 # Fzf local git repos
 gp() {
 	local dir
-	dir=$(find ~/git ~/src ~/geo -mindepth 1 -maxdepth 1 -type d |
+	dir=$(find ~/git ~/src ~/geo ~/go/src/github.pie.*.com/pie -mindepth 1 -maxdepth 1 -type d |
 		fzf "$@")
 	[[ -n "$dir" ]] && cd "$dir"
 }
@@ -485,20 +485,20 @@ _gib_git_f() {
 _gib_git_b() {
 	git branch -a --color=always --sort=committerdate --sort=-refname:rstrip=2 | grep -v '/HEAD\s' |
 		fzf --height 50% "$@" --border --ansi --multi --tac --preview-window right:70% \
-		--preview 'git log --oneline --graph --date=short --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1) | head -'$LINES | sed 's/^..//' | cut -d' ' -f1 | sed 's#^remotes/##'
+		--preview 'git log --color=always --oneline --graph --date=short --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1) | head -200' | sed 's/^..//' | cut -d' ' -f1 | sed 's#^remotes/##'
 }
 # Fzf git tags.
 _gib_git_t() {
 	git tag --sort -version:refname |
 		fzf --height 50% "$@" --border --multi --preview-window right:70% \
-		--preview 'git show --color=always {} | head -'$LINES
+		--preview 'git show --color=always {} | head -200'
 }
 # Fzf git commits.
 _gib_git_h() {
 	git log --date=short --format="%C(green)%C(bold)%cd %C(auto)%h%d %s (%an)" --graph --color=always |
 		fzf --height 50% "$@" --border --ansi --no-sort --reverse --multi --bind 'ctrl-s:toggle-sort' \
 		--header 'Press CTRL-S to toggle sort' \
-		--preview 'grep -o "[a-f0-9]\{7,\}" <<< {} | xargs git show --color=always | head -'$LINES | grep -o "[a-f0-9]\{7,\}"
+		--preview 'grep -o "[a-f0-9]\{7,\}" <<< {} | xargs git show --color=always | head -200' | grep -o "[a-f0-9]\{7,\}"
 }
 # Fzf git remotes.
 _gib_git_r() {
