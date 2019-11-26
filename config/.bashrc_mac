@@ -13,36 +13,6 @@ if hash ag 2>/dev/null; then
   tag() { command tag "$@"; source "${TAG_ALIAS_FILE:-/tmp/tag_aliases}" 2>/dev/null; }
 fi
 
-# Homebrew
-export HOMEBREW_NO_AUTO_UPDATE=1
-
-if command -v brew >/dev/null 2>&1; then
-    export PATH="/usr/local/bin:/usr/local/sbin:/usr/local/opt/coreutils/libexec/gnubin:$PATH"
-    export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
-
-    # The $(brew --prefix) command takes > 100ms. Just use a hardcoded value
-    # and check once in a while that it is up-to-date so that I eventually know
-    # that it gets out of sync.
-    if [[ $RANDOM == *9 ]]; then
-        if [[ $(brew --prefix) != /usr/local ]]; then
-            echo '"$(brew --prefix)" is not "/usr/local" anymore! Change your .bashrc_mac!'
-        fi
-    fi
-    L_BREW_PREFIX=/usr/local
-fi
-
-# Z (autojump) - replacing with FASD
-# [[ -f "$L_BREW_PREFIX/etc/profile.d/z.sh" ]] && . "$L_BREW_PREFIX/etc/profile.d/z.sh"
-# if command -v _z >/dev/null 2>&1; then
-#     L_Z_PROMPT_CMD=_z
-# else
-#     L_Z_PROMPT_CMD=true
-# fi
-
-# Misc
-export PYTHONPATH="$PYTHONPATH:$HOME/.vim/bundle/rope"
-export VAGRANT_DEFAULT_PROVIDER=virtualbox
-
 _completion_dir=/usr/local/etc/bash_completion.d
 
 # Docker, Git
@@ -64,9 +34,6 @@ export PROTOBUF_HOME=/usr/local/protobuf-2.4.1
 export PATH=$GRADLE_HOME/bin:$PROTOBUF_HOME/bin:$PATH
 
 # Bash
-[[ -z $TERM ]] && export TERM=xterm-256color
-
-export L_VIM="nvim"
 
 
 ###############################
