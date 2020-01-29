@@ -77,17 +77,18 @@ call plug#begin('~/.vim/plugged')
 " General plugins
 
 Plug 'autozimu/LanguageClient-neovim', { 'branch': 'next', 'do': 'bash install.sh', } " LSP Support (:h LanguageClient).
-if has("nvim")                                      " NeoVim specific settings.
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' } " Asynchronous completion framework for neovim/Vim8 (used in LanguageClient).
-else
-  Plug 'Shougo/deoplete.nvim'                       " Same as neovim one but without UpdateRemotePlugins.
-  Plug 'roxma/nvim-yarp'                            " nvim compatibility plugin for vim used by deoplete.
-  Plug 'roxma/vim-hug-neovim-rpc'                   " nvim compatibility plugin for vim used by deoplete.
-endif
+" if has("nvim")                                      " NeoVim specific settings.
+"   Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' } " Asynchronous completion framework for neovim/Vim8 (used in LanguageClient).
+" else
+"   Plug 'Shougo/deoplete.nvim'                       " Same as neovim one but without UpdateRemotePlugins.
+"   Plug 'roxma/nvim-yarp'                            " nvim compatibility plugin for vim used by deoplete.
+"   Plug 'roxma/vim-hug-neovim-rpc'                   " nvim compatibility plugin for vim used by deoplete.
+" endif
 
 Plug 'itchyny/lightline.vim'                        " Nice looking status bar
 Plug 'Shougo/echodoc.vim'                           " Complete func signatures in cmd
-Plug 'scrooloose/nerdcommenter'
+Plug 'tpope/vim-commentary'
+" Plug 'scrooloose/nerdcommenter'
 Plug 'tpope/vim-surround'
 Plug 'kana/vim-fakeclip'
 Plug 'easymotion/vim-easymotion'
@@ -104,7 +105,7 @@ Plug 'tpope/vim-speeddating' " Increase/decrease date with <C-a>/<C-x>
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-repeat'
 Plug 'tommcdo/vim-exchange'
-Plug 'ciaranm/detectindent'
+Plug 'tpope/vim-sleuth'
 Plug 'ap/vim-readdir' " Simpler browser
 Plug 'tpope/vim-abolish' " :Subvert (substitute with case preserve) and 'coerce to different casing' with crX: MixedCase (crm), camelCase (crc), snake_case (crs), UPPER_CASE (cru), dash-case (cr-), dot.case (cr.), space case (cr<space>), and Title Case (crt)
 Plug 'terryma/vim-expand-region' " Incremental selection (like ctrl-w in IDEA)
@@ -134,7 +135,7 @@ Plug 'scwood/vim-hybrid'
 Plug 'vim-syntastic/syntastic'
 " Plug 'neomake/neomake'
 Plug 'kassio/neoterm'
-Plug 'hynek/vim-python-pep8-indent'
+Plug 'Vimjas/vim-python-pep8-indent'
 Plug 'elixir-lang/vim-elixir'
 Plug 'kballard/vim-swift'
 Plug 'plasticboy/vim-markdown'
@@ -347,8 +348,12 @@ map <F9> :!%
 "" REDEFINITIONS
 
 " Navigate between buffers.
-nnoremap <return> :bn<cr>
+nnoremap <cr> :bn<cr>
 nnoremap <bs> :bp<cr>
+" But in command-line mode (mapped to 'q:', 'q/', etc.), enter validates the
+" command/search/etc.
+au CmdWinEnter * nnoremap <buffer> <cr> <cr>
+au CmdWinEnter * nnoremap <buffer> <bs> <bs>
 
 " Beginners that want to have a good habit
 " (i.e. use hjkl instead of <left>,<down>,<up>,<right>) can use:
@@ -499,13 +504,16 @@ let g:lightline.active = {
 \            [ 'percent' ],
 \            [ 'fileformat', 'fileencoding', 'filetype' ] ] }
 let g:lightline.inactive = {
-\ 'left': [ [ 'filename' ] ],
+\ 'left': [ [ 'filename', 'modified' ] ],
 \ 'right': [ [ 'lineinfo' ],
 \            [ 'percent' ] ] }
 let g:lightline.tabline = {
 \ 'left': [ [ 'tabs' ] ],
 \ 'right': [ [ 'close' ] ] }
 
+" line:col/linewidth
+let g:lightline.component = {
+\ 'lineinfo': '%3l:%-2v/%{strwidth(getline("."))}' }
 
 "" Neoterm
 let g:neoterm_default_mod='belowright'
@@ -535,6 +543,8 @@ let g:LanguageClient_serverCommands = {
     \ 'python': ['/usr/local/bin/pyls'],
     \ 'rust':   ['rls'],
     \ 'go':     ['/Users/rchossart/go/bin/go-langserver'],
+    \ 'cpp': ['cquery', '--log-file=/tmp/cq.log'],
+    \ 'c': ['cquery', '--log-file=/tmp/cq.log'],
     \ }
 if executable('bash-language-server')
   let g:LanguageClient_serverCommands['sh'] = ['bash-language-server', 'start']
@@ -542,20 +552,26 @@ endif
 
 let g:LanguageClient_useVirtualText = 0  " Do not use the 'virtual' area on the right to display diagnostics.
 let g:LanguageClient_diagnosticsList = "Location" " Don't overwrite quickfix list with linter/checker output.
+let g:LanguageClient_settingsPath = expand('~/.config/nvim/langserver-settings.json')
+
 
 nnoremap <F5> :call LanguageClient_contextMenu()<CR>
 " Or map each action separately
-nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
-nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
+"nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
 nnoremap <silent> <F6> :call LanguageClient#textDocument_rename()<CR><Paste>
 
-" deoplete (async autocomplete)
-let g:deoplete#enable_at_startup = 1
-call deoplete#custom#source('_', 'max_menu_width', 0)
-call deoplete#custom#source('_', 'max_info_width', 0)
-call deoplete#custom#source('LanguageClient', 'max_info_width', 0)
-call deoplete#custom#source('_', 'max_kind_width', 0)
-call deoplete#custom#source('_', 'max_abbr_width', 0)
+nnoremap <silent> gh :call LanguageClient#textDocument_hover()<CR>
+nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
+nnoremap <silent> gr :call LanguageClient#textDocument_references()<CR>
+nnoremap <silent> gs :call LanguageClient#textDocument_documentSymbol()<CR>
+
+" " deoplete (async autocomplete)
+" let g:deoplete#enable_at_startup = 1
+" call deoplete#custom#source('_', 'max_menu_width', 0)
+" call deoplete#custom#source('_', 'max_info_width', 0)
+" call deoplete#custom#source('LanguageClient', 'max_info_width', 0)
+" call deoplete#custom#source('_', 'max_kind_width', 0)
+" call deoplete#custom#source('_', 'max_abbr_width', 0)
 
 " Silence the ins-completion-menu messages in the command line
 " such as '-- XXX completion (YYY)', 'match 1 of 2', 'The only match', etc.
@@ -707,8 +723,8 @@ let g:fzf_action = {
 " UltiSnips
 let g:UltiSnipsSnippetDir = 'UltiSnips'
 let g:UltiSnipsListSnippets = '<c-x><tab>'
-let g:UltiSnipsJumpForwardTrigger='<tab>'
-let g:UltiSnipsJumpBackwardTrigger='<s-tab>'
+let g:UltiSnipsJumpForwardTrigger='<C-j>'
+let g:UltiSnipsJumpBackwardTrigger='<C-k>'
 
 " UltiSnips - ft specific
 let g:ultisnips_python_quoting_style='single'
@@ -740,11 +756,6 @@ hi lin htmlH3 Special
 
 "" Gundo plugin - undo tree :)
 map <leader>g :GundoToggle<CR>
-
-"" DetectIndent
-let g:detectindent_preferred_expandtab = 1
-let g:detectindent_preferred_indent = 4
-autocmd VimEnter * DetectIndent
 
 "" readdir (simpler file explorer)
 let g:loaded_netrwPlugin = 1
@@ -787,9 +798,11 @@ com! XMLClean 1,$!xmllint --format -
 let g:is_bash = 1 " Make bash default rather than sh
 
 " Shellcheck
-autocmd FileType sh set makeprg=shellcheck\ -f\ gcc\ %
+autocmd FileType sh setlocal makeprg=shellcheck\ -f\ gcc\ %
 
 "" Python
+
+autocmd FileType python setlocal makeprg=python\ setup.py
 
 " Requirements.txt
 autocmd BufReadPost requirements*.txt set comments=b:#
@@ -831,8 +844,13 @@ autocmd FileType python nnoremap <buffer> <silent> <Leader>te <Esc>:Pytest error
 
 "" Rust
 
+autocmd FileType rust inoremap <buffer> {<cr> {<CR><BS>}<Esc>ko
 autocmd FileType rust noremap <F10> :!cargo run --release<cr>
 autocmd FileType rust if get(g:, 'neoterm_loaded', 0) | noremap <C-e><F10> :T cargo run --release<cr> | endif
+autocmd FileType rust setlocal makeprg=RUST_BACKTRACE=1\ cargo
+
+"" Bazel
+autocmd FileType bzl inoremap <buffer> {<CR> {<CR>}<ESC>ko<TAB>
 
 "}}}
 
