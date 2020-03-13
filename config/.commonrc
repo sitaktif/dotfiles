@@ -1,8 +1,9 @@
 # bash and zsh rc file
 
-#
-## Prelude
-#
+
+###############################
+#           PRELUDE           #
+###############################
 
 # Non-interactive mode
 [[ -z "$PS1" ]] && return
@@ -14,6 +15,22 @@ COMMONRC_SOURCED=1
 
 exists() { command -v "$1" >/dev/null 2>&1; } # Check if command exists (is in path).
 
+
+###############################
+#     OPTIONS / ENV VARS      #
+###############################
+
+# Binaries in home
+export PATH=~/bin/local:~/bin:~/bin/scripts:~/.cargo/bin:${GOPATH:-$USER/go}/bin:$PATH
+
+# Less (--quit-if-one-screen needs version >= 520 to work with alternate screens, i.e. without --no-init)
+# Tab is 4 spaces, search ignores case, enable colours, cat if less than one screen.
+# --status-column: column to show lines matching current search or first unread line after moving,
+# --ignore-case: smartcase search, --LONG-PROMPT: verbose prompt, --RAW-CONTROL-CHARS: show colors,
+# --HILITE-UNREAD: highlight first unread line moving, --tabs=4: tab is 4 spaces,
+# --window=-4: keep 4 lines overlapping when scrolling with the space key
+export LESS='--tabs=4 --ignore-case --quit-if-one-screen --RAW-CONTROL-CHARS --status-column --LONG-PROMPT --HILITE-UNREAD --window=-4'
+
 if exists nvim; then
     export EDITOR="nvim"
 elif exists vim; then
@@ -22,20 +39,16 @@ else
     export EDITOR="vi"
 fi
 export VISUAL="$EDITOR"
+export PAGER=less
 
 [[ -z $TERM ]] && export TERM=xterm-256color
 
 # Homebrew
-if command -v brew >/dev/null 2>&1; then
+if exists brew; then
     export HOMEBREW_NO_AUTO_UPDATE=1
-
     export PATH="/usr/local/bin:/usr/local/sbin:/usr/local/opt/coreutils/libexec/gnubin:$PATH"
     export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
 fi
-
-# Misc
-export PYTHONPATH="$PYTHONPATH:$HOME/.vim/bundle/rope"
-export VAGRANT_DEFAULT_PROVIDER=virtualbox
 
 # Dircolors (ls output)
 if exists dircolors && [[ -f ~/.dircolors ]] ; then
@@ -43,52 +56,80 @@ if exists dircolors && [[ -f ~/.dircolors ]] ; then
     eval "$(dircolors "$HOME/.dircolors")"
 fi
 
+# Go
+export PATH=$PATH:$GOPATH/bin
+export GOPATH="$HOME/go"
 
-#
-## Common config
-#
-
-## Bookmarks
-alias cdjf='cd ~/git/site_espira/jf'
-alias cdj2='cd ~/git/site_chinafrique/src'
-alias cdjj='cd ~/sites/jj/code'
-alias cdts='cd ~/git/ts.git/src'
-alias cdsp='cd ~/git/site_sportsclub/sportsclub/club'
-alias cdts='cd ~/git/ts/src'
+# Misc
+export VAGRANT_DEFAULT_PROVIDER=virtualbox
 
 
-alias cdms='cd ~/Media/series'
-alias cdmf='cd ~/Media/films'
-alias cdma='cd ~/Media/animes'
-alias cdmm='cd ~/Media/music_new'
+###############################
+# ALIASES & SIMPLE FUNCTIONS  #
+###############################
 
-# Git bookmarks begin with cdg
-alias cdgd='cd ~/git/perso_dotfiles'
+# Core
+alias ls='ls --color=auto'
+alias sl='ls'
+alias l='ls'
+alias la='ls -al'
+alias ll='ls -ahl'
 
-alias p=python
-alias pse='python setup.py'
-alias pset='python setup.py test'
-alias psep='python setup.py package'
+lsd() { ls -F "$@" |grep '/$'  ; }
 
-# gradle
-gw() { # Run gradle if found in the current or parent directories
-    for i in . .. ../.. ../../.. ../../../..; do
-        if [[ -x $i/gradlew ]]; then
-            (cd $i && ./gradlew "$@") ; return
-        fi
-    done
-    echo "No gradlew found in current or parent directories"
+# Directory change functions
+mkcd () {
+    mkdir -p "$*" && cd "$*"
 }
 
+alias ,='cd ..'
+alias ,,='cd ../..'
+alias ,,,='cd ../../..'
+alias ,,,,='cd ../../../..'
+alias ,,,,,='cd ../../../../..'
+alias ,,,,,,='cd ../../../../../..'
+
+# Utilities (grep, basename, dirname)
+alias grep='grep --color'
+
+# Find
+ff() {
+    name="$1" ; shift
+    find . -name '*'"$name"'*' "$@"
+}
+
+# Disk use sorted, process list
+alias dus='du -shm * .[^.]* | sort -n'
+alias pst='pstree -hAcpul'
+
+# Editor related
+alias e="$EDITOR"
+alias vim="echo 'Prefer using \"e\".'; sleep 0.3; $EDITOR"  # Incentive to use 'e' to edit stuff
+
+# Bash, zsh, vim RC files
+alias sob='source ~/.bashrc'
+alias soz='source ~/.zshrc'
+alias vimb="e ~/.commonrc"
+alias vimz="e ~/.commonrc"
+alias vimv="e ~/.vim/vimrc"
+alias vimg="e ~/.gitconfig"
+alias p=python
+alias p3=python3
+alias psp='python setup.py'
+alias pspt='python setup.py test'
+alias pspp='python setup.py package'
+
 # git
+alias g=git
 alias gg='git log --graph --color --pretty=format:"%x1b[31m%h%x09%C(auto)%d%Creset%x20%s"'
 alias gg2='git log --graph --color --pretty=format:"%x1b[31m%h%x09%x20%x1b[0m%s%x1b[32m%d%x1b[0m"'
 alias gga='git log --graph --full-history --all --color --pretty=format:"%x1b[31m%h%x09%C(auto)%d%Creset%x20%s"'
 alias gga2='git log --graph --full-history --all --color --pretty=format:"%x1b[31m%h%x09%x20%x1b[0m%s%x1b[32m%d%x1b[0m"'
 alias gl="git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd) %C(bold blue)<%an>%Creset' --abbrev-commit --date=local"
 alias gap="git add -p"
+
 # Edit files in conflict
-alias gec="git diff --name-only | uniq | xargs $EDITOR"
+alias gec='git diff --name-only | uniq | xargs "$EDITOR"'
 
 gl2() {
     # Escape < and > for github markdown
@@ -104,7 +145,7 @@ gpr() {
 
     local github_user=rchossart  # <-- Amend accordingly
 
-    command -v hub >/dev/null 2>&1|| { echo "This requires 'hub' to be installed --> 'brew install hub'"; return 1; }
+    exists hub || { echo "This requires 'hub' to be installed --> 'brew install hub'"; return 1; }
     local symbolic_rev=$(git rev-parse --abbrev-ref HEAD)
     local unacceptable_branch='^dev$|^devel$|^master$|^release$'
     if [[ $symbolic_rev == HEAD ]]; then
@@ -116,60 +157,6 @@ gpr() {
     hub compare "$github_user:$symbolic_rev"
 }
 
-alias g=git
-alias gra='git remote add'
-alias grr='git remote rm'
-alias grv='git remote -v'
-alias grec='git rebase --cont'
-alias grea='git rebase --abort'
-alias gpullod='git pull origin dev'
-alias gpullom='git pull origin master'
-alias gpullud='git pull up dev'
-alias gpullum='git pull up master'
-alias gpushod='git push origin dev'
-alias gpushom='git push origin master'
-alias gpushud='git push up dev'
-alias gpushum='git push up master'
-
-alias h=hub
-
-alias b=bazel
-
-bzgraph() {
-    local target=${1:?missing argument: target}
-    bazel query "deps($target)" --noimplicit_deps --output graph > graph.in && \
-        dot -Tpdf < graph.in > graph.pdf && \
-        open graph.pdf
-}
-bzigraph() {
-    local target=${1:?missing argument: target}
-    bazel query "deps($target)" --output graph > graph.in && \
-        dot -Tpdf < graph.in > graph.pdf && \
-        open graph.pdf
-}
-
-# Core
-alias ls='ls --color=auto'
-alias sl='ls'
-alias l='ls'
-alias ll='ls -ahl'
-
-lsd() { ls -F "$@" |grep '/$'  ; }
-lsl() { ls -F "$@" |grep '@$'  ; }
-lsx() { ls -F "$@" |grep '\*$' ; }
-
-# Directory change functions
-mkcd () {
-    mkdir -p "$*" ; cd "$*"
-}
-
-alias ,='cd ..'
-alias ,,='cd ../..'
-alias ,,,='cd ../../..'
-alias ,,,,='cd ../../../..'
-alias ,,,,,='cd ../../../../..'
-alias ,,,,,,='cd ../../../../../..'
-
 # cd to the first parent dir containing .git/
 function cdg() {
     local curdir=$(pwd)
@@ -178,84 +165,55 @@ function cdg() {
     done
 }
 
-# Utilities (grep, basename, dirname)
-alias grep='grep --color'
-alias gri='grep -rI'
-grio() { grep -rIO "$@" 2>/dev/null ; }
+# Bazel
+alias b=bazelisk
 
-alias ag='ag --ignore .venv --ignore tags --ignore TAGS'
-
-# Find
-ff() {
-    name="$1" ; shift
-    find . -name '*'"$name"'*' "$@"
-}
-fl() {
-    name="$1" ; shift
-    find -L . -name '*'"$name"'*' "$@"
+bzgraph() {
+    local target=${1:?missing argument: target}
+    bazelisk query "deps($target)" --noimplicit_deps --output graph > graph.in && \
+        dot -Tpdf < graph.in > graph.pdf && \
+        open graph.pdf
 }
 
-# Disk use sorted, process list
-alias dus='du -shm * .[^.]* | sort -n'
-alias psa='ps aux'
-alias pst='pstree -hAcpul'
+bzigraph() {
+    local target=${1:?missing argument: target}
+    bazelisk query "deps($target)" --output graph > graph.in && \
+        dot -Tpdf < graph.in > graph.pdf && \
+        open graph.pdf
+}
 
-# Rsync - Unison
-alias unison='unison -ui text'
-alias unismall='unison small_data'
-alias unibig='unison big_data'
-alias unifull='unismall && unibig'
-
-# Taskwarrior
-alias t='task'
-
-# Screen
-alias sls='screen -ls'
-alias sr='screen -r'
+# Rust
+alias c=cargo
+alias cb='cargo build'
 
 # Docker
+alias d=docker
 alias dr='docker run -ti'
 alias drr='docker run -ti --rm'
 
-# Handy prefixes
-alias left='DISPLAY=:0.0'
-alias right='DISPLAY=:0.1'
-
-# Editor related
-alias e="$EDITOR"
-
-# Incentive to use 'e' to edit stuff
-alias vim="echo 'Use e for neovim or rvim for regular vim'"
-
-# Regular vim
-alias rvim='command vim'  # The 'command' builtin ensures we don't resolve functions/aliases
-
-# Bash, zsh, vim RC files
-alias sob='source ~/.bashrc'
-alias vimb="e ~/.bashrc"
-alias vimbm="e ~/.bashrc_mac"
-alias vimbs="e ~/.bashrc_slacker"
-alias vimbl="e ~/.bashrc_linux"
-alias vimbg="e ~/.bashrc_slacker"
-alias vimbk="e ~/.bashrc_kollok"
-alias vimg="e ~/.gitconfig"
-alias soz="source ~/.zshrc"
-alias vimz="e ~/.zshrc"
-alias vimv="e ~/.vim/vimrc"
-
+# Kubernetes
 alias k=kubectl
+alias kp='kubectl --kubeconfig=/Users/rchossart/.kube/pie-ci.kubeconfig'
+alias kc='kubectx'
 
-alias c=cargo
-alias cb='cargo build'
+# Gradle
+gw() {
+    # Run gradlew if found in the current or parent directories
+    for i in . .. ../.. ../../.. ../../../..; do
+        if [[ -x $i/gradlew ]]; then
+            (cd $i && ./gradlew "$@") ; return
+        fi
+    done
+    echo "No gradlew found in current or parent directories"
+}
+
 
 ############################
 #        BOOKMARKS         #
 ############################
 
 # Other
-alias restore_vim_session='vim $(find . -name ".*.swp" | while read f; do rm "$f"; echo "$f" | sed "s/\\.\\([^/]*\\).swp/\\1/"; done)'
-alias vless='vim -u /usr/share/vim/vim72/macros/less.vim'
-alias myports='netstat -alpe --ip'
+alias vim_restore_session='vim $(find . -name ".*.sw[pon]" | while read f; do rm "$f"; echo "$f" | sed "s/\\.\\([^/]*\\).swp/\\1/"; done)'
 
 
 ############################
@@ -296,7 +254,9 @@ alias re='$EDITOR -q <($(fc -ln -1) --vimgrep)'
 ## Python
 
 # Virtualenv activate
-alias vv='virtualenv .venv && . .venv/bin/activate'
+alias vv='echo "Please use vv2 or vv3" && false'
+alias vv2='virtualenv .venv && . .venv/bin/activate'
+alias vv3='python3 -m venv .venv && . .venv/bin/activate'
 va() {
     if [[ -d .venv${1:-} ]]; then
         . .venv${1:-}/bin/activate
@@ -329,6 +289,10 @@ case "$shell" in
         export HISTSIZE=100000
         export SAVEHIST=100000  # zsh only
 
+        if [[ -e ~/bin/git-prompt.sh ]]; then
+            . ~/bin/git-prompt.sh
+        fi
+
         preexec() {
             timer=${timer:-$SECONDS}
         }
@@ -346,22 +310,21 @@ case "$shell" in
         ## Prompt
         default_prompt() {
             # Built-in zsh VCS info
-            autoload -Uz vcs_info
-            precmd_functions+=( vcs_info )
             setopt prompt_subst
-            zstyle ':vcs_info:git:*' formats '%F{240}(%b)%f'
-            zstyle ':vcs_info:*' enable git
 
-            export VIRTUAL_ENV_DISABLE_PROMPT=1
+            export VIRTUAL_ENV_DISABLE_PROMPT=1  # We do it ourselves
 
+            # Shell integration escape sequence (allows quickly jumping from prompt to prompt with iTerm2).
+            # ...but it messes with the terminal so I'm deactivating it.
+            # [[ $TERM_PROGRAM == iTerm.app ]] && local prompt_seq=']133;A' || local prompt_seq=''
             # Virtualenv in green
             local venv='${VIRTUAL_ENV:+%F{28\}(${VIRTUAL_ENV##*/}) %f}'
             # Show the branch with a space (and escape percent signs) but only if present.
-            local vcs='${vcs_info_msg_0_:+$vcs_info_msg_0_ }'
+            local vcs='%F{240}$(__git_ps1 "(%s) ")%f'
             # Show the return code in orange with red brackets if non-zero.
             local ret_code='%(?..%F{red}[%F{214}%?%F{red}] %f)'
             # Left prompt: purple path, red/orange non-zero status code, grey % (# for root)
-            PROMPT='%F{161}%~%f '${venv}${vcs}${ret_code}'%F{240}%#%f '
+            PROMPT=${prompt_seq}'%F{161}%~%f '${venv}${vcs}${ret_code}'%F{240}%#%f '
             # Right prompt: last command time, grey date
             RPROMPT='[%F{yellow}${timer_show:-0}s%f] %F{240}%*%f'
         }
@@ -372,13 +335,19 @@ case "$shell" in
         # Added by fzf - needs to be set before the `binkeys` calls down there to override.
         [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-        ## zsh config (see `man zshoptions`)
+        ## ZSH config (see `man zshoptions`)
 
-        # history
+        # Flow - disable control-s/control-q flow control
+        setopt noflowcontrol
+
+        # History
         setopt hist_ignore_all_dups hist_ignore_space share_history extended_history hist_expire_dups_first
 
-        # completion
+        # Completion
         setopt beep no_autolist bash_autolist no_menucomplete no_automenu
+
+        # Allow comments on the command line.
+        setopt interactivecomments
 
         ## Prompt movement
 
@@ -477,6 +446,12 @@ case "$shell" in
         bindkey '^[[1;2B' down-line-or-history # Shift-down
         bindkey '^X^R' fzf-history-widget  # Ctrl-X Ctrl-R
 
+        bindkey "^Q" push-input
+
+        # autoload -z edit-command-line
+        # zle -N edit-command-line
+        # bindkey "^X^E" edit-command-line
+
         # More zsh bindkeys
         bindkey \^U backward-kill-line  # Use bash's behaviour (don't kill-whole-line).
         bindkey "${terminfo[kcbt]}" reverse-menu-complete   # <Shift>-<Tab> - move backwards through the completion menu.
@@ -516,9 +491,10 @@ case "$shell" in
 
 
         # Load z (jump to directories, see `man z`) if brew is installed and z is too
-        if command -v brew >/dev/null 2>&1; then
+        if exists brew; then
             # Load rupa's z if installed
             [ -f "$(brew --prefix)/etc/profile.d/z.sh" ] && source "$(brew --prefix)/etc/profile.d/z.sh"
+            export HOMEBREW_NO_ANALYTICS=1
         fi
 
         # Add the fuzzyfinder completion - TODO: migrate to zsh
@@ -551,12 +527,33 @@ case "$shell" in
 
     bash) # bash specific options.
 
-        ###############################
-        #      SYSTEM SPECIFIC        #
-        ###############################
+        # Bash
+        shopt -s histappend
+        export HISTCONTROL=ignoredups
+        export HISTFILESIZE=100000
+        export HISTSIZE=100000  # zsh
 
         export L_PS1_HOST_COLOR="46" # Green by default
         export L_PS1_ALREADY_SET=""
+
+        # Completion/prompt functions
+        bash_completion_dir=/usr/local/etc/bash_completion.d
+
+        # Docker, Git
+        [[ -s $bash_completion_dir/docker ]] && . "$bash_completion_dir/docker"
+        [[ -s $bash_completion_dir/git-completion.bash ]] && \
+            . "$bash_completion_dir/git-completion.bash"
+
+        _this_realdir=$(cd "$(dirname \
+            "$(my_relpath "$(readlink "$BASH_SOURCE")" "$(dirname "$BASH_SOURCE")")")" \
+            && pwd -P)
+
+        # A copy of the git prompt is in the resources/ dir
+        if [[ -s $bash_completion_dir/git-prompt.sh ]];then
+            . "$bash_completion_dir/git-prompt.sh"
+        elif [[ -s $_this_realdir/../resources/bash/git-prompt.sh ]]; then
+            . "$_this_realdir/../resources/bash/git-prompt.sh"
+        fi
 
         # Some tokens and other private stuff
         # - HOMEBREW_GITHUB_API_TOKEN: github token to be used by homebrew (untick all permissions - public only)
@@ -684,44 +681,6 @@ case "$shell" in
         alias prompt_simple='export PROMPT_COMMAND=__rc_prompt_command2'
 
         ###############################
-        #          OPTIONS            #
-        ###############################
-
-        # Binaries in home
-        export PATH=~/bin/local:~/bin:~/bin/scripts:${GOPATH:-$USER/go}/bin:$PATH
-
-        # General
-
-        # Bash
-        shopt -s histappend
-        export HISTCONTROL=ignoredups
-        export HISTFILESIZE=100000
-        export HISTSIZE=100000  # zsh
-
-        # Less (--quit-if-one-screen needs version >= 520 to work with alternate screens, i.e. without --no-init)
-        # Tab is 4 spaces, search ignores case, enable colours, cat if less than one screen.
-        # --status-column: column to show lines matching current search or first unread line after moving,
-        # --ignore-case: smartcase search, --LONG-PROMPT: verbose prompt, --RAW-CONTROL-CHARS: show colors,
-        # --HILITE-UNREAD: highlight first unread line moving, --tabs=4: tab is 4 spaces,
-        # --window=-4: keep 4 lines overlapping when scrolling with the space key
-        export LESS='--tabs=4 --ignore-case --quit-if-one-screen --RAW-CONTROL-CHARS --status-column --LONG-PROMPT --HILITE-UNREAD --window=-4'
-
-        # Pager
-        export PAGER=less
-
-        # Go
-        export GOPATH="$HOME/go"
-        export PATH=$PATH:$GOPATH/bin
-
-        # Rsync and others transfer apps
-        export UPLOAD_BW_LIMIT=400
-
-        # App-specific
-        export MPD_HOST=localhost
-        export TEXMFHOME=~/.texmf
-
-
-        ###############################
         #           ALIASES           #
         ###############################
 
@@ -812,7 +771,7 @@ case "$shell" in
         [[ -f ~/.fzf.bash ]] && source ~/.fzf.bash
 
         # Load z (jump to directories, see `man z`) if brew is installed and z is too
-        if command -v brew >/dev/null 2>&1; then
+        if exists brew; then
             # Load rupa's z if installed
             [ -f $(brew --prefix)/etc/profile.d/z.sh ] && source $(brew --prefix)/etc/profile.d/z.sh
         fi
@@ -836,5 +795,8 @@ esac
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
+
+# Pyenv (manage multiple python versions)
+eval "$(pyenv init -)"
 
 # vim: ft=sh foldmethod=marker sw=4 ts=4 sts=4 et

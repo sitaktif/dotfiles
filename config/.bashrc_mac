@@ -13,20 +13,6 @@ if hash ag 2>/dev/null; then
   tag() { command tag "$@"; source "${TAG_ALIAS_FILE:-/tmp/tag_aliases}" 2>/dev/null; }
 fi
 
-_completion_dir=/usr/local/etc/bash_completion.d
-
-# Docker, Git
-[[ -s $_completion_dir/docker ]] && . "$_completion_dir/docker"
-[[ -s $_completion_dir/git-completion.bash ]] && . "$_completion_dir/git-completion.bash"
-
-_this_realdir=$(cd "$(dirname "$(my_relpath "$(readlink "$BASH_SOURCE")" "$(dirname "$BASH_SOURCE")")")" && pwd -P)
-
-# A copy of the git prompt is in the resources/ dir
-if [[ -s $_completion_dir/git-prompt.sh ]];then
-  . "$_completion_dir/git-prompt.sh"
-elif [[ -s $_this_realdir/../resources/bash/git-prompt.sh ]]; then
-  . "$_this_realdir/../resources/bash/git-prompt.sh"
-fi
 
 # Gradle
 export GRADLE_HOME=/usr/local/Cellar/gradle/2.12/libexec
