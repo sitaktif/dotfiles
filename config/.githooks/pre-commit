@@ -7,6 +7,10 @@
 #
 # To enable this hook, rename this file to "pre-commit".
 
+if [[ -n $GIT_NO_VERIFY ]]; then
+    exit
+fi
+
 if git rev-parse --verify HEAD >/dev/null 2>&1
 then
 	against=HEAD
@@ -45,8 +49,11 @@ EOF
 	exit 1
 fi
 
+disallowed_regex='FIXME\|\bXXX\b\|TODO(rchossart):'
+
 # Diff of the cache, but with no context lines (-U0) to avoid matching pre-existing ones.
-if git diff --cached -U0 $against -- | grep -v '^-' | grep 'FIXME\|\bXXX\b\|TODO(rchossart):'; then
+if git diff --cached -U0 $against -- | grep '^[@+]' | grep '^+++\|'"$disallowed_regex" | sed 's/^+++ b\/\(.*\)/\1:/' | grep "$disallowed_regex" -B1; then
+    echo
     echo 'Detected FIXMEs or XXXs in the diff. Not committing.'
     exit 1
 fi

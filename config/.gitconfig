@@ -1,17 +1,14 @@
-[http]
-    sslVerify = false
-
 [user]
     name = Romain Chossart
     email = romainchossart@gmail.com
 
 [core]
     excludesfile = ~/.gitexclude
-    trustctime = false
     hooksPath = ~/.githooks
+    trustctime = false
 
-    # Use diff-highlight script if it exists, or just use less. It's pretty awesome that you can do this.
-    # diff-highlight highlights the specific words that change in a diff.
+    # Use diff-highlight script if it exists, or just use less.
+    # Diff-highlight highlights the specific words that change in a diff.
     pager = "$(dh=/usr/local/share/git-core/contrib/diff-highlight/diff-highlight; [ -x "$dh" ] && echo "$dh" || echo cat) | less"
 
 
@@ -37,30 +34,57 @@
 
     st = status
     a = add
-    ad = add
+    br = branch
+    co = checkout
+    l = log
+    s = show
+
+    d = diff
+    dif = diff
+    dc = diff --cached
+
     c = commit
     ci = commit
     ca = commit --amend
-    caca = commit --amend -a -C HEAD
     cf = commit --fixup
-    cfh = commit --fixup
-    cfha = commit --fixup HEAD --all
-    br = branch
-    co = checkout
+    cac = commit --amend -C HEAD
+    caca = commit --amend -C HEAD -a
+
+    ra=remote add
+    rr=remote rm
+    rv=remote -v
+
     rb = rebase
-    s = show
-    d = diff
-    di = diff
-    dif = diff
-    dc = diff --cached
-    difca = diff --cached
+    re = rebase
+    rec = rebase --cont
+    rea = rebase --abort
+
     sub = submodule
     cpi = cherry-pick
-    p = push
+    push = push
 
     f = fetch            # Fetch one remote.
     fa = fetch --all     # Fetch from all the remotes.
+    fod = fetch origin dev
+    fom = fetch origin master
+    fud = fetch up dev
+    fum = fetch up master
 
+    pl = pull
+    pullod = pull origin dev
+    pullom = pull origin master
+    pullud = pull up dev
+    pullum = pull up master
+    plod = pull origin dev
+    plom = pull origin master
+    plud = pull up dev
+    plum = pull up master
+
+    p = push
+    pod = push origin dev
+    pom = push origin master
+    pud = push up dev
+    pum = push up master
 
     # Handy aliases
     headUpstream = rev-parse --abbrev-ref --symbolic-full-name @{u} # Upstream of current branch, e.g. origin/master.
@@ -74,6 +98,10 @@
 
     # A nice list of branches with dates
     brs = !git for-each-ref --sort=-committerdate refs/heads/ \
+        --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset)|%(objectname:short)|%(color:green)%(committerdate:relative)%(color:reset)' \
+        | column -ts '|'
+
+    brsa = !git for-each-ref --sort=-committerdate refs/heads/ refs/remotes/ \
         --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset)|%(objectname:short)|%(color:green)%(committerdate:relative)%(color:reset)' \
         | column -ts '|'
 
@@ -100,6 +128,9 @@
 
     lol = log --graph --decorate --pretty=oneline --abbrev-commit
     lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
+
+    # Open merge conflicts in editor.
+    mc  = "!echo \"$VISUAL\" | grep -iq vi && c='-c /\\(|||||||\\|=======\\|>>>>>>>\\|<<<<<<<\\)' || c=\"\"; git diff --name-only --diff-filter=U | xargs $VISUAL $c"
 
 [credential]
     helper = osxkeychain
@@ -134,6 +165,9 @@
 [includeIf "gitdir:~/geo/"]
     path = .gitconfig-work
 
+[includeIf "gitdir:~/go/src/github.pie.*/"]
+    path = .gitconfig-work
+
 [pull]
     rebase = true  # Rebase by default when doing a pull
 [bash]
@@ -148,3 +182,8 @@
     showStash = true
 [stash]
     showPatch = true
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
