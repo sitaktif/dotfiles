@@ -717,6 +717,7 @@ let g:fzf_action = {
   \ 'enter': function('s:fzf_build_quickfix_list'),
   \ 'ctrl-l': function('s:fzf_build_location_list'),
   \ 'ctrl-t': 'tab split',
+  \ 'ctrl-s': 'split',
   \ 'ctrl-x': 'split',
   \ 'ctrl-v': 'vsplit' }
 
