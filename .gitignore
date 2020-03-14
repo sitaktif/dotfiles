@@ -1,3 +1,9 @@
 /config/.vim/plugged
 /config/.config/karabiner/automatic_backups/
 /config/.config/karabiner/assets/
+
+# Stuff I don't want to commit (e.g. because of work)
+/misc.install
+/resources/LaunchBar/
+/resources/idea-settings.jar
+/resources/idea/
