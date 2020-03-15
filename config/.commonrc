@@ -499,10 +499,7 @@ case "$shell" in
 
         # Add the fuzzyfinder completion - TODO: migrate to zsh
         if [[ -n "${ZSH_VERSION:-}" ]]; then
-            # TODO: convert to bash
-            # complete -r z
-            # complete -F _fzf_complete_z -o default -o bashdefault z
-            true
+            [[ -e ~/git/fz/fz.sh ]] && . ~/git/fz/fz.sh
         fi
 
         _gib_join-lines() { local item; while read -r item; do echo -n "${(q)item} "; done; }
