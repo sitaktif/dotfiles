@@ -490,18 +490,7 @@ case "$shell" in
         }
 
 
-        # Load z (jump to directories, see `man z`) if brew is installed and z is too
-        if exists brew; then
-            # Load rupa's z if installed
-            [ -f "$(brew --prefix)/etc/profile.d/z.sh" ] && source "$(brew --prefix)/etc/profile.d/z.sh"
-            export HOMEBREW_NO_ANALYTICS=1
-        fi
-
-        # Add the fuzzyfinder completion - TODO: migrate to zsh
-        if [[ -n "${ZSH_VERSION:-}" ]]; then
-            [[ -e ~/git/fz/fz.sh ]] && . ~/git/fz/fz.sh
-        fi
-
+        # Helper function to bind each git fzf completion to <c-g><c-something>.
         _gib_join-lines() { local item; while read -r item; do echo -n "${(q)item} "; done; }
         bind-git-helper() {
             local c
@@ -517,6 +506,17 @@ case "$shell" in
         bind-git-helper f b t r h # Bind <C-g><C-{f,b,t,r,h}> to fuzzy-find show {files,branches,tags,remotes,hashes}.
         unset -f bind-git-helper
 
+        # Load z (jump to directories, see `man z`) if brew is installed and z is too
+        if exists brew; then
+            # Load rupa's z if installed
+            [ -f "$(brew --prefix)/etc/profile.d/z.sh" ] && source "$(brew --prefix)/etc/profile.d/z.sh"
+            export HOMEBREW_NO_ANALYTICS=1
+        fi
+
+        # Add the fuzzyfinder completion - TODO: migrate to zsh
+        if [[ -n "${ZSH_VERSION:-}" ]]; then
+            [[ -e ~/git/fz/fz.sh ]] && . ~/git/fz/fz.sh
+        fi
 
         # ZSH completion initialization
         autoload -U compinit && compinit
