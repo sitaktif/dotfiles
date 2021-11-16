@@ -13,7 +13,7 @@ CYN=$(tput setaf 6)
 WHT=$(tput setaf 7)
 RST=$(tput sgr0)
 
-THIS_DIR=$(dirname "$0")
+THIS_DIR=$(cd dirname "$0" && pwd -P)
 REL_DOT_DIR="git/dotfiles/config"  # Replace this with repo path
 
 INSTALL=true
@@ -376,6 +376,8 @@ main() {
     fi
 
     if [[ $INSTALL == true ]]; then
+        ln -nsf $THIS_DIR/bin ~/bin
+
         echo "* Setting mac preferences (keyboard shortcuts) with 'defaults'"
         set_mac_prefs
 
