@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# This is a shortcul for "kubectl-describe" allowing to type "kubectl d".
+
+exec kubectl get "$@"

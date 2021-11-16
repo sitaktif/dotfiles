@@ -1,0 +1,92 @@
+#!/usr/bin/env zsh
+
+set -eu
+
+autoload -U colors && colors
+
+usage() {
+  echo "$(
+    tput bold
+    tput setaf 74
+  )$0 [-h|--help]$(tput sgr0)
+
+Checks for unsaved changes. If this passes the repo is backed up to its git remotes.
+"
+}
+
+[[ ${1:-} =~ ^(--help|-h)$ ]] && {
+  usage
+  exit
+}
+
+[[ ${1:-} =~ ^(--version|-v)$ ]] && {
+  echo "main"
+  exit
+}
+
+SHORT=
+[[ ${1:-} =~ ^(--short)$ ]] && { SHORT=true; }
+
+# Usage: indented_text=$(indent <<<"$text")
+indent() {
+  # Replace \ with \\ so e.g. literal \n in the output doesn't get read as an escape code.
+  # Indent each line by 8 spaces.
+  sed -e 's/\\/\\\\/g' -e "s/^/    /"
+}
+
+# Check status for $1 dir.
+unpushed=""
+
+# Check stash.
+stash+=$(git stash list --color=always | head)
+if [[ -n $stash ]]; then
+  unpushed+="${fg[cyan]}-> Repo has stashed changes:${reset_color}"$'\n'
+  unpushed+=$(indent <<<"$stash")$'\n'
+fi
+
+# Check uncommitted diffs.
+diff+=$(git diff --color=always @ | head)
+if [[ -n $diff ]]; then
+  unpushed+="${fg[cyan]}-> Repo has uncommitted diffs:${reset_color}"$'\n'
+  unpushed+=$(indent <<<"$diff")$'\n'
+fi
+
+# Check untracked files.
+untracked+=$(git ls-files . --exclude-standard --others | head)
+if [[ -n $untracked ]]; then
+  unpushed+="${fg[cyan]}-> Repo has untracked files:${reset_color}"$'\n'
+  unpushed+=$(indent <<<"$untracked")$'\n'
+fi
+
+# Plumbing version of 'git branch'.
+for branch in $(git for-each-ref refs/heads/ --format='%(refname:short)'); do
+  branch_hash=$(git rev-parse "$branch")
+
+  push_hash=$(git rev-parse "$branch@{push}" 2>/dev/null) && true
+  has_push=$?
+  upstream_hash=$(git rev-parse "$branch@{upstream}" 2>/dev/null) && true
+  has_upstream=$?
+
+  if [[ $has_push == 0 ]]; then
+    # What's not in push branch that is in local branch?
+    push_delta=$(git cherry -v "$push_hash" "$branch_hash" | head)
+    if [[ -n $push_delta ]]; then
+      unpushed+="${fg[cyan]}-> $branch has commits not in @{push}:${reset_color}"$'\n'
+      unpushed+=$(indent <<<"$push_delta")$'\n'
+    fi
+  elif [[ $has_upstream == 0 ]]; then
+    # What's not in upstream branch that is in local branch?
+    upstream_delta=$(git cherry -v "$upstream_hash" "$branch_hash" | head)
+    if [[ -n $upstream_delta ]]; then
+      unpushed+="${fg[cyan]}-> $branch has commits not in @{upstream}:${reset_color}"$'\n'
+      unpushed+=$(indent <<<"$upstream_delta")$'\n'
+    fi
+  else
+    unpushed+="${fg[cyan]}-> $branch has no @{upstream} or @{push}${reset_color}"$'\n'
+  fi
+done
+
+if [[ -n "$unpushed" ]]; then
+  echo -e "$unpushed"$'\n'
+  exit 1
+fi

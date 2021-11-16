@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+usage() {
+    echo "usage: $(basename "$0") EMAIL_UUID"
+    echo
+    echo "Copy an email deeplink to clipboard"
+    echo
+    echo "Supported inputs:"
+    echo
+    echo "$ $(basename "$0") 12345ABC-1234-AAAA-BBCC-DDEEFF889900@email.apple.com"
+    echo "$ $(basename "$0") 12345ABC-1234-AAAA-BBCC-DDEEFF889900@apple.com"
+    echo
+    echo "To display email UUIDs on Mail.app: Preferences → Viewing → Show message headers: Message-Id"
+    echo
+    echo "Known issues:"
+    echo "- you need to copy the uuid without the angle brackets as they somehow confuse the shell."
+}
+
+if [[ $# -ne 1 ]]; then
+    usage >&2
+    exit 2
+fi
+
+uuid=$1
+
+if [[ ! $uuid == *@* ]]; then
+    echo "Expecting @apple.com or @email.apple.com argument" >&2
+    exit 2
+fi
+
+uuid=${uuid#<} # Remove leading "<" if present
+uuid=${uuid%>} # Remove trailing ">" if present
+# uuid=${uuid%@email.apple.com} # Remove trailing @email.apple.com if present
+# uuid=${uuid%@apple.com} # Remove trailing @apple.com if present
+
+link_url="message://%3c$uuid%3e"
+link_title="email link"
+printf -v html_link '<a href="%s">%s</a>' "$link_url" "$link_title"
+textutil -stdin -format html -convert rtf -stdout <<<"$html_link" | pbcopy
+echo "Copied $html_link to clipboard."

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# Checksum of the directory subtree, data only.
+find -Ls "$1" -type f -exec md5sum {} \; | md5sum

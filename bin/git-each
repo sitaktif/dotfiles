@@ -1,0 +1,76 @@
+#!/usr/bin/env zsh
+
+set -eu
+
+autoload -U colors && colors
+
+usage() {
+echo "$(tput bold; tput setaf 74)$0 [-h|--help]$(tput sgr0)
+
+Checks code dirs for git repos (things with .git subdirs) and executes the command passed in each dir.
+e.g. 'git each git unpushed' to check status of each remote.
+
+To configure the code dirs set the env var GIT_EACH_DIRS to a newline-separated list, default:
+GIT_EACH_DIRS=\"\$HOME/wrk
+\$HOME/code\"
+
+Requires: fd CLI (https://github.com/sharkdp/fd).
+  brew install fd
+"
+}
+
+[[ ${1:-} =~ ^(--help|-h)$ ]] && { usage; exit; }
+
+[[ ${1:-} =~ ^(--version|-v)$ ]] && { echo "main"; exit; }
+
+# Usage: exit message [rc]
+error() {
+  # printf "${fg[red]}Error:${reset_color} %s\n" "$1"
+  echo -e "${fg[red]}Error:${reset_color} $1"
+  exit "${2:-1}"
+}
+
+# Usage: indented_text=$(indent <<<"$text")
+indent() {
+  # Replace \ with \\ so e.g. literal \n in the output doesn't get read as an escape code.
+  # Indent each line by 8 spaces.
+  sed -e 's/\\/\\\\/g' -e "s/^/    /"
+}
+
+if [[ ${1:-} == --each-dir* ]]; then
+  # Run command on `--each-dir`.
+  if [[ $1 == --each-dir=* ]]; then
+    repo_path=${1#--each-dir=}
+    shift 1
+  else
+    repo_path=${2}
+    shift 2
+  fi
+
+  if [[ $repo_path == */go/* ]]; then
+    exit 0 # Skip go directories.
+  fi
+
+  output=$(cd "$repo_path" && "$@" 2>&1) && true
+  rc=$?
+  if [[ -n ${output:-} ]]; then
+    printf "${fg[magenta]}=> git-each: %s in $repo_path${reset_color}"$'\n' "$*"
+    printf "%s\n" "$(indent <<<"$output")"
+  fi
+  exit $rc
+else
+  git_each_dirs_input=("${(@f)${GIT_EACH_DIRS:-"$HOME/wrk
+    $HOME/code"}}")
+  git_each_dirs=()
+  for dir in "${git_each_dirs_input[@]}"; do
+    if [[ -d $dir ]]; then
+      git_each_dirs+=("${dir}")
+    fi
+  done
+  # Call self with each dir.
+  fd --no-ignore --hidden --type directory '^\.git$' "${git_each_dirs[@]}" -x "$0" '--each-dir={//}' "$@" && true
+  rc=$?
+  if [[ $rc != 0 ]]; then
+    error "${fg[magenta]}One or more git-each commands failed ($rc) ⬆⬆⬆.${reset_color}" "$rc"
+  fi
+fi

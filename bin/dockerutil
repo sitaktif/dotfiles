@@ -1,0 +1,61 @@
+#!/bin/bash
+
+set -eu
+
+usage() {
+echo "usage: dockerutil <command> [<args>]
+
+Available commands:
+
+    clean
+        Clean stopped containers and untagged images
+"
+}
+
+do_clean() {
+    local containers images
+    containers=$(docker ps -a -q)
+    images=$(docker images -q --filter "dangling=true")
+    if [[ -z $containers && -z $images ]]; then
+        echo "Nothing to clean"
+        return 0
+    fi
+    if [[ -n $containers ]]; then
+        echo "Cleaning up containers"
+        docker rm $containers
+    fi
+    if [[ -n $images ]]; then
+        docker rmi $images
+    fi
+}
+
+args=()
+command=
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        clean)
+            command=do_clean
+            shift
+            ;;
+        --)
+            shift
+            args+=("$@")
+            set --
+            break
+            ;;
+        *)
+            args+=("$1")
+            shift
+            ;;
+    esac
+done
+
+if [[ -z $command ]]; then
+    echo "Error: missing command argument" >&2
+    echo
+    usage
+    exit 2
+fi
+
+"$command" "${args:+${args[@]}}"
