@@ -1,68 +1,73 @@
-tap "homebrew/boneyard"
 tap "homebrew/bundle"
 tap "homebrew/cask"
 tap "homebrew/core"
 tap "homebrew/services"
-
-brew "aircrack-ng"
 brew "ansible"
-brew "python"
+brew "arping"
 brew "asciinema"
-brew "gettext"
 brew "autoconf"
 brew "automake"
-brew "bash", link: false
+brew "bash"
+brew "bat"
+brew "bazelisk"
 brew "binutils"
 brew "bison"
-brew "blackbox"
 brew "boost"
-brew "cabal-install"
+brew "buildifier"
+brew "buildozer"
+brew "bzip2"
+brew "gettext"
+brew "glib"
+brew "cairo"
 brew "cassandra"
 brew "cmake"
+brew "colordiff"
 brew "coreutils"
-brew "cquery"
-brew "cscope", link: false
+brew "cscope"
 brew "ctags"
 brew "curl"
 brew "cython"
+brew "docker"
+brew "docker-credential-helper"
 brew "elixir"
+brew "enchant"
 brew "entr"
 brew "exiftags"
 brew "expect"
-brew "fasd"
+brew "fd"
+brew "gnutls"
 brew "ffmpeg"
 brew "findutils"
 brew "fswatch"
 brew "fzf"
-brew "mpfr"
-brew "gawk", link: false
+brew "gawk"
 brew "gcc"
 brew "gdb"
-brew "geoip"
-brew "gifsicle"
 brew "git"
-brew "git-flow"
+brew "git-delta"
+brew "git-interactive-rebase-tool"
+brew "git-lfs"
+brew "gnu-sed"
+brew "gnupg"
+brew "gnuplot"
 brew "go"
 brew "gnu-tar"
+brew "graphviz"
 brew "grep"
-brew "gron"  # Grep json
-brew "gtk+"
 brew "gzip"
 brew "htop"
-brew "httpie"
 brew "hub"
 brew "iftop"
-brew "libtool", args: ["universal"]
 brew "imagemagick"
 brew "ipython"
-brew "ipython@5"
-brew "ispell"
-brew "jasper", args: ["universal"]
-brew "jemalloc"
-brew "oniguruma"
 brew "jq"
-brew "jython"
+brew "kubernetes-cli"
+brew "kubectx"
+brew "kustomize"
+brew "lcov"
 brew "less"
+brew "ruby"
+brew "minikube"
 brew "libarchive"
 brew "libev"
 brew "libusb-compat"
@@ -74,44 +79,32 @@ brew "libuv"
 brew "libvterm"
 brew "libxml2"
 brew "libxslt"
-brew "little-cms2"
 brew "lua"
 brew "luajit"
-brew "m-cli"
-brew "markdown", link: false
-brew "mercurial"
-brew "subversion"
+brew "markdown"
 brew "msgpack"
 brew "multimarkdown"
 brew "multitail"
 brew "mysql"
-brew "nanomsg"
-brew "neon"
-brew "unibilium"
 brew "neovim"
-brew "net-snmp"
 brew "nmap"
 brew "node"
-brew "nvm"
-brew "ocaml"
-brew "ossp-uuid"
 brew "osxutils"
 brew "p7zip"
 brew "pandoc"
 brew "pigz"
-brew "popt"
 brew "postgresql", restart_service: true
 brew "protobuf"
 brew "pstree"
 brew "psutils"
 brew "pyenv"
-brew "pyenv-virtualenv"
 brew "python"
 brew "python@2"
 brew "rbenv"
 brew "redis"
-brew "rg"
+brew "ripgrep"
 brew "rpm"
+brew "the_silver_searcher"
 brew "rpm2cpio"
 brew "ruby"
 brew "ruby-build"
@@ -121,73 +114,41 @@ brew "shellcheck"
 brew "sphinx"
 brew "swig"
 brew "tcl-tk"
-brew "tig"
 brew "tmux"
 brew "tree"
-brew "unixodbc"
-brew "vim", args: ["override-system-vi", "with-python@2"]
-brew "wget"
-brew "wine"
-brew "wireshark", args: ["with-x"]
+brew "watch"
 brew "yarn"
+brew "yq"
 brew "z"
 brew "zlib"
 brew "zstd"
 
-cask "homebrew/cask-fonts/font-terminus"
 cask "Karabiner-elements"  # Any keyboard shortcut
 cask "Spectacle"   # Move windows around with shortcuts
 cask "Iterm2"
 cask "Dropbox"
-cask "google-chrome"
 cask "Firefox"
 cask "LaunchBar"   # Spotlight replacement
-cask "keepassxc"   # Passwd manager
-cask "macvim"      # Vim with a nice Mac GUI
-cask "meld"        # Three way merge tool (GTK :( )
 cask "qlmarkdown"  # Quicklook (spacebar in Finder) for markdown preview
 cask "qlstephen"   # Quicklook (spacebar in Finder) for extension-less files (README, etc)
 cask "spotify"
-cask "vagrant"
 cask "vimr"        # Nice/fast Neovim Gui
 cask "time-out"
 cask "copyq"
-
-# Fuse stuff
 cask "osxfuse"
-brew "ntfs-3g"
+cask "pgadmin4"
+cask "wireshark"
 
-# JDK-related things
-cask "java"
-brew "groovy"
-brew "ant"
-brew "maven"
-brew "gradle"
-brew "pmd"
-
-# Emacs-plus / spacemacs
-tap "d12frosted/emacs-plus"
-brew "d12frosted/emacs-plus/emacs-plus", link: false
-
-# See https://github.com/aykamko/tag
-# Maybe start using it?
-# tap "aykamko/tag-ag"
-# brew "aykamko/tag-ag/tag-ag"
-
-# I'm using emacs-plus for spacemacs
-# brew "emacs", args: ["HEAD", "with-cocoa", "with-gnutls"], link: false
-
-# I'm using emacs-plus for spacemacs
-# tap "railwaycat/emacsmacport"
-# brew "railwaycat/emacsmacport/emacs-mac"
-# cask "railwaycat/emacsmacport/emacs-mac"
-
+mas "1Password 7", id: 1333542190
+mas "CalcMadeEasy", id: 417402227
 mas "feedly", id: 865500966
+mas "GarageBand", id: 682658836
 mas "iMovie", id: 408981434
 mas "Keynote", id: 409183694
+mas "Lungo", id: 1263070803
 mas "Musicnotes", id: 1025073421
 mas "Numbers", id: 409203825
 mas "Pages", id: 409201541
 mas "Pocket", id: 568494494
-mas "Remote Desktop", id: 409907375
+mas "Save to Pocket", id: 1477385213
 mas "Slack", id: 803453959
