@@ -9,8 +9,24 @@
 
     # Use diff-highlight script if it exists, or just use less.
     # Diff-highlight highlights the specific words that change in a diff.
-    pager = "$(dh=/usr/local/share/git-core/contrib/diff-highlight/diff-highlight; [ -x "$dh" ] && echo "$dh" || echo cat) | less"
+    # pager = "$(dh=/usr/local/share/git-core/contrib/diff-highlight/diff-highlight; [ -x "$dh" ] && echo "$dh" || echo cat) | less"
 
+[core]
+    # Fancy diff viewer
+    pager = delta
+
+[delta]
+    # syntax-theme = Monokai Extended
+    syntax-theme = Dracula
+    line-numbers = true
+    side-by-side = false
+
+[interactive]
+    # Don't show the a/ and b/ prefixes in files during `git add --patch`.
+    # Diffs can have colors, so we can't simply match '^---' / '^+++'. But BSD
+    # sed doesn't seem to be able to match an escape sequence, so just match
+    # '^.[' instead of '^\e['.
+    diffFilter = gsed -E -e 's,(^|^.\\[[^ ]{4\\,6})--- a/,\\1--- ,' -e 's,(^|^.\\[[^ ]{4\\,6})\\+\\+\\+ b/,\\1\\+\\+\\+ ,'
 
 [color]
     ui = auto
@@ -58,6 +74,10 @@
     re = rebase
     rec = rebase --cont
     rea = rebase --abort
+
+    # Add an empty file (give the file path as argument). e69de29bb2d1d6434b8b29ae775ad8c2e48c5391 is the hash for empty.
+    add-empty = "! for file in $@; do git update-index --add --cacheinfo 0644 e69de29bb2d1d6434b8b29ae775ad8c2e48c5391 $file; done #"
+    autorb = ! GIT_SEQUENCE_EDITOR=true git rebase -i
 
     sub = submodule
     cpi = cherry-pick
@@ -182,8 +202,5 @@
     showStash = true
 [stash]
     showPatch = true
-[filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
+[diff]
+    noprefix = true

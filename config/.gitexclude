@@ -9,4 +9,10 @@
 # Vim Obsession plugin
 Session.vim
 
+.idea
+*.iml
+.ijwb
+
 .venv
+
+.fzf-bazel-query-cache

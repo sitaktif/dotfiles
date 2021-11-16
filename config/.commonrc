@@ -49,6 +49,9 @@ if exists brew; then
     export PATH="/usr/local/bin:/usr/local/sbin:/usr/local/opt/coreutils/libexec/gnubin:$PATH"
     export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
 fi
+if [[ -d /opt/brew ]]; then
+    export PATH="/opt/brew/bin:$PATH"
+fi
 
 # Dircolors (ls output)
 if exists dircolors && [[ -f ~/.dircolors ]] ; then
@@ -69,7 +72,7 @@ export VAGRANT_DEFAULT_PROVIDER=virtualbox
 ###############################
 
 # Core
-alias ls='ls --color=auto'
+export CLICOLOR=1
 alias sl='ls'
 alias l='ls'
 alias la='ls -al'
@@ -103,7 +106,7 @@ alias dus='du -shm * .[^.]* | sort -n'
 alias pst='pstree -hAcpul'
 
 # Editor related
-alias e="$EDITOR"
+alias e="commonrc__bazel_edit"
 alias vim="echo 'Prefer using \"e\".'; sleep 0.3; $EDITOR"  # Incentive to use 'e' to edit stuff
 
 # Bash, zsh, vim RC files
@@ -113,6 +116,7 @@ alias vimb="e ~/.commonrc"
 alias vimz="e ~/.commonrc"
 alias vimv="e ~/.vim/vimrc"
 alias vimg="e ~/.gitconfig"
+alias vimk="e ~/.kube/config"
 alias p=python
 alias p3=python3
 alias psp='python setup.py'
@@ -127,6 +131,9 @@ alias gga='git log --graph --full-history --all --color --pretty=format:"%x1b[31
 alias gga2='git log --graph --full-history --all --color --pretty=format:"%x1b[31m%h%x09%x20%x1b[0m%s%x1b[32m%d%x1b[0m"'
 alias gl="git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd) %C(bold blue)<%an>%Creset' --abbrev-commit --date=local"
 alias gap="git add -p"
+
+# Ripgrep
+alias rga='rg --hidden --no-ignore --glob=!.git'
 
 # Edit files in conflict
 alias gec='git diff --name-only | uniq | xargs "$EDITOR"'
@@ -145,7 +152,7 @@ gpr() {
 
     local github_user=rchossart  # <-- Amend accordingly
 
-    exists hub || { echo "This requires 'hub' to be installed --> 'brew install hub'"; return 1; }
+    command -v hub >/dev/null 2>&1 || { echo "This requires 'hub' to be installed --> 'brew install hub'"; return 1; }
     local symbolic_rev=$(git rev-parse --abbrev-ref HEAD)
     local unacceptable_branch='^dev$|^devel$|^master$|^release$'
     if [[ $symbolic_rev == HEAD ]]; then
@@ -167,6 +174,58 @@ function cdg() {
 
 # Bazel
 alias b=bazelisk
+alias bob='bazelisk info output_base'
+# Bazel edit - transform targets into their corresponding BUILD file.
+commonrc__bazel_workspace_root() {
+    set -eu
+    (
+    local current_dir
+    for i in {1..10}; do
+        current_dir=$(pwd -P)
+        if [[ -e ./WORKSPACE ]]; then
+            echo "$current_dir"
+            return 0
+        elif [[ $current_dir == / ]]; then
+            break
+        fi
+        cd ..
+    done
+    return 1
+    )
+}
+
+# Edit but replace bazel targets.
+function commonrc__bazel_edit() {
+    local workspace_root target args=()
+    if ! workspace_root=$(commonrc__bazel_workspace_root); then
+        args=("$@")
+    else
+        while [[ $# -gt 0 ]]; do
+            arg=$1
+            if [[ $arg == //* ]]; then
+                arg=${arg/\/\//}
+                if [[ $arg == *:* ]]; then
+                    # Simplistic way to jump to the right target in vim
+                    # (just search for 'name = "the-target"').
+                    target=${arg##*:}
+                    args+=("+/name = \"$target\"")
+                    arg=${arg%:*}
+                fi
+                arg+="/BUILD"
+                if ! [[ -f $workspace_root/$arg ]]; then
+                    arg+=".bazel"
+                fi
+                if ! [[ -f $workspace_root/$arg ]]; then
+                    echo "[could not find BUILD file for $1]" >&2
+                    return 1
+                fi
+            fi
+            args+=("$arg")
+            shift
+        done
+    fi
+    "$EDITOR" "${args[@]}"
+}
 
 bzgraph() {
     local target=${1:?missing argument: target}
@@ -182,6 +241,20 @@ bzigraph() {
         open graph.pdf
 }
 
+bzcgraph() {
+    local target=${1:?missing argument: target}
+    bazelisk cquery "deps($target)" --noimplicit_deps --output graph > graph.in && \
+        dot -Tpdf < graph.in > graph.pdf && \
+        open graph.pdf
+}
+
+bzicgraph() {
+    local target=${1:?missing argument: target}
+    bazelisk cquery "deps($target)" --output graph > graph.in && \
+        dot -Tpdf < graph.in > graph.pdf && \
+        open graph.pdf
+}
+
 # Rust
 alias c=cargo
 alias cb='cargo build'
@@ -193,8 +266,7 @@ alias drr='docker run -ti --rm'
 
 # Kubernetes
 alias k=kubectl
-alias kp='kubectl --kubeconfig=/Users/rchossart/.kube/pie-ci.kubeconfig'
-alias kc='kubectx'
+alias kx='kubectx'
 
 # Gradle
 gw() {
@@ -224,7 +296,13 @@ alias vim_restore_session='vim $(find . -name ".*.sw[pon]" | while read f; do rm
 ## Fuzzy-finder (fzf) - see https://junegunn.kr/2016/07/fzf-git/
 
 # multi-selection, 60% height (default 40%),
-export FZF_DEFAULT_OPTS='--multi --height=60% --bind ctrl-t:toggle-all,alt-j:jump,alt-k:jump-accept,alt-p:toggle-preview'
+# extended: use leading single quote for exact word matches.
+export FZF_DEFAULT_OPTS='--multi --extended --height=60% --bind ctrl-t:toggle-all,alt-j:jump,alt-k:jump-accept,alt-p:toggle-preview'
+
+if command -v fd >/dev/null 2>&1; then
+    export FZF_ALT_C_COMMAND="command fd --type d 2> /dev/null"
+    export FZF_DEFAULT_COMMAND='fd --type f'
+fi
 
 # Custom fuzzy completion for "z" command
 #   e.g. z **<TAB>
@@ -274,6 +352,25 @@ alias vd=deactivate
 # pytest, no coverage, no warning
 alias pt="CI=1 unbuffer pytest --no-cov --junit-xml='' --disable-pytest-warnings | sed 's/WARNING: Coverage disabled via --no-cov switch!//'"
 
+# Get the App Bundle ID (Associated Domain) of a macOS/iOS/etc app, using an app store link, or an app on the system.                                                                                              [0s] 10:45:01
+# Useful for adding to 1Password: https://www.reddit.com/r/1Password/comments/hk02p7/suggestions_in_apps_for_1password_for_macos/.
+# Refs: StackOverflow (https://stackoverflow.com/questions/27509838/how-to-get-bundle-id-of-ios-app-either-using-ipa-file-or-app-installed-on-iph)
+# Usage:
+#   apple_app_bundleid https://apps.apple.com/us/app/watch/id1069511734
+#   apple_app_bundleid /Applications/kitty.app
+apple_app_bundleid() {
+  case $1 in;
+    https://*) # Assume URL (Google for the app, copy URL).
+      id=${1##*id} # Assumes $1 is a URL like https://apps.apple.com/.../id0000000000
+      curl "https://itunes.apple.com/lookup?id=${id}" | jq -r '"app://\(.results[0].bundleId)"'
+      ;;
+    *) # Assume App Name / Path.
+      id=$1
+      echo "app://$(osascript -e "id of app \"$1\"")"
+      ;;
+  esac
+}
+
 
 #
 ## Shell-specific config
@@ -316,7 +413,7 @@ case "$shell" in
 
             # Shell integration escape sequence (allows quickly jumping from prompt to prompt with iTerm2).
             # ...but it messes with the terminal so I'm deactivating it.
-            # [[ $TERM_PROGRAM == iTerm.app ]] && local prompt_seq=']133;A' || local prompt_seq=''
+            [[ $TERM_PROGRAM == iTerm.app ]] && local prompt_mark=$'%{\e]1337;SetMark\x07%}' || local prompt_mark=''
             # Virtualenv in green
             local venv='${VIRTUAL_ENV:+%F{28\}(${VIRTUAL_ENV##*/}) %f}'
             # Show the branch with a space (and escape percent signs) but only if present.
@@ -324,7 +421,7 @@ case "$shell" in
             # Show the return code in orange with red brackets if non-zero.
             local ret_code='%(?..%F{red}[%F{214}%?%F{red}] %f)'
             # Left prompt: purple path, red/orange non-zero status code, grey % (# for root)
-            PROMPT=${prompt_seq}'%F{161}%~%f '${venv}${vcs}${ret_code}'%F{240}%#%f '
+            PROMPT=${prompt_mark}'%F{161}%~%f '${venv}${vcs}${ret_code}'%F{240}%#%f '
             # Right prompt: last command time, grey date
             RPROMPT='[%F{yellow}${timer_show:-0}s%f] %F{240}%*%f'
         }
@@ -344,36 +441,58 @@ case "$shell" in
         setopt hist_ignore_all_dups hist_ignore_space share_history extended_history hist_expire_dups_first
 
         # Completion
-        setopt beep no_autolist bash_autolist no_menucomplete no_automenu
+        setopt beep no_autolist bash_autolist no_menucomplete no_automenu no_dotglob
 
         # Allow comments on the command line.
         setopt interactivecomments
 
+        # Add ~/.zsh/completion/ to the fpath for completion scripts.
+        # Run 'rm -f ~/.zcompdump; compinit' after adding anything here.
+        fpath[1,0]=~/.zsh/completion/
+
+        # This way the completion script does not have to parse Bazel's options
+        # repeatedly.  The directory in cache-path must be created manually.
+        [[ -e ~/.zsh/cache-completion ]] || mkdir -p ~/.zsh/cache-completion
+        zstyle ':completion:*' use-cache on
+        zstyle ':completion:*' cache-path ~/.zsh/cache-completion
+
+
         ## Prompt movement
 
-        # Alt+Backspace deletes word up to non-alphanum.
-        backward-kill-dir () {
+        # Alt+Backspace - delete one word (not including colon, dot...)
+        my-backward-kill-smallword () {
             local WORDCHARS='_'
+            zle -f kill # Append to the kill ring on subsequent kills.
             zle backward-kill-word
         }
-        zle -N backward-kill-dir
-        bindkey '^[^?' backward-kill-dir
+        zle -N my-backward-kill-smallword
+        bindkey '^[^?' my-backward-kill-smallword
 
-        # Alt+b
-        backward-word-dir () {
+        # Alt+b - move one word backwards (not including colon, dot...)
+        my-backward-smallword () {
             local WORDCHARS='_'
             zle backward-word
         }
-        zle -N backward-word-dir
-        bindkey "^[f" forward-word-dir
+        zle -N my-backward-smallword
+        bindkey "^[b" my-backward-smallword
 
-        # Alt+f
-        forward-word-dir () {
+        # Alt+f - move one word forwards (not including colon, dot...)
+        my-forward-smallword () {
             local WORDCHARS='_'
             zle forward-word
         }
-        zle -N forward-word-dir
-        bindkey "^[b" backward-word-dir
+        zle -N my-forward-smallword
+        bindkey "^[f" my-forward-smallword
+
+        # Ctrl-w - delete a full WORD (including colon, dot...)
+        my-backward-kill-word () {
+            # Add colon, comma, single/double quotes to word chars
+            local WORDCHARS='*?_-.[]~=/&;!#$%^(){}<>:,"'"'"
+            zle -f kill # Append to the kill ring on subsequent kills.
+            zle backward-kill-word
+        }
+        zle -N my-backward-kill-word
+        bindkey '^w' my-backward-kill-word
 
         ## zplugin
 
@@ -438,15 +557,28 @@ case "$shell" in
 
         # Local history (initial .zsh_history then local shell)
         bindkey '^[[A' up-line-or-local-history
+        bindkey '^[OA' up-line-or-local-history  # Up in the CSI u escape codes
         bindkey '^[[B' down-line-or-local-history
+        bindkey '^[OB' down-line-or-local-history  # Down in the CSI u escape codes
         bindkey '^R' fzf-history-widget-local
 
         # Global history (across shells)
         bindkey '^[[1;2A' up-line-or-history  # Shift-up
         bindkey '^[[1;2B' down-line-or-history # Shift-down
+        bindkey "\e[H" beginning-of-line  # Home
+        bindkey "\e[F" end-of-line  # End
+        bindkey "\e[5~" up-line-or-history  # PageUp
+        bindkey "\e[6~" down-line-or-history  # PageDown
         bindkey '^X^R' fzf-history-widget  # Ctrl-X Ctrl-R
 
+        bindkey "\e[95;5u" undo  # Ctrl-_
+
         bindkey "^Q" push-input
+
+        # Edit the current line with EDITOR
+        autoload -z edit-command-line
+        zle -N edit-command-line
+        bindkey "^X^E" edit-command-line
 
         # autoload -z edit-command-line
         # zle -N edit-command-line
@@ -455,6 +587,18 @@ case "$shell" in
         # More zsh bindkeys
         bindkey \^U backward-kill-line  # Use bash's behaviour (don't kill-whole-line).
         bindkey "${terminfo[kcbt]}" reverse-menu-complete   # <Shift>-<Tab> - move backwards through the completion menu.
+
+
+        # "CSI U" (libtermkey) allow shift-space/enter etc which is great but let's map
+        # shift-space to space as I often have the shift key still pressed after e.g. a
+        # pipe command on the shell.
+        bindkey -s "\e[32;2u" " "  # Space
+        bindkey -s "\e[127;2u" "\C-?"  # Backspace
+        bindkey -s "\e[13;2u" "\C-J"  # Enter
+
+        # Bindings that run commands
+        # F12
+        bindkey -s "\e[24~" 'e $(!! -l)\n'
 
         # Fzf git files (unstaged).
         _gib_git_f() {
@@ -479,7 +623,7 @@ case "$shell" in
             git log --date=short --format="%C(green)%C(bold)%cd %C(auto)%h%d %s (%an)" --graph --color=always |
                 fzf --height 50% "$@" --border --ansi --no-sort --reverse --multi --bind 'ctrl-s:toggle-sort' \
                 --header 'Press CTRL-S to toggle sort' \
-                --preview 'grep -o "[a-f0-9]\{7,\}" <<< {} | xargs git show --color=always | head -200' | grep -o "[a-f0-9]\{7,\}"
+                --preview 'awk "{ print \$3 }" <<< {} | xargs git show --color=always | head -200' | awk "{ print \$3 }"
         }
         # Fzf git remotes.
         _gib_git_r() {
@@ -488,7 +632,6 @@ case "$shell" in
                 --preview 'git log --oneline --graph --date=short --pretty="format:%C(auto)%cd %h%d %s" {1} | head -200' |
                 cut -d$'\t' -f1
         }
-
 
         # Helper function to bind each git fzf completion to <c-g><c-something>.
         _gib_join-lines() { local item; while read -r item; do echo -n "${(q)item} "; done; }
@@ -520,6 +663,18 @@ case "$shell" in
 
         # ZSH completion initialization
         autoload -U compinit && compinit
+
+        # # Kubectl completion (takes 200ms+ to load)
+        # source <(kubectl completion zsh)
+        # complete -F __start_kubectl k
+
+        # Complete aliases as their original commands.
+        compdef bazelw=bazel
+        compdef b=bazel
+        compdef gw=gradle
+        compdef g=git
+        # compdef d=docker
+
         ;;
 
     bash) # bash specific options.
@@ -794,6 +949,12 @@ esac
 export PATH="$PATH:$HOME/.rvm/bin"
 
 # Pyenv (manage multiple python versions)
-eval "$(pyenv init -)"
+if exists pyenv; then
+    eval "$(pyenv init -)"
+fi
+
+if exists rbenv; then
+    eval "$(rbenv init -)"
+fi
 
 # vim: ft=sh foldmethod=marker sw=4 ts=4 sts=4 et

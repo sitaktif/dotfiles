@@ -208,6 +208,12 @@ set_mac_prefs() {
     defaults_dict_set_val 'com.apple.iChat' NSUserKeyEquivalents '\033Window\033Select Previous Conversation' '@~k'
     } &
 
+    # Messsages - switch conversations with Cmd-option-j/k.
+    {
+    defaults_dict_set_val 'com.apple.MobileSMS' NSUserKeyEquivalents '\033Window\033Go to Next Conversation' '@~j'
+    defaults_dict_set_val 'com.apple.MobileSMS' NSUserKeyEquivalents '\033Window\033Go to Previous Conversation' '@~k'
+    } &
+
     # Wait for defaults to be written down
     wait
 
@@ -248,8 +254,15 @@ set_mac_prefs() {
     # Tell iTerm2 to use the custom preferences in the directory
     defaults_write com.googlecode.iterm2.plist LoadPrefsFromCustomFolder -int 1
 
-    # Show and hide docker super quickly
+    # React quickly to mouse presence to show/hide dock (killall Dock to apply).
+    defaults write com.apple.dock autohide-delay -float 0
+    # Fast docker show/hide animation.
     defaults write com.apple.dock autohide-time-modifier -float 0.12
+
+    # Remove delay in showing the draggable icon in window bars.
+    # You can also press down shift- to drag and drop the title.
+    # https://mjtsai.com/blog/2020/10/05/big-surs-hidden-document-proxy-icon/
+    defaults write NSGlobalDomain NSToolbarTitleViewRolloverDelay -float 0
 
     #  # Examples from gibfahn
     #  

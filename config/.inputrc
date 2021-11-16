@@ -13,3 +13,12 @@ set mark-symlinked-directories
 # Ctrl-left / Ctrl-right. Only works on recent versions of bash/readline.
 "\e[1;5C": shell-forward-word
 "\e[1;5D": shell-backward-word
+
+"\e[1;5D": shell-backward-word
+
+# "CSI U" (libtermkey) allow shift-space/enter etc which is great but let's map
+# shift-space to space as I often have the shift key still pressed after e.g. a
+# pipe command on the shell.
+# Same for backspace.
+"\e[32;2u": " "
+"\e[127;2u": "\C-?"
