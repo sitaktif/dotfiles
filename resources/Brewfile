@@ -72,7 +72,7 @@ brew "libarchive"
 brew "libev"
 brew "libusb-compat"
 brew "libgphoto2"
-brew "libicns", args: ["universal"]
+brew "libicns"
 brew "libident"
 brew "libtermkey"
 brew "libuv"
@@ -81,7 +81,6 @@ brew "libxml2"
 brew "libxslt"
 brew "lua"
 brew "luajit"
-brew "markdown"
 brew "msgpack"
 brew "multimarkdown"
 brew "multitail"
@@ -99,7 +98,6 @@ brew "pstree"
 brew "psutils"
 brew "pyenv"
 brew "python"
-brew "python@2"
 brew "rbenv"
 brew "redis"
 brew "ripgrep"
@@ -135,7 +133,7 @@ cask "spotify"
 cask "vimr"        # Nice/fast Neovim Gui
 cask "time-out"
 cask "copyq"
-cask "osxfuse"
+cask "macfuse"
 cask "pgadmin4"
 cask "wireshark"
 
@@ -146,9 +144,7 @@ mas "GarageBand", id: 682658836
 mas "iMovie", id: 408981434
 mas "Keynote", id: 409183694
 mas "Lungo", id: 1263070803
-mas "Musicnotes", id: 1025073421
 mas "Numbers", id: 409203825
 mas "Pages", id: 409201541
 mas "Pocket", id: 568494494
-mas "Save to Pocket", id: 1477385213
 mas "Slack", id: 803453959
