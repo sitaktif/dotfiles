@@ -13,7 +13,7 @@ CYN=$(tput setaf 6)
 WHT=$(tput setaf 7)
 RST=$(tput sgr0)
 
-THIS_DIR=$(cd dirname "$0" && pwd -P)
+THIS_DIR=$(cd "$(dirname "$0")" && pwd -P)
 REL_DOT_DIR="git/dotfiles/config"  # Replace this with repo path
 
 INSTALL=true
