@@ -133,14 +133,17 @@ defaults_write() {
     val_type="$3"
     val="$4"
 
-    current_val="$(defaults read "$domain" "$key" 2>/dev/null)"
+    current_val="$(defaults read "$domain" "$key" 2>/dev/null || true)"
 
     if [[ "$current_val" == "$val" ]]; then
         printf "%-32s %-32s -> [$GRN%s$RST]\n" "'$domain'" "'$key'" "already set to '$val'"
         return 0
+    elif [[ -z "$current_val" ]]; then
+        printf "%-32s %-32s -> [$YLW%s$RST]\n" "'$domain'" "'$key'" "added with value '$val'"
+    else
+        printf "%-32s %-32s -> [$YLW%s$RST]\n" "'$domain'" "'$key'" "changed from '$current_val' to '$val'"
     fi
 
-    printf "%-32s %-32s -> [$YLW%s$RST]\n" "'$domain'" "'$key'" "changed from '$current_val' to '$val'"
     defaults write "$domain" "$key" "$val_type" "$val"
 }
 
@@ -240,10 +243,10 @@ set_mac_prefs() {
     defaults_write NSGlobalDomain AppleKeyboardUIMode -int 2 &
 
     # Ctrl-wheel to zoom
-    defaults_write com.apple.AppleMultitouchTrackpad HIDScrollZoomModifierMask -int 262144
-    defaults_write com.apple.driver.AppleBluetoothMultitouch.trackpad HIDScrollZoomModifierMask -int 262144
-    defaults_write com.apple.universalaccess closeViewScrollWheelToggle -int 1
-    defaults_write com.apple.universalaccess closeViewPanningMode -int 1
+    defaults_write com.apple.AppleMultitouchTrackpad HIDScrollZoomModifierMask -int 262144 &
+    defaults_write com.apple.driver.AppleBluetoothMultitouch.trackpad HIDScrollZoomModifierMask -int 262144 &
+    defaults_write com.apple.universalaccess closeViewScrollWheelToggle -int 1 &
+    defaults_write com.apple.universalaccess closeViewPanningMode -int 1 &
 
     # Wait for defaults to be written down
     wait
@@ -384,16 +387,16 @@ main() {
         if ! command -v brew >/dev/null 2>&1; then
             echo "* Installing brew"
             echo "Go to https://brew.sh/ and manually install brew..."
-            open "https://brew.sh/"
-            echo "press enter to continue..."
-            read -r
+            echo "Once you are done, open a new shell and re-run this install script"
+            echo "This is needed to ensure the rest of the install script use the brew-install tools"
+            exit 0
         fi
 
         echo "* Installing / updating software using brew"
         brew bundle install --file=$(dirname ${BASH_SOURCE[0]})/resources/Brewfile
 
-        echo "* Installing vim plugins"
-        vim -c 'PlugInstall | qa'
+        rustup-init -y
+        ~/.cargo/bin/rustup install stable
     fi
 
     echo "* Symlinking dotfiles"
@@ -402,24 +405,32 @@ main() {
     echo "* Adding Spectacle config symlink"
     ln -sf ~/.config/Spectacle/Shortcuts.json ~/Library/Application\ Support/Spectacle/Shortcuts.json
 
-    echo "* Adding python2 packages"
-    pip2 install --upgrade setuptools virtualenv neovim ropevim
+    if command -v python2 >/dev/null 2>&1; then
+        echo "* Adding python2 packages"
+        python2 -m ensurepip --user
+        python2 -m pip install --user --upgrade pip virtualenv neovim ropevim
+    fi
 
     echo "* Adding python3 packages"
-    pip3 install --upgrade neovim ropevim
+    pip3 install --upgrade neovim ropevim pip
 
     echo "* Adding ruby gems"
-    gem install neovim
+    gem install --user-install neovim
 
     echo "* Adding npm packages"
     npm install -g neovim
 
     echo "* Adding iCloud symlink"
-    ln -sTf ~/'Library/Mobile Documents/com~apple~CloudDocs' ~/iCloud
+    ln -snf ~/'Library/Mobile Documents/com~apple~CloudDocs' ~/iCloud
 
     echo "* Follow the following tutorial if your display sucks"
     echo "https://www.mathewinkson.com/2013/03/force-rgb-mode-in-mac-os-x-to-fix-the-picture-quality-of-an-external-monitor"
     echo "The script to generate the right calibration is under resources/patch-screen.rb"
+
+    if [[ $INSTALL == true ]]; then
+        echo "* Installing vim plugins"
+        nvim -c 'PlugInstall | qa'
+    fi
 }
 
 main "$@"

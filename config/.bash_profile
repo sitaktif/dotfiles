@@ -10,6 +10,6 @@ export PATH
 
 export TERM=${TERM:-xterm-256color}
 
-export PATH="$HOME/.cargo/bin:$PATH"
 
 export PATH="$HOME/.poetry/bin:$PATH"
+. "$HOME/.cargo/env"

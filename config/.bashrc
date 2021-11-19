@@ -2,3 +2,4 @@
 if [[ -f ~/.commonrc ]]; then
     . ~/.commonrc
 fi
+. "$HOME/.cargo/env"
