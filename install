@@ -228,8 +228,11 @@ set_mac_prefs() {
     # Sets a low time before key starts repeating.
     defaults_write NSGlobalDomain InitialKeyRepeat -int 15 &
 
-    # Disable the "accent menu" when long-pressing a key
+    # Disable the "accent menu" when long-pressing a key.
     defaults_write NSGlobalDomain ApplePressAndHoldEnabled -int 0 &
+
+    # Show Dock quickly when hidden.
+    defaults write com.apple.dock autohide-time-modifier -float 0.15
 
     # System Preferences -> Keyboard -> Shortcuts -> Full Keyboard Access
     # Full Keyboard Access: In Windows and Dialogs, press Tab to move keyboard
@@ -266,6 +269,10 @@ set_mac_prefs() {
     # You can also press down shift- to drag and drop the title.
     # https://mjtsai.com/blog/2020/10/05/big-surs-hidden-document-proxy-icon/
     defaults write NSGlobalDomain NSToolbarTitleViewRolloverDelay -float 0
+
+    echo "* Removing Box global shortcut"
+    # Removes Cmd-ctrl-alt-space shortcut.
+    defaults write com.box.desktop.ui DisableSearchShortcut -bool true
 
     #  # Examples from gibfahn
     #  

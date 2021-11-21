@@ -2,8 +2,13 @@
 Sitaktif's dotfiles
 ===================
 
-Notes
------
+New installations
+-----------------
 
-* This repository contains git submodules. Run `git submodules update --init` after you check out this repository.
-* Run `bin/create-symlinks` to see what symlings would be created (I highly recommend appending `--noop` to this the first time)
+On a completely new machine, run something like:
+
+    mkdir -p ~/git
+    # This will ask you to install the command line tools, which takes a few minutes.
+    git clone https://github.com/sitaktif/dotfiles ~/git/dotfiles
+    cd ~/git/dotfiles
+    ./install
