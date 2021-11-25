@@ -245,6 +245,13 @@ set_mac_prefs() {
     # Option and press the letter to choose that option.
     defaults_write NSGlobalDomain AppleKeyboardUIMode -int 2 &
 
+    defaults_write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false &
+    defaults_write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false &
+    defaults_write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false &
+    defaults_write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false &
+    defaults_write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false &
+    defaults_write NSGlobalDomain NSAutomaticTextCompletionEnabled -bool false &
+
     # Ctrl-wheel to zoom
     defaults_write com.apple.AppleMultitouchTrackpad HIDScrollZoomModifierMask -int 262144 &
     defaults_write com.apple.driver.AppleBluetoothMultitouch.trackpad HIDScrollZoomModifierMask -int 262144 &
