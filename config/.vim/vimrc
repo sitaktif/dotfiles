@@ -87,7 +87,7 @@ Plug 'tpope/vim-surround'
 Plug 'kana/vim-fakeclip'
 Plug 'easymotion/vim-easymotion'
 Plug 'tpope/vim-fugitive'
-Plug 'SirVer/ultisnips'
+" Plug 'SirVer/ultisnips'  " Prevents editing when python extension fails to load.
 Plug 'tpope/vim-obsession'
 Plug 'git://github.com/majutsushi/tagbar'
 Plug 'airblade/vim-gitgutter'
