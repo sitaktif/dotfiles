@@ -135,6 +135,7 @@ cask "copyq"
 cask "macfuse"
 cask "pgadmin4"
 cask "wireshark"
+cask "Discord"
 
 mas "1Password 7", id: 1333542190
 mas "CalcMadeEasy", id: 417402227
