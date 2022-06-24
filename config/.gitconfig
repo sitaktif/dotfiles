@@ -26,7 +26,7 @@
     # Diffs can have colors, so we can't simply match '^---' / '^+++'. But BSD
     # sed doesn't seem to be able to match an escape sequence, so just match
     # '^.[' instead of '^\e['.
-    diffFilter = gsed -E -e 's,(^|^.\\[[^ ]{4\\,6})--- a/,\\1--- ,' -e 's,(^|^.\\[[^ ]{4\\,6})\\+\\+\\+ b/,\\1\\+\\+\\+ ,'
+    diffFilter = sed -E -e 's,(^|^.\\[[^ ]{4\\,6})--- a/,\\1--- ,' -e 's,(^|^.\\[[^ ]{4\\,6})\\+\\+\\+ b/,\\1\\+\\+\\+ ,'
 
 [color]
     ui = auto
