@@ -1,9 +1,36 @@
 # bash and zsh rc file
 
-
 ###############################
 #           PRELUDE           #
 ###############################
+
+if [[ -n "${ZSH_VERSION:-}" ]]; then
+    shell=zsh
+elif [[ -n "${BASH_VERSION:-}" ]]; then
+    shell=bash
+else
+    shell=unknown
+fi
+
+# Functions to measure how long parts of your zshrc takes to execute.
+# Call `time_tick` to split things into sections.
+# Finish by calling `time_toal`.
+declare -F SECONDS=$SECONDS
+declare -i ddd_firsttime=$((SECONDS * 1000))
+declare -i ddd_oldtime=$ddd_firsttime
+time_tick() {
+    [[ $shell != zsh ]] && return
+    printf "%s" "$((i++)): "
+    ddd_newtime=$((SECONDS * 1000))
+
+    printf "%dms\n" "$((ddd_newtime - ddd_oldtime))"
+    ddd_oldtime=$ddd_newtime
+}
+time_total() {
+    [[ $shell != zsh ]] && return
+    ddd_newtime=$((SECONDS * 1000))
+    printf "Last: %sms\n" "$((ddd_newtime - ddd_firsttime))"
+}
 
 # Non-interactive mode
 [[ -z "$PS1" ]] && return
@@ -46,11 +73,13 @@ export PAGER=less
 # Homebrew
 if exists brew; then
     export HOMEBREW_NO_AUTO_UPDATE=1
-    export PATH="/usr/local/bin:/usr/local/sbin:/usr/local/opt/coreutils/libexec/gnubin:$PATH"
-    export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+    export PATH="/usr/local/bin:/usr/local/sbin:$PATH"
+    if [[ -e /opt/brew/bin/gls ]]; then
+        alias ls='gls --color=auto'
+    fi
 fi
 if [[ -d /opt/brew ]]; then
-    export PATH="/opt/brew/bin:$PATH"
+    export PATH="/opt/brew/bin:/opt/brew/sbin:$PATH"
 fi
 
 # Dircolors (ls output)
@@ -359,7 +388,7 @@ alias pt="CI=1 unbuffer pytest --no-cov --junit-xml='' --disable-pytest-warnings
 #   apple_app_bundleid https://apps.apple.com/us/app/watch/id1069511734
 #   apple_app_bundleid /Applications/kitty.app
 apple_app_bundleid() {
-  case $1 in;
+  case $1 in
     https://*) # Assume URL (Google for the app, copy URL).
       id=${1##*id} # Assumes $1 is a URL like https://apps.apple.com/.../id0000000000
       curl "https://itunes.apple.com/lookup?id=${id}" | jq -r '"app://\(.results[0].bundleId)"'
@@ -375,9 +404,6 @@ apple_app_bundleid() {
 #
 ## Shell-specific config
 #
-
-[ "${ZSH_VERSION:-}" ] && shell=zsh
-[ "${BASH_VERSION:-}" ] && shell=bash
 
 case "$shell" in
 
@@ -397,9 +423,11 @@ case "$shell" in
         precmd() {
             if [[ -n $timer ]]; then
                 timer_show=$(($SECONDS - $timer))
-                # if [[ timer_show -gt 5 ]]; then
-                #     export RPROMPT="<%F{cyan}${timer_show}s%f>"
-                # fi
+                if [[ $timer_show -lt 10 ]]; then
+                    printf -v timer_show "%.1f" "$timer_show"
+                else
+                    printf -v timer_show "%.0f" "$timer_show"
+                fi
                 unset timer
             fi
         }
@@ -427,9 +455,36 @@ case "$shell" in
         }
         default_prompt
 
+        ## Autoloads (run early so it doesn't override our key bindings)
+
+        # ZSH completion initialization
+        # On slow systems, checking the cached .zcompdump file to see if it must be
+        # regenerated adds a noticable delay to zsh startup.  This little hack restricts
+        # it to once a day.  It should be pasted into your own completion file.
+        #
+        # The globbing is a little complicated here:
+        # - '#q' is an explicit glob qualifier that makes globbing work within zsh's [[ ]] construct.
+        # - 'N' makes the glob pattern evaluate to nothing when it doesn't match (rather than throw a globbing error)
+        # - '.' matches "regular files"
+        # - 'mh-24' matches files that are more recent than 24 hours.
+        autoload -U compinit
+        _update_zcomp() {
+            setopt extendedglob
+            if [[ -z ~/.zcompdump(#qN.mh-24) ]]; then
+            # if true; then
+                compinit -d ~/.zcompdump
+                touch ~/.zcompdump
+            else
+                compinit -C -d ~/.zcompdump
+            fi;
+            unsetopt extendedglob
+        }
+        _update_zcomp
+
         ## Other tools
 
         # Added by fzf - needs to be set before the `binkeys` calls down there to override.
+        # Takes ~25 or 30 ms
         [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
         ## ZSH config (see `man zshoptions`)
@@ -661,16 +716,13 @@ case "$shell" in
             [[ -e ~/git/fz/fz.sh ]] && . ~/git/fz/fz.sh
         fi
 
-        # ZSH completion initialization
-        autoload -U compinit && compinit
-
         # # Kubectl completion (takes 200ms+ to load)
         # source <(kubectl completion zsh)
         # complete -F __start_kubectl k
 
         # Complete aliases as their original commands.
-        compdef bazelw=bazel
-        compdef b=bazel
+        # compdef bazelw=bazel
+        # compdef b=bazel
         compdef gw=gradle
         compdef g=git
         # compdef d=docker
@@ -786,7 +838,7 @@ case "$shell" in
             fi
 
             # $__RC_LAST_COMMAND_START is set by the DEBUG trap above
-            local last_cmd_time_seconds=$(($SECONDS - $__RC_LAST_COMMAND_START))
+            local -i last_cmd_time_seconds=$(($SECONDS - $__RC_LAST_COMMAND_START))
             if [[ $last_cmd_time_seconds -gt 2 ]]; then
                 PS_JOB_TIME="${C_YELLOW}[${last_cmd_time_seconds}s]${C_RST} "
             else
@@ -950,11 +1002,16 @@ export PATH="$PATH:$HOME/.rvm/bin"
 
 # Pyenv (manage multiple python versions)
 if exists pyenv; then
-    eval "$(pyenv init -)"
+    eval "$(pyenv init - --no-rehash)"
 fi
 
 if exists rbenv; then
-    eval "$(rbenv init -)"
+    # Faster, but needs to be rehashed manually from time to time.
+    if [[ $RANDOM == *0 ]]; then
+        eval "$(rbenv init -)"
+    else
+        eval "$(rbenv init - --no-rehash)"
+    fi
 fi
 
 # vim: ft=sh foldmethod=marker sw=4 ts=4 sts=4 et
