@@ -89,7 +89,6 @@ Plug 'easymotion/vim-easymotion'
 Plug 'tpope/vim-fugitive'
 " Plug 'SirVer/ultisnips'  " Prevents editing when python extension fails to load.
 Plug 'tpope/vim-obsession'
-Plug 'git://github.com/majutsushi/tagbar'
 Plug 'airblade/vim-gitgutter'
 Plug 'godlygeek/tabular'  " Needed for plasticboy/vim-markdown
 Plug 'rking/ag.vim'

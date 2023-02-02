@@ -46,7 +46,6 @@ brew "gdb"
 brew "git"
 brew "git-delta"
 brew "git-interactive-rebase-tool"
-brew "git-lfs"
 brew "gnu-sed"
 brew "gnupg"
 brew "gnuplot"
@@ -122,13 +121,13 @@ brew "zlib"
 brew "zstd"
 
 cask "Karabiner-elements"  # Any keyboard shortcut
-cask "Spectacle"   # Move windows around with shortcuts
+cask "Rectangle"   # Move windows around with shortcuts
 cask "Iterm2"
 cask "Dropbox"
 cask "Firefox"
 cask "LaunchBar"   # Spotlight replacement
+cask "syntax-highlight"  # Quicklook (spacebar in Finder) for source code and other files
 cask "qlmarkdown"  # Quicklook (spacebar in Finder) for markdown preview
-cask "qlstephen"   # Quicklook (spacebar in Finder) for extension-less files (README, etc)
 cask "spotify"
 cask "vimr"        # Nice/fast Neovim Gui
 cask "time-out"
@@ -138,9 +137,7 @@ cask "pgadmin4"
 cask "wireshark"
 cask "Discord"
 
-mas "1Password 7", id: 1333542190
 mas "CalcMadeEasy", id: 417402227
-mas "feedly", id: 865500966
 mas "GarageBand", id: 682658836
 mas "iMovie", id: 408981434
 mas "Keynote", id: 409183694

@@ -81,6 +81,8 @@
 
     sub = submodule
     cpi = cherry-pick
+    cpic = cherry-pick --continue
+    cpia = cherry-pick --abort
     push = push
 
     f = fetch            # Fetch one remote.
@@ -155,6 +157,8 @@
     # Get the version in the format that is used in go.mod.
     goversion = !TZ=UTC0 git --no-pager show --quiet --abbrev=12 --date='format-local:%Y%m%d%H%M%S' --format="%cd-%h"
 
+[init]
+    defaultBranch = main
 [credential]
     helper = osxkeychain
 [rerere]
@@ -207,8 +211,3 @@
     showPatch = true
 [diff]
     noprefix = true
-[filter "lfs"]
-	process = git-lfs filter-process
-	required = true
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f

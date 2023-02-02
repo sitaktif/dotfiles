@@ -48,7 +48,7 @@ exists() { command -v "$1" >/dev/null 2>&1; } # Check if command exists (is in p
 ###############################
 
 # Binaries in home
-export PATH=~/bin/local:~/bin:~/bin/scripts:~/.cargo/bin:${GOPATH:-$USER/go}/bin:$PATH
+export PATH=~/bin:~/.cargo/bin:${GOPATH:-$HOME/go}/bin:$PATH
 
 # Less (--quit-if-one-screen needs version >= 520 to work with alternate screens, i.e. without --no-init)
 # Tab is 4 spaces, search ignores case, enable colours, cat if less than one screen.
@@ -72,14 +72,15 @@ export PAGER=less
 
 # Homebrew
 if exists brew; then
+    __brew_prefix=$(brew --prefix)
+    export HOMEBREW_NO_ANALYTICS=1
     export HOMEBREW_NO_AUTO_UPDATE=1
-    export PATH="/usr/local/bin:/usr/local/sbin:$PATH"
-    if [[ -e /opt/brew/bin/gls ]]; then
+
+    export PATH="$__brew_prefix/bin:$__brew_prefix/sbin:$PATH"
+
+    if exists gls; then
         alias ls='gls --color=auto'
     fi
-fi
-if [[ -d /opt/brew ]]; then
-    export PATH="/opt/brew/bin:/opt/brew/sbin:$PATH"
 fi
 
 # Dircolors (ls output)
@@ -196,7 +197,7 @@ gpr() {
 # cd to the first parent dir containing .git/
 function cdg() {
     local curdir=$(pwd)
-    while curdir=$(dirname "$curdir"); do
+    while curdir=$(dirname "$curdir") && [[ $curdir != "/" ]]; do
         [[ -e $curdir/.git ]] && cd "$curdir" && return
     done
 }
@@ -204,6 +205,10 @@ function cdg() {
 # Bazel
 alias b=bazelisk
 alias bob='bazelisk info output_base'
+bobe() {
+    echo "$(bazelisk info output_base)/external"
+}
+
 # Bazel edit - transform targets into their corresponding BUILD file.
 commonrc__bazel_workspace_root() {
     set -eu
@@ -545,15 +550,40 @@ case "$shell" in
         zle -N my-forward-smallword
         bindkey "^[f" my-forward-smallword
 
+        # Alt-d - delete one word forward (not including colon, dot...)
+        my-forward-kill-word () {
+            # Only delete alphanum and underscores in one stroke.
+            local WORDCHARS='_'
+            zle -f kill # Append to the kill ring on subsequent kills.
+            zle kill-word
+        }
+        zle -N my-forward-kill-word
+        bindkey '^[d' my-forward-kill-word
+
         # Ctrl-w - delete a full WORD (including colon, dot...)
         my-backward-kill-word () {
-            # Add colon, comma, single/double quotes to word chars
-            local WORDCHARS='*?_-.[]~=/&;!#$%^(){}<>:,"'"'"
+            # Add colon, comma, @, +, single/double quotes to word chars
+            local WORDCHARS='*?_-.[]~=/&;!#$%^(){}<>:,+@"'"'"
             zle -f kill # Append to the kill ring on subsequent kills.
             zle backward-kill-word
         }
         zle -N my-backward-kill-word
         bindkey '^w' my-backward-kill-word
+
+        # Make fg behave the same as bash:
+        # - `fg -` will put the alternate job in fg.
+        # - `fg N` (with N being one digit) will put job %N in fg.
+        # - `fg NN..` (N being 2+ digits) will put job with pid NN.. in fg.
+        _sita_jobcmd() {
+            cmd=$1; shift
+            if [[ $# -eq 1 && $1 == ? ]]; then
+                builtin "$cmd" %"$@"
+            else
+                builtin "$cmd" "$@"
+            fi
+        }
+        fg() { _sita_jobcmd fg "$@" }
+        bg() { _sita_jobcmd fg "$@" }
 
         ## zplugin
 
@@ -727,7 +757,6 @@ case "$shell" in
         # complete -F __start_kubectl k
 
         # Complete aliases as their original commands.
-        # compdef bazelw=bazel
         # compdef b=bazel
         compdef gw=gradle
         compdef g=git
