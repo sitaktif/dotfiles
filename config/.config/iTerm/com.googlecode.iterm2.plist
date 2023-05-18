@@ -5,7 +5,7 @@
 	<key>AdjustWindowForFontSizeChange</key>
 	<false/>
 	<key>AllowClipboardAccess</key>
-	<false/>
+	<true/>
 	<key>AnimateDimming</key>
 	<false/>
 	<key>AutoHideTmuxClientSession</key>

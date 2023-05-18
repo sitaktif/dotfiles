@@ -11,9 +11,8 @@
     # Diff-highlight highlights the specific words that change in a diff.
     # pager = "$(dh=/usr/local/share/git-core/contrib/diff-highlight/diff-highlight; [ -x "$dh" ] && echo "$dh" || echo cat) | less"
 
-[core]
     # Fancy diff viewer
-    pager = delta
+    pager = delta --paging=always
 
 [delta]
     # syntax-theme = Monokai Extended
@@ -88,21 +87,22 @@
     f = fetch            # Fetch one remote.
     fa = fetch --all     # Fetch from all the remotes.
     fod = fetch origin dev
-    fom = fetch origin master
+    fom = fetch origin main
     fud = fetch up dev
-    fum = fetch up master
+    fum = fetch up main
 
     pl = pull
-    pullod = pull origin dev
-    pullom = pull origin master
-    pullud = pull up dev
-    pullum = pull up master
+    pullod = !echo "run 'git plod' instead"
+    pullom = !echo "run 'git plom' instead"
+    pullud = !echo "run 'git plud' instead"
+    pullum = !echo "run 'git plum' instead"
     plod = pull origin dev
-    plom = pull origin master
+    plom = pull origin main
     plud = pull up dev
-    plum = pull up master
+    plum = pull up main
 
     p = push
+    pf = push --force-with-lease
     pod = push origin dev
     pom = push origin master
     pud = push up dev
