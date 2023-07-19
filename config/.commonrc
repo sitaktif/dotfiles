@@ -458,6 +458,31 @@ case "$shell" in
         # Evaluate this once only.
         exists __git_ps1 && __GIT_PS1_EXISTS=true || __GIT_PS1_EXISTS=false
 
+        # default_prompt() {
+        #     # Built-in zsh VCS info
+        #     setopt prompt_subst
+
+        #     export VIRTUAL_ENV_DISABLE_PROMPT=1  # We do it ourselves
+
+        #     local prompt_mark venv vcs ret_code
+        #     local newline=$'\n'
+
+        #     # Shell integration escape sequence (allows quickly jumping from prompt to prompt with iTerm2).
+        #     # ...but it messes with the terminal so I'm deactivating it.
+        #     [[ $TERM_PROGRAM == iTerm.app ]] && prompt_mark=$'%{\e]1337;SetMark\x07%}' || prompt_mark=''
+        #     # Virtualenv in green
+        #     venv='${VIRTUAL_ENV:+%F{28\}(${VIRTUAL_ENV##*/}) %f}'
+        #     # Show the branch with a space (and escape percent signs) but only if present.
+        #     [[ $__GIT_PS1_EXISTS == true ]] && vcs='%F{240}$(__git_ps1 "(%s) ")%f' || vcs=''
+        #     # Show the return code in orange with red brackets if non-zero.
+        #     ret_code='%(?..%F{red}[%F{214}%?%F{red}] %f)'
+        #     # Left prompt: purple path, red/orange non-zero status code, grey % (# for root)
+        #     PROMPT=${prompt_mark}'%F{161}%~%f '${venv}${vcs}${ret_code}'%F{240}%#%f '
+        #     # Right prompt: last command time, grey date
+        #     RPROMPT='[%F{yellow}${timer_show:-0}s%f] %F{240}%*%f'
+        # }
+        # default_prompt
+
         default_prompt() {
             # Built-in zsh VCS info
             setopt prompt_subst
@@ -465,6 +490,7 @@ case "$shell" in
             export VIRTUAL_ENV_DISABLE_PROMPT=1  # We do it ourselves
 
             local prompt_mark venv vcs ret_code
+            local newline=$'\n'
 
             # Shell integration escape sequence (allows quickly jumping from prompt to prompt with iTerm2).
             # ...but it messes with the terminal so I'm deactivating it.
@@ -476,9 +502,10 @@ case "$shell" in
             # Show the return code in orange with red brackets if non-zero.
             ret_code='%(?..%F{red}[%F{214}%?%F{red}] %f)'
             # Left prompt: purple path, red/orange non-zero status code, grey % (# for root)
-            PROMPT=${prompt_mark}'%F{161}%~%f '${venv}${vcs}${ret_code}'%F{240}%#%f '
-            # Right prompt: last command time, grey date
-            RPROMPT='[%F{yellow}${timer_show:-0}s%f] %F{240}%*%f'
+            PROMPT=${prompt_mark}'%F{161}%~%f '${venv}${vcs}${ret_code}
+            # Continued left prompt: last command time, grey date
+            PROMPT+='[%F{yellow}${timer_show:-0}s%f] %F{240}%*%f'
+            PROMPT+=$newline'%F{240}%#%f '
         }
         default_prompt
 
