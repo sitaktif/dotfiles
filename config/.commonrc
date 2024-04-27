@@ -173,6 +173,9 @@ alias gga2='git log --graph --full-history --all --color --pretty=format:"%x1b[3
 alias gl="git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd) %C(bold blue)<%an>%Creset' --abbrev-commit --date=local"
 alias gap="git add -p"
 
+# ssh
+alias sshx='ssh x230'
+
 # Ripgrep
 alias rga='rg --hidden --no-ignore --glob=!.git'
 
@@ -218,6 +221,18 @@ alias b=bazelisk
 alias bob='bazelisk info output_base'
 bobe() {
     echo "$(bazelisk info output_base)/external"
+}
+
+# JQ
+
+# Hacky jq editor using fzf
+fzjq() {
+    f=${1:?Missing argument: json file}
+    if [[ $# -gt 1 ]]; then
+        echo "usage: fzjq JSON_FILE" >&2
+        return 2
+    fi
+    echo '' | fzf --print-query --height "100%" --preview-window="top,99%" --preview "cat $f | jq -C {q}"
 }
 
 # Bazel edit - transform targets into their corresponding BUILD file.
@@ -300,6 +315,9 @@ bzicgraph() {
         open graph.pdf
 }
 
+alias bzoutputs='bazel cquery --output=starlark --starlark:file=$HOME/bin/bazel-outputs.starlark'
+alias bzrunfiles='bazel cquery --output=starlark --starlark:file=$HOME/bin/bazel-runfiles.starlark'
+
 # Rust
 alias c=cargo
 alias cb='cargo build'
@@ -316,18 +334,13 @@ dockertags() {
 
 # Kubernetes
 alias k=kubectl
-alias kx='kubectx'
+alias kx=kubectx
+alias xk='kubectl --kubeconfig ~/.kube/config.x230'
+alias xkx='KUBECONFIG='~/.kube/config.x230' kubectx'
+alias xk9s='k9s --kubeconfig ~/.kube/config.x230'
 
-# Gradle
-gw() {
-    # Run gradlew if found in the current or parent directories
-    for i in . .. ../.. ../../.. ../../../..; do
-        if [[ -x $i/gradlew ]]; then
-            (cd $i && ./gradlew "$@") ; return
-        fi
-    done
-    echo "No gradlew found in current or parent directories"
-}
+# Ansible
+alias ap='ansible-playbook'
 
 
 ############################
@@ -345,9 +358,16 @@ alias vim_restore_session='vim $(find . -name ".*.sw[pon]" | while read f; do rm
 
 ## Fuzzy-finder (fzf) - see https://junegunn.kr/2016/07/fzf-git/
 
+# Key bindings containing spaces need to be quoted.
+# The shift-left/right bindings will be available in fzf >0.50.0
+_fzf_bindings=(
+'ctrl-t:toggle-all,alt-j:jump,alt-k:jump-accept,alt-p:toggle-preview,shift-up:toggle+up,shift-down:toggle+down'
+\''shift-left:transform:for _ in $(seq $FZF_POS $FZF_MATCH_COUNT); do echo -n +toggle+up; done'\'
+\''shift-right:transform:for _ in $(seq 1 $FZF_POS); do echo -n +toggle+down; done'\'
+)
 # multi-selection, 60% height (default 40%),
 # extended: use leading single quote for exact word matches.
-export FZF_DEFAULT_OPTS='--multi --extended --height=60% --bind ctrl-t:toggle-all,alt-j:jump,alt-k:jump-accept,alt-p:toggle-preview'
+export FZF_DEFAULT_OPTS="--multi --extended --height=60% ${_fzf_bindings[@]/#/--bind }"
 
 if command -v fd >/dev/null 2>&1; then
     export FZF_ALT_C_COMMAND="command fd --type d 2> /dev/null"
@@ -719,7 +739,7 @@ case "$shell" in
         # F12
         bindkey -s "\e[24~" 'e $(!! -l)\n'
 
-        # Fzf git files (unstaged).
+        # Fzf git files.
         _gib_git_f() {
             git -c color.status=always status --short |
                 fzf --height 50% "$@" --border -m --ansi --nth 2..,.. \

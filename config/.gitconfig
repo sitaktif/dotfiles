@@ -157,6 +157,9 @@
     # Get the version in the format that is used in go.mod.
     goversion = !TZ=UTC0 git --no-pager show --quiet --abbrev=12 --date='format-local:%Y%m%d%H%M%S' --format="%cd-%h"
 
+    # Install git-lfs locally (current repo only)
+    lfs-setup = "! git config core.hooksPath .git/hooks && git lfs install --local && git lfs fetch && git lfs checkout #" # Set up local git-lfs.
+
 [init]
     defaultBranch = main
 [credential]
@@ -210,4 +213,4 @@
 [stash]
     showPatch = true
 [diff]
-    noprefix = true
+    # noprefix = true

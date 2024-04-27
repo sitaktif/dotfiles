@@ -1,0 +1,9 @@
+def format(target):
+    """
+    Get the outputs of a given target. To use it, run:
+
+        bazel cquery --output=starlark --starlark:file=$HOME/bin/bazel-outputs.starlark //your:target
+    """
+
+    outputs = target.files.to_list()
+    return "\n".join([f.path for f in outputs])

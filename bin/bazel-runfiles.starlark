@@ -1,0 +1,15 @@
+def format(target):
+    """
+    Get the runfiles of a given target. To use it, run:
+
+        bazel cquery --output=starlark --starlark:file=$HOME/bin/bazel-runfiles.starlark //your:target
+    """
+
+    # return str(configuration(target))
+    # return "---\n" + str(dir(target.output_groups))
+    # return "---\n" + "\n".join(build_options(target).keys())
+    # return dir(target.actions)
+    # return "%s\n%s" % (dir(target.default_runfiles), target.default_runfiles)
+    outputs = target.default_runfiles.files.to_list()
+    return "---\n" + "\n".join([f.path for f in outputs])
+

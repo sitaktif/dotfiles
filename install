@@ -222,6 +222,10 @@ set_mac_prefs() {
 
     echo "* Setting misc Mac preferences"
 
+    # Reduce the spacing between menu bar icons to fit more of them.
+    defaults -currentHost write -globalDomain NSStatusItemSelectionPadding -int 6
+    defaults -currentHost write -globalDomain NSStatusItemSpacing -int 6
+
     # Set up fastest key repeat rate (needs relogin).
     defaults_write NSGlobalDomain KeyRepeat -int 1 &
 
@@ -233,6 +237,9 @@ set_mac_prefs() {
 
     # Show Dock quickly when hidden.
     defaults write com.apple.dock autohide-time-modifier -float 0.15
+
+    # Use the "scale" effect when minimising (faster than "genie").
+    defaults write com.apple.dock "mineffect" -string "scale"
 
     # System Preferences -> Keyboard -> Shortcuts -> Full Keyboard Access
     # Full Keyboard Access: In Windows and Dialogs, press Tab to move keyboard
