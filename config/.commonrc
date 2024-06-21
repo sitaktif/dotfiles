@@ -98,6 +98,8 @@ export GOPATH="$HOME/go"
 # Misc
 export VAGRANT_DEFAULT_PROVIDER=virtualbox
 
+# Useful variables
+export AS=~/Library/Application\ Support
 
 ###############################
 # ALIASES & SIMPLE FUNCTIONS  #

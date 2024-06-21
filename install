@@ -134,8 +134,12 @@ defaults_write() {
     val="$4"
 
     current_val="$(defaults read "$domain" "$key" 2>/dev/null || true)"
+    if [[ "$val_type" == bool* ]]; then
+        [[ "$current_val" == 0 ]] && current_val="false"
+        [[ "$current_val" == 1 ]] && current_val="true"
+    fi
 
-    if [[ "$current_val" == "$val" ]]; then
+    if [[ "$current_val" == "$val" ]] || [[ "$current_val" == "0" && "$val" == "false" ]]; then
         printf "%-32s %-32s -> [$GRN%s$RST]\n" "'$domain'" "'$key'" "already set to '$val'"
         return 0
     elif [[ -z "$current_val" ]]; then
@@ -263,7 +267,7 @@ set_mac_prefs() {
     defaults_write com.apple.AppleMultitouchTrackpad HIDScrollZoomModifierMask -int 262144 &
     defaults_write com.apple.driver.AppleBluetoothMultitouch.trackpad HIDScrollZoomModifierMask -int 262144 &
     defaults_write com.apple.universalaccess closeViewScrollWheelToggle -int 1 &
-    defaults_write com.apple.universalaccess closeViewPanningMode -int 1 &
+    # defaults_write com.apple.universalaccess closeViewPanningMode -int 1 &
 
     # Wait for defaults to be written down
     wait
@@ -292,7 +296,7 @@ set_mac_prefs() {
 
     # Default to the home directory.
     defaults_write com.apple.finder NewWindowTarget -string PfHm &
-    defaults_write NewWindowTargetPath -string "file:///Users/rchossart/" &
+    defaults_write com.apple.finder NewWindowTargetPath -string "file:///Users/rchossart/" &
 
     # Show hidden files in the finder.
     if [[ "$(defaults read com.apple.finder AppleShowAllFiles)" != 1 ]]; then
@@ -437,6 +441,7 @@ main() {
         ln -nsf $THIS_DIR/bin ~/bin
 
         echo "* Setting mac preferences (keyboard shortcuts) with 'defaults'"
+        echo "Note: you need to allow full disk access to '/bin/bash' first in Preferences"
         set_mac_prefs
 
         if ! command -v brew >/dev/null 2>&1; then
@@ -456,9 +461,6 @@ main() {
 
     echo "* Symlinking dotfiles"
     linkall
-
-    echo "* Adding Spectacle config symlink"
-    ln -sf ~/.config/Spectacle/Shortcuts.json ~/Library/Application\ Support/Spectacle/Shortcuts.json
 
     if command -v python2 >/dev/null 2>&1; then
         echo "* Adding python2 packages"
