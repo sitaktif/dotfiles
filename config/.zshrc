@@ -22,3 +22,5 @@ fi
 # fi
 # unset __conda_setup
 # # <<< conda initialize <<<
+
+test -e /Users/rchossart/.iterm2_shell_integration.zsh && source /Users/rchossart/.iterm2_shell_integration.zsh || true

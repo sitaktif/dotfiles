@@ -450,8 +450,14 @@ case "$shell" in
 
     zsh)
 
+        # Change the name of the history file to avoid the case where zsh is
+        # run without the user .zshrc file and zsh truncates the file because
+        # of default settings.
+        export HISTFILE=~/.zsh_history_sita
         export HISTSIZE=100000
         export SAVEHIST=100000  # zsh only
+
+        export GPG_TTY=$(tty)
 
         if [[ -e ~/bin/git-prompt.sh ]]; then
             . ~/bin/git-prompt.sh
