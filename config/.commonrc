@@ -206,7 +206,7 @@ gpr() {
     elif [[ $symbolic_rev =~ $unacceptable_branch ]]; then
         echo "Not creating PR from '$symbolic_rev'. Please use a feature branch instead." && return 2
     fi
-    git push origin "$symbolic_rev" -u
+    git push origin "$symbolic_rev" -u || return 1
     hub compare "$github_user:$symbolic_rev"
 }
 
@@ -220,10 +220,11 @@ function cdg() {
 
 # Bazel
 alias b=bazelisk
-alias bob='bazelisk info output_base'
+alias bob='bazel info output_base'
 bobe() {
-    echo "$(bazelisk info output_base)/external"
+    echo "$(bazel info output_base)/external"
 }
+alias bq='bazel query'
 
 # JQ
 
@@ -456,8 +457,8 @@ case "$shell" in
         # run without the user .zshrc file and zsh truncates the file because
         # of default settings.
         export HISTFILE=~/.zsh_history_sita
-        export HISTSIZE=100000
-        export SAVEHIST=100000  # zsh only
+        export HISTSIZE=500000
+        export SAVEHIST=500000  # zsh only
 
         export GPG_TTY=$(tty)
 
