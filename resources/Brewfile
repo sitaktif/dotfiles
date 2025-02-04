@@ -113,9 +113,10 @@ cask "Rectangle"   # Move windows around with shortcuts
 cask "Iterm2"
 cask "Dropbox"
 cask "Firefox"
-cask "LaunchBar"   # Spotlight replacement
+# cask "LaunchBar"   # Spotlight replacement
 cask "syntax-highlight"  # Quicklook (spacebar in Finder) for source code and other files
 cask "qlmarkdown"  # Quicklook (spacebar in Finder) for markdown preview
+cask "sanesidebuttons"  # Back and Previous using the mouse.
 cask "spotify"
 cask "vimr"        # Nice/fast Neovim Gui
 cask "time-out"
