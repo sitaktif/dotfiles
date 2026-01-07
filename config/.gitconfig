@@ -52,6 +52,7 @@
     a = add
     br = branch
     co = checkout
+    copr = "! if [[ $1 == *:* ]]; then remote=${1%:*}; branch=${1#*:}; else remote=up; branch=$1; fi; git fetch $remote; git checkout $remote/$branch #"
     l = log
     s = show
 
@@ -65,6 +66,8 @@
     cf = commit --fixup
     cac = commit --amend -C HEAD
     caca = commit --amend -C HEAD -a
+
+    caw = "! git commit -a -m \"WIP! at $(date '+%Y-%m-%d %H:%M:%S') on $(hostname)\" \"$@\" #" # work in progress commit to be squashed
 
     ra=remote add
     rr=remote rm
@@ -85,12 +88,11 @@
     cpia = cherry-pick --abort
     push = push
 
+    prm2 = "!arg=${1:-$(pbpaste)}; echo $arg; if [[ $arg == https://*/pull/* ]]; then echo LALA; repo=${arg%/pull/*}; arg=${arg#**/pull/}; else echo LOLO; fi; /tmp/a.sh gh pr view ${repo:+-R} ${repo:+$repo} --json=title,url,number \"$arg\" #"
+
+    prm = "!arg=${1:-$(pbpaste)}; if [[ $arg == https://*/pull/* ]]; then repo=${arg%/pull/*}; arg=${arg#**/pull/}; fi; gh pr view ${repo:+-R $repo} --json=title,url,number \"$arg\" | jq -r '\":pr-open: [\\(.url | capture(\"^https://.*/(?<repo>[^/]+/[^/]+)/pull/[0-9]+$\") .repo)#\\(.number)](\\(.url)) \\(.title)\"' | tr -d '\n' | pbcopy #" # Get markdown for PR.
+
     f = fetch            # Fetch one remote.
-    fa = fetch --all     # Fetch from all the remotes.
-    fod = fetch origin dev
-    fom = fetch origin main
-    fud = fetch up dev
-    fum = fetch up main
 
     pl = pull
     pullod = !echo "run 'git plod' instead"
@@ -167,6 +169,8 @@
     helper = osxkeychain
 [rerere]
     enabled = true
+[fetch]
+    all = true
 [push]
     default = simple
 

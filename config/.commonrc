@@ -225,6 +225,11 @@ bobe() {
     echo "$(bazel info output_base)/external"
 }
 alias bq='bazel query'
+alias bql='bazel query --output=label_kind'
+alias bqf='bazel cquery --output=files --ui_event_filters=-debug,-info,-warning --noshow_progress'
+
+# Starlark
+alias s='starlark'
 
 # JQ
 
@@ -318,15 +323,22 @@ bzicgraph() {
         open graph.pdf
 }
 
-alias bzoutputs='bazel cquery --output=starlark --starlark:file=$HOME/bin/bazel-outputs.starlark'
+# alias bzoutputs='bazel cquery --output=starlark --starlark:file=$HOME/bin/bazel-outputs.starlark'
+bzoutputs() {
+	local ws=$(bazel info workspace --ui_event_filters=-debug,-info,-warning)
+	local relpath=$(bazel cquery "$@" --output=files --ui_event_filters=-debug,-info,-warning --noshow_progress)
+	echo "$ws/$relpath"
+}
+
 alias bzrunfiles='bazel cquery --output=starlark --starlark:file=$HOME/bin/bazel-runfiles.starlark'
 
-# Rust
-alias c=cargo
-alias cb='cargo build'
+alias oi='open -a "IntelliJ IDEA.app"'
 
 # Docker
-alias d=docker
+alias c='container'
+alias cr='container image run -ti'
+alias crr='container image run -ti --rm'
+alias d='docker'
 alias dr='docker run -ti'
 alias drr='docker run -ti --rm'
 dockertags() {
@@ -579,7 +591,7 @@ case "$shell" in
         setopt hist_ignore_all_dups hist_ignore_space share_history extended_history hist_expire_dups_first
 
         # Completion
-        setopt beep no_autolist bash_autolist no_menucomplete no_automenu no_dotglob
+        setopt beep no_autolist bash_autolist no_menucomplete no_automenu no_dotglob list_ambiguous
 
         # Allow comments on the command line.
         setopt interactivecomments
@@ -593,6 +605,9 @@ case "$shell" in
         [[ -e ~/.zsh/cache-completion ]] || mkdir -p ~/.zsh/cache-completion
         zstyle ':completion:*' use-cache on
         zstyle ':completion:*' cache-path ~/.zsh/cache-completion
+
+        # Only complete up to the unambiguous part of the available options.
+        zstyle ':autocomplete:*' insert-unambiguous yes
 
 
         ## Prompt movement
@@ -982,7 +997,7 @@ case "$shell" in
 
         # Wrapper that creates a completion function on the fly for aliases that contain arguments.
         #
-        # For aliases that don't take arguments you can directly set the completion function with e.g. 
+        # For aliases that don't take arguments you can directly set the completion function with e.g.
         # complete -o default -F _git g   # Assuming 'g' is the alias and '_git' is
         # the completion function.
         #
@@ -1013,7 +1028,7 @@ case "$shell" in
             eval "$function"
             # echo "$function_name"
             # echo "$function"
-            
+
             # Not quite working yet...
             # make_completion_wrapper _git_remote _my_git_remote_rm git-remote rm
             # complete -o default -F _my_git_remote_rm grr
@@ -1032,8 +1047,7 @@ case "$shell" in
         # Fzf local git repos
         gp() {
             local dir
-            dir=$(find ~/git ~/src ~/geo ~/go/src/github.pie.*.com/pie -mindepth 1 -maxdepth 1 -type d |
-                fzf "$@")
+            dir=$(find ~/git ~/src ~/geo -mindepth 1 -maxdepth 1 -type d | fzf "$@")
             [[ -n "$dir" ]] && cd "$dir"
         }
 

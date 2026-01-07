@@ -8,7 +8,18 @@ syntax on
 filetype plugin on
 filetype indent on
 set background=dark
-set termencoding=utf-8
+"set termencoding=utf-8
+
+" We expect a python virtualenv with `pynvim` package installed here.
+" If we don't do that, vim might slowly try to find a python runtime that has
+" the package, and the slowness is hard to track down.
+" let g:python3_host_prog = expand('~/.venv.nvim/bin/python')
+" let g:python_host_prog = expand('~/.venv.nvim/bin/python3')
+
+" " If this fails, run: `python -m pip install pynvim`.")
+" python << EOF
+" True
+" EOF
 
 "}}}
 
@@ -20,9 +31,6 @@ if has('macunix') || system('uname -o') =~? '^darwin'
     let g:PLATFORM = 'mac'
 elseif has('win32unix')
     let g:PLATFORM = 'cygwin'
-elseif has('win32') || has('win64')
-    let g:PLATFORM = 'win'
-    let s:config_dir = s:path . '/vimfiles'
 else
     let g:PLATFORM = 'other'
 endif
@@ -35,7 +43,7 @@ if has("gui_running") || has("gui_vimr") " GUI mode
     set guioptions-=m "No menubar
     set guioptions-=r "No scroolbar (right)
     set guioptions-=L "No scroolbar (left)
-    set guioptions+=c "Console dialogs (no popup)
+    " set guioptions+=c "Console dialogs (no popup)
     "set guioptions+=a "Gui visual w/ mouse (yank to "*)
 elseif has('gui') " A terminal with GUI support
     colorscheme ps_color
@@ -71,6 +79,8 @@ call plug#begin('~/.vim/plugged')
 
 " General plugins
 
+Plug 'nvim-lua/plenary.nvim'
+
 Plug 'itchyny/lightline.vim'                        " Nice looking status bar
 Plug 'Shougo/echodoc.vim'                           " Complete func signatures in cmd
 Plug 'tpope/vim-commentary'
@@ -82,7 +92,6 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-obsession'
 Plug 'airblade/vim-gitgutter'
 Plug 'godlygeek/tabular'  " Needed for plasticboy/vim-markdown
-Plug 'rking/ag.vim'
 Plug 'rizzatti/dash.vim'
 Plug 'jceb/vim-orgmode'
 Plug 'tpope/vim-speeddating' " Increase/decrease date with <C-a>/<C-x>
@@ -103,12 +112,13 @@ Plug 'junegunn/vim-easy-align'
 Plug 'justinmk/vim-sneak' " multiline f-motion with two letters
 Plug 'sjl/gundo.vim' " Interactive undo tree
 Plug 'michaeljsmith/vim-indent-object' " ii object for 'inner indent' (useful for python)
-Plug 'vim-scripts/taglist.vim'
 Plug 'qpkorr/vim-bufkill'
 Plug 'vim-scripts/a.vim'
 Plug 'fidian/hexmode'
 
 Plug 'dstein64/vim-startuptime'
+
+Plug 'cgrindel/vim-bazelrc'
 
 if exists('##TextYankPost')
   Plug 'machakann/vim-highlightedyank'
@@ -119,14 +129,10 @@ endif
 Plug 'scwood/vim-hybrid'
 
 " FT Plugs
-Plug 'vim-syntastic/syntastic'
-" Plug 'neomake/neomake'
 Plug 'kassio/neoterm'
 Plug 'Vimjas/vim-python-pep8-indent'
-Plug 'elixir-lang/vim-elixir'
 Plug 'kballard/vim-swift'
 Plug 'plasticboy/vim-markdown'
-Plug 'kylef/apiblueprint.vim'
 Plug 'nvie/vim-rst-tables'
 Plug 'honza/vim-snippets'
 Plug 'pangloss/vim-javascript'
@@ -135,7 +141,7 @@ Plug 'rust-lang/rust.vim'
 
 " Python
 Plug 'alfredodeza/pytest.vim'
-Plug 'python-rope/ropevim'
+" Plug 'python-rope/ropevim'
 Plug 'nvie/vim-flake8'
 
 " Initialize plugin system
@@ -290,13 +296,15 @@ command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
             \ | wincmd p | diffthis
 endif
 
-func! DeleteTrailingWS()
-    let lnum = line(".")
-    let cnum = col(".")
-    silent! keepjumps %s/\s\+$//ge
-    silent! keepjumps call cursor(lnum, cnum)
-endfunc
-autocmd BufWrite *.sh,*.bash,*.java,*.py,*.rb,*.h,*.hpp,*.c,*.cpp,*.md,*.rst :call DeleteTrailingWS()
+" Delete trailing whitespaces on save.
+function! <SID>StripTrailingWhitespaces()
+  if !&binary && &filetype != 'diff'
+    let l:save = winsaveview()
+    keeppatterns %s/\s\+$//e
+    call winrestview(l:save)
+  endif
+endfun
+autocmd BufWritePre,FileWritePre,FileAppendPre,FilterWritePre * :call <SID>StripTrailingWhitespaces()
 
 "}}}
 
@@ -489,88 +497,6 @@ endif
 
 " ---| PLUGINS |--- {{{
 
-" "" COC - completion
-" 
-" " Always show the signcolumn, otherwise it would shift the text each time
-" " diagnostics appear/become resolved.
-" if has("patch-8.1.1564")
-"   " Recently vim can merge signcolumn and number column into one
-"   set signcolumn=number
-" else
-"   set signcolumn=yes
-" endif
-" 
-" " Silence the ins-completion-menu messages in the command line
-" " such as '-- XXX completion (YYY)', 'match 1 of 2', 'The only match', etc.
-" if has("patch-7.4.314")
-"   set shortmess+=c
-" endif
-" 
-" " Use <TAB> to confirm completion, `<C-g>u` means break undo chain at current
-" " position. Coc only does snippet and additional edit on confirm.
-" " <TAB> could be remapped by other vim plugin, try `:verbose imap <TAB>`.
-" if exists('*complete_info')
-"   inoremap <expr> <TAB> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<TAB>"
-" else
-"   inoremap <expr> <TAB> pumvisible() ? "\<C-y>" : "\<C-g>u\<TAB>"
-" endif
-" 
-" " Show the hints (to the right of expressions) as light grey.
-" hi CocHintSign ctermfg=239 guifg=#606060
-" 
-" " Close the preview window when completion is done.
-" autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
-" 
-" function! s:check_back_space() abort
-"   let col = col('.') - 1
-"   return !col || getline('.')[col - 1]  =~# '\s'
-" endfunction
-" 
-" " Use <c-space> to trigger completion.
-" if has('nvim')
-"   inoremap <silent><expr> <c-space> coc#refresh()
-" else
-"   inoremap <silent><expr> <c-@> coc#refresh()
-" endif
-" 
-" " Use escape to cancel completion and close the completion popup.
-" " Actually it's annoying because it forces you to type <esc> twice to save.
-" " inoremap <expr> <esc> pumvisible() ? "\<C-e>" : "\<esc>"
-" 
-" " Use `[g` and `]g` to navigate diagnostics
-" " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
-" nmap <silent> [g <Plug>(coc-diagnostic-prev)
-" nmap <silent> ]g <Plug>(coc-diagnostic-next)
-" 
-" " GoTo code navigation.
-" nmap <silent> gd <Plug>(coc-definition)
-" nmap <silent> gy <Plug>(coc-type-definition)
-" nmap <silent> gi <Plug>(coc-implementation)
-" nmap <silent> gr <Plug>(coc-references)
-" 
-" " Use K to show documentation in preview window.
-" nnoremap <silent> K :call <SID>show_documentation()<CR>
-" 
-" function! s:show_documentation()
-"   if (index(['vim','help'], &filetype) >= 0)
-"     execute 'h '.expand('<cword>')
-"   else
-"     call CocAction('doHover')
-"   endif
-" endfunction
-" 
-" if exists('g:did_coc_loaded')
-"     " Highlight the symbol and its references when holding the cursor.
-"     autocmd CursorHold * silent call CocActionAsync('highlight')
-" endif
-" 
-" " Symbol renaming.
-" nmap <leader>rn <Plug>(coc-rename)
-" 
-" " Formatting selected code.
-" xmap <leader>f  <Plug>(coc-format-selected)
-" nmap <leader>f  <Plug>(coc-format-selected)
-
 "" Lightline - status line
 
 " Display the file path (not just the basename)
@@ -618,13 +544,11 @@ let g:sneak#s_next = 1 " Allow s/S to go to the next/prev sneak value
 " echodoc (cmdline function signature completion)
 let g:echodoc#enable_at_startup = 1
 let g:echodoc#events = ['CompleteDone']
-"let g:echodoc#events = ['CompleteDone', 'BufWritePost']
 if has('nvim-0.3.2') | let g:echodoc#type = 'virtual' | endif
-set cmdheight=2
 
 
 " LanguageServer (https://github.com/autozimu/LanguageClient-neovim)
-" 
+"
 "     "\ 'rust':   ['rls'],
 " let g:LanguageClient_serverCommands = {
 "     \ 'python': ['/usr/local/bin/pyls'],
@@ -635,7 +559,7 @@ set cmdheight=2
 " if executable('bash-language-server')
 "   let g:LanguageClient_serverCommands['sh'] = ['bash-language-server', 'start']
 " endif
-" 
+"
 " let g:LanguageClient_useVirtualText = 0  " Do not use the 'virtual' area on the right to display diagnostics.
 " let g:LanguageClient_diagnosticsList = "Location" " Don't overwrite quickfix list with linter/checker output.
 " let g:LanguageClient_settingsPath = expand('~/.config/nvim/langserver-settings.json')
@@ -645,7 +569,7 @@ set cmdheight=2
 " " Or map each action separately
 " "nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
 " nnoremap <silent> <F6> :call LanguageClient#textDocument_rename()<CR><Paste>
-" 
+"
 " nnoremap <silent> gh :call LanguageClient#textDocument_hover()<CR>
 " nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
 " nnoremap <silent> gr :call LanguageClient#textDocument_references()<CR>
@@ -729,15 +653,15 @@ vnoremap g<C-s> :<C-u>RgaVisual<cr>
 "   \   fzf#vim#with_preview('right:50%:hidden', '?'),
 "   \   <bang>0)
 " command! RG Rg
-" 
+"
 " command! -bang -nargs=* RgCurrentWord
 "   \ call fzf#vim#grep(
 "   \   'rg --column --line-number --no-heading --color=always --smart-case '.
 "   \   (<bang>0 ? '-u ' : '').shellescape(<q-args>), 1,
 "   \   fzf#vim#with_preview({'options': ['--query', expand('<cword>')]}, 'right:50%:hidden', '?'),
 "   \   <bang>0)
-" 
-" 
+"
+"
 " command! -bang -nargs=* RgVisualSelection
 "   \ call fzf#vim#grep(
 "   \   'rg --column --line-number --no-heading --color=always --smart-case '.
@@ -790,25 +714,6 @@ let g:UltiSnipsJumpBackwardTrigger='<C-k>'
 
 " UltiSnips - ft specific
 let g:ultisnips_python_quoting_style='single'
-
-" Taglist plugin
-let Tlist_Use_Right_Window = 1
-let Tlist_Exit_OnlyWindow = 1
-let Tlist_Enable_Fold_Column = 0
-"
-"let Tlist_Compact_Format = 1
-let Tlist_Display_Prototype = 1
-let Tlist_File_Fold_Auto_Close = 1 " Only display current file
-let Tlist_Inc_Winwidth = 1
-let Tlist_WinWidth = 48
-"
-" Taglist OCaml language
-let g:tlist_ocaml_settings = 'ocaml;m:module;t:type;d:definition'
-let g:tlist_omlet_settings = 'ocaml;m:module;t:type;d:definition'
-
-"Panel with list of functions, vars...
-map <F11> :TagbarToggle<cr>
-let g:tagbar_autoclose = 1
 
 " Markdown
 let g:vim_markdown_folding_disabled = 1
@@ -892,20 +797,6 @@ let g:ultisnips_python_triple_quoting_style = "double"
 if !has('python')
     let b:did_pyflakes_plugin = 1
 endif
-"let g:pyflakes_use_quickfix = 0
-
-" Sytastic Settings
-let g:syntastic_python_checkers = ["flake8"]
-"
-" Pep8:
-" E201    whitespace after ‘(‘
-" E202    whitespace before ‘)’
-" E127    continuation line over-indented for visual indent
-" E128    continuation line under-indented for visual indent
-"
-" PyLint:
-" C0103   Invalid constant/variable name (1 or 2 letter, lowercase constant, ...)
-let g:syntastic_python_flake8_args = "--max-line-length=160 --ignore=C0103"
 
 " PyTest - Execute the tests
 autocmd FileType python nnoremap <buffer> <silent> <Leader>tf <Esc>:Pytest file<CR>

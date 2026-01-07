@@ -16,3 +16,15 @@ Session.vim
 .venv
 
 .fzf-bazel-query-cache
+
+/.aider*
+
+/.roo
+.roomodes
+
+/.continue
+/.continueignore
+
+/CLAUDE.local.md
+
+.claude/settings.local.json

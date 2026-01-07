@@ -81,6 +81,7 @@ brew "osxutils"
 brew "p7zip"
 brew "pandoc"
 brew "pigz"
+brew "pinentry-mac"
 brew "postgresql", restart_service: true
 brew "protobuf"
 brew "pstree"
