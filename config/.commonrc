@@ -5,14 +5,16 @@
 ###############################
 
 if [[ -n "${ZSH_VERSION:-}" ]]; then
-    shell=zsh
+    __shell=zsh
 elif [[ -n "${BASH_VERSION:-}" ]]; then
-    shell=bash
+    __shell=bash
 else
-    shell=unknown
+    __shell=unknown
 fi
 
-if [[ $shell == zsh ]]; then
+__os=$(uname)
+
+if [[ $__shell == zsh ]]; then
     # Functions to measure how long parts of your zshrc takes to execute.
     # Call `time_tick` to split things into sections.
     # Finish by calling `time_toal`.
@@ -20,7 +22,7 @@ if [[ $shell == zsh ]]; then
     declare -i ddd_firsttime=$((SECONDS * 1000))
     declare -i ddd_oldtime=$ddd_firsttime
     time_tick() {
-        [[ $shell != zsh ]] && return
+        [[ $__shell != zsh ]] && return
         printf "%s" "$((i++)): "
         ddd_newtime=$((SECONDS * 1000))
 
@@ -28,7 +30,7 @@ if [[ $shell == zsh ]]; then
         ddd_oldtime=$ddd_newtime
     }
     time_total() {
-        [[ $shell != zsh ]] && return
+        [[ $__shell != zsh ]] && return
         ddd_newtime=$((SECONDS * 1000))
         printf "Last: %sms\n" "$((ddd_newtime - ddd_firsttime))"
     }
@@ -37,10 +39,10 @@ fi
 # Non-interactive mode
 [[ -z "$PS1" ]] && return
 
-if [[ -n ${COMMONRC_SOURCED:-} ]]; then
+if [[ -n ${__COMMONRC_SOURCED:-} ]]; then
     echo "~/.commonrc was already sourced!" >&2
 fi
-COMMONRC_SOURCED=1
+__COMMONRC_SOURCED=1
 
 my_relpath() {
   local path=$1
@@ -109,6 +111,7 @@ export VAGRANT_DEFAULT_PROVIDER=virtualbox
 
 # Useful variables
 export AS=~/Library/Application\ Support
+
 
 ###############################
 # ALIASES & SIMPLE FUNCTIONS  #
@@ -459,7 +462,7 @@ apple_app_bundleid() {
 ## Shell-specific config
 #
 
-case "$shell" in
+case "$__shell" in
 
     zsh)
 
@@ -865,9 +868,9 @@ case "$shell" in
 
         # Load OS-specific rc files
         #
-        if [[ "$(uname)" == 'Darwin' ]]; then # MacOS
+        if [[ "$__os" == 'Darwin' ]]; then # MacOS
             source ~/.bashrc_mac
-        elif [[ "$(uname)" == 'Linux' ]]; then # Linux (slacker / kollok)
+        elif [[ "$__os" == 'Linux' ]]; then # Linux (slacker / kollok)
             source ~/.bashrc_linux
         fi
 
@@ -1103,4 +1106,5 @@ if exists rbenv; then
     fi
 fi
 
+unset __os __shell
 # vim: ft=sh foldmethod=marker sw=4 ts=4 sts=4 et
