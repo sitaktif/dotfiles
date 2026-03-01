@@ -107,7 +107,6 @@ brew "z"
 brew "zlib"
 brew "zstd"
 
-cask "aldente"  # Custom limits for battery charging
 cask "Karabiner-elements"  # Any keyboard shortcut
 cask "Rectangle"   # Move windows around with shortcuts
 cask "Iterm2"
@@ -127,6 +126,7 @@ cask "macfuse"
 cask "Discord"
 cask "Workflowy"
 cask "Logseq"
+cask "Vlc"
 
 mas "CalcMadeEasy", id: 417402227
 mas "GarageBand", id: 682658836

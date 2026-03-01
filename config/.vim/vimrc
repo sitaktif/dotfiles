@@ -8,7 +8,6 @@ syntax on
 filetype plugin on
 filetype indent on
 set background=dark
-set termencoding=utf-8
 
 "}}}
 
@@ -35,7 +34,6 @@ if has("gui_running") || has("gui_vimr") " GUI mode
     set guioptions-=m "No menubar
     set guioptions-=r "No scroolbar (right)
     set guioptions-=L "No scroolbar (left)
-    set guioptions+=c "Console dialogs (no popup)
     "set guioptions+=a "Gui visual w/ mouse (yank to "*)
 elseif has('gui') " A terminal with GUI support
     colorscheme ps_color
