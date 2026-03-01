@@ -367,18 +367,6 @@ alias xk9s='k9s --kubeconfig ~/.kube/config.x230'
 alias ap='ansible-playbook'
 
 
-############################
-#        BOOKMARKS         #
-############################
-
-# Other
-alias vim_restore_session='vim $(find . -name ".*.sw[pon]" | while read f; do rm "$f"; echo "$f" | sed "s/\\.\\([^/]*\\).swp/\\1/"; done)'
-
-
-############################
-#        FUNCTIONS         #
-############################
-
 
 ## Fuzzy-finder (fzf) - see https://junegunn.kr/2016/07/fzf-git/
 
@@ -420,16 +408,9 @@ if exists fzf; then
     }
 fi
 
-
-# No worky?
-# --no-hscroll
-# --bind ctrl-v:toggle-preview --preview-window down:3:hidden
-
 # Open results of rg in vim, with fzf filtering
 # TODO: add one that uses fzf to choose the files
 alias re='$EDITOR -q <($(fc -ln -1) --vimgrep)'
-
-
 
 ## Python
 
@@ -831,13 +812,6 @@ case "$shell" in
         bind-git-helper f b t r h # Bind <C-g><C-{f,b,t,r,h}> to fuzzy-find show {files,branches,tags,remotes,hashes}.
         unset -f bind-git-helper
 
-        # Load z (jump to directories, see `man z`) if brew is installed and z is too
-        if exists brew; then
-            # Load rupa's z if installed
-            [ -f "$(brew --prefix)/etc/profile.d/z.sh" ] && source "$(brew --prefix)/etc/profile.d/z.sh"
-            export HOMEBREW_NO_ANALYTICS=1
-        fi
-
         # Add the fuzzyfinder completion - TODO: migrate to zsh
         if [[ -n "${ZSH_VERSION:-}" ]]; then
             [[ -e ~/git/fz/fz.sh ]] && . ~/git/fz/fz.sh
@@ -979,9 +953,6 @@ case "$shell" in
             PS1+="${C_DATE}$(date +%H:%M:%S)${C_BLUE}${_P_SSH} ${PS_EXIT}${PS_JOB_TIME}${C_BLUE}\w \$${C_RST} "
 
             __rc_append_bash_history_maybe
-
-            # Z (autojump like thing) - defined in other .bashrc_xxx - replacing with FASD
-            # "$L_Z_PROMPT_CMD" --add "$(command pwd -P 2>/dev/null)" 2>/dev/null
         }
         # Smaller prompt, good for presentations
         function __rc_prompt_command2() {
@@ -996,9 +967,6 @@ case "$shell" in
             PS1+="${C_DATE}$(date +%H:%M) ${PS_EXIT}${C_BLUE}\W \$${C_RST} "
 
             __rc_append_bash_history_maybe
-
-            # Z (autojump like thing) - defined in other .bashrc_xxx - replacing with FASD
-            # "$L_Z_PROMPT_CMD" --add "$(command pwd -P 2>/dev/null)" 2>/dev/null
         }
 
         # stalker: purple - slacker: bordeaux - kollok: orange - blinker: 'skin'
@@ -1099,18 +1067,6 @@ case "$shell" in
 
         [[ -f ~/.fzf.bash ]] && source ~/.fzf.bash
 
-        # Load z (jump to directories, see `man z`) if brew is installed and z is too
-        if exists brew; then
-            # Load rupa's z if installed
-            [ -f $(brew --prefix)/etc/profile.d/z.sh ] && source $(brew --prefix)/etc/profile.d/z.sh
-        fi
-
-        # Add the fuzzyfinder completion for z
-        if [[ -n "$BASH" ]] && exists z; then
-            complete -r z
-            complete -F _fzf_complete_z -o default -o bashdefault z
-        fi
-
         ;;
 
     *) true ;;  # Unknown shell
@@ -1121,6 +1077,14 @@ esac
 #
 ## Other common additions from utilities
 #
+
+## zoxide (modern directory autojump like z)
+
+if exists zoxide && [[ $shell =~ ^zsh\|bash$ ]]; then
+    # Must run after `compinit`
+    eval "$(zoxide init "$shell")"
+fi
+
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
