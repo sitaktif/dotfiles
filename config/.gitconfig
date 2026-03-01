@@ -1,7 +1,6 @@
 [user]
     name = Romain Chossart
     email = romainchossart@gmail.com
-    signingkey = 8FDC059FCC879FD9B2C6874BCBA9C3883C422717
 
 [core]
     excludesfile = ~/.gitexclude
