@@ -18,6 +18,18 @@ REL_DOT_DIR="git/dotfiles/config"  # Replace this with repo path
 
 INSTALL=true
 
+IS_LINUX=0
+IS_MAC=0
+case $(uname) in
+    Linux)
+        IS_LINUX=1 ;;
+    Darwin)
+        IS_MAC=1 ;;
+    *)
+        echo "Could not determine OS; aborting" >&2
+        exit 1 ;;
+esac
+
 parse_args() {
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -28,6 +40,8 @@ parse_args() {
     done
 }
 
+LINUX_PACKAGES=(neovim fzf ripgrep ansible tree)
+
 linkit() {
     local rel_target_path=$1
     local base_link_src=$2
@@ -37,15 +51,15 @@ linkit() {
     # Case where the link is set already
     if [[ -h "$target" ]] && [[ $(readlink "$target") == "$src" ]]; then
         printf "%-48s [${GRN}already linked${RST}]\n" "$target"
-    # Case where a file is present but isn't the expected link, and where we can create a backup
+        # Case where a file is present but isn't the expected link, and where we can create a backup
     elif { [[ -h "$target" ]] || [[ -e "$target" ]] ; } && [[ ! -e "$target.bak" ]]; then
         printf "%-48s [${YLW}wrong link - replacing link and backing up old file into %s.bak${RST}]\n" "$target" "$target"
         mv "$target" "$target.bak"
         ln -s "$src" "$target"
-    # Case where a file is present but isn't the expected link, but where a backup already exists
+        # Case where a file is present but isn't the expected link, but where a backup already exists
     elif { [[ -h "$target" ]] || [[ -e "$target" ]] ; } && [[ -e "$target.bak" ]]; then
         printf "%-48s [${RED}wrong link and back up already exists in %s.bak${RST} - skipping]\n" "$target" "$target"
-    # Case where the target doesn't exist yet (happy path)
+        # Case where the target doesn't exist yet (happy path)
     else
         printf "%-48s [${GRN}creating link${RST}]\n" "$target"
         ln -s "$src" "$target"
@@ -54,14 +68,14 @@ linkit() {
 
 linkall() {
     (
-        # We will list directories and files from there
-        cd "$THIS_DIR/config"
+    # We will list directories and files from there
+    cd "$THIS_DIR/config"
 
-        mkdir -p ~/.config
-        for rel_target_path in .[^.]*; do
-            [[ $rel_target_path == .config ]] && continue
-            linkit "$rel_target_path" "$REL_DOT_DIR"
-        done
+    mkdir -p ~/.config
+    for rel_target_path in .[^.]*; do
+        [[ $rel_target_path == .config ]] && continue
+        linkit "$rel_target_path" "$REL_DOT_DIR"
+    done
 
         # Create links inside ~/.config/ (the relative symlinks will start with ../)
         for rel_target_path in .config/*; do
@@ -87,7 +101,7 @@ defaults_dict_get() {
         grep -F "\"$dict_key\"" |
         sed -n 's/[[:space:]]*"\{0,1\}[^"]*"\{0,1\}[[:space:]]*=[[:space:]]*"\{0,1\}\([^"]*\)"\{0,1\};/\1/p' |
         sed 's/\\\\/\\/g'
-}
+    }
 
 # Set the value to the macOS "defaults" dict if not set yet
 defaults_dict_set_val() {
@@ -162,63 +176,63 @@ set_mac_prefs() {
     # @command, ~option, ^ctrl, $shift
 
     {
-    # Global ('Apple Global Domain')
-    defaults_dict_set_val NSGlobalDomain NSUserKeyEquivalents 'Hide Others' '@~^$7'
-    defaults_dict_set_val NSGlobalDomain NSUserKeyEquivalents 'Minimise' '@~^$9'
-    defaults_dict_set_val NSGlobalDomain NSUserKeyEquivalents 'Minimise All' '@~^$8'
-    defaults_dict_set_val NSGlobalDomain NSUserKeyEquivalents 'Minimize' '@~^$-'
-    defaults_dict_set_val NSGlobalDomain NSUserKeyEquivalents 'Minimize All' '@~^$0'
-    defaults_dict_set_val NSGlobalDomain NSUserKeyEquivalents 'Merge All Windows' '@~^/'
+        # Global ('Apple Global Domain')
+        defaults_dict_set_val NSGlobalDomain NSUserKeyEquivalents 'Hide Others' '@~^$7'
+        defaults_dict_set_val NSGlobalDomain NSUserKeyEquivalents 'Minimise' '@~^$9'
+        defaults_dict_set_val NSGlobalDomain NSUserKeyEquivalents 'Minimise All' '@~^$8'
+        defaults_dict_set_val NSGlobalDomain NSUserKeyEquivalents 'Minimize' '@~^$-'
+        defaults_dict_set_val NSGlobalDomain NSUserKeyEquivalents 'Minimize All' '@~^$0'
+        defaults_dict_set_val NSGlobalDomain NSUserKeyEquivalents 'Merge All Windows' '@~^/'
     } &
 
     {
-    # Keynote
-    defaults_dict_set_val 'com.apple.iWork.Keynote' NSUserKeyEquivalents '\033Arrange\033Align Objects\033Bottom' '@~\U2193'
-    defaults_dict_set_val 'com.apple.iWork.Keynote' NSUserKeyEquivalents '\033Arrange\033Align Objects\033Left' '@~\U2190'
-    defaults_dict_set_val 'com.apple.iWork.Keynote' NSUserKeyEquivalents '\033Arrange\033Align Objects\033Right' '@~\U2192'
-    defaults_dict_set_val 'com.apple.iWork.Keynote' NSUserKeyEquivalents '\033Arrange\033Align Objects\033Top' '@~\U2191'
-    defaults_dict_set_val 'com.apple.iWork.Keynote' NSUserKeyEquivalents 'Play Slideshow' '@~o'
+        # Keynote
+        defaults_dict_set_val 'com.apple.iWork.Keynote' NSUserKeyEquivalents '\033Arrange\033Align Objects\033Bottom' '@~\U2193'
+        defaults_dict_set_val 'com.apple.iWork.Keynote' NSUserKeyEquivalents '\033Arrange\033Align Objects\033Left' '@~\U2190'
+        defaults_dict_set_val 'com.apple.iWork.Keynote' NSUserKeyEquivalents '\033Arrange\033Align Objects\033Right' '@~\U2192'
+        defaults_dict_set_val 'com.apple.iWork.Keynote' NSUserKeyEquivalents '\033Arrange\033Align Objects\033Top' '@~\U2191'
+        defaults_dict_set_val 'com.apple.iWork.Keynote' NSUserKeyEquivalents 'Play Slideshow' '@~o'
     } &
 
     {
-    # Numbers
-    defaults_dict_set_val 'com.apple.iWork.Numbers' NSUserKeyEquivalents 'Delete Column' '@~$-'
-    defaults_dict_set_val 'com.apple.iWork.Numbers' NSUserKeyEquivalents 'Delete Columns' '@~$-'
-    defaults_dict_set_val 'com.apple.iWork.Numbers' NSUserKeyEquivalents 'Delete Row' '@~-'
-    defaults_dict_set_val 'com.apple.iWork.Numbers' NSUserKeyEquivalents 'Delete Rows' '@~-'
+        # Numbers
+        defaults_dict_set_val 'com.apple.iWork.Numbers' NSUserKeyEquivalents 'Delete Column' '@~$-'
+        defaults_dict_set_val 'com.apple.iWork.Numbers' NSUserKeyEquivalents 'Delete Columns' '@~$-'
+        defaults_dict_set_val 'com.apple.iWork.Numbers' NSUserKeyEquivalents 'Delete Row' '@~-'
+        defaults_dict_set_val 'com.apple.iWork.Numbers' NSUserKeyEquivalents 'Delete Rows' '@~-'
     } &
 
     {
-    # Notes
-    defaults_dict_set_val 'com.apple.Notes' NSUserKeyEquivalents '\033Format\033Font\033Remove Style' '@$t'
-    defaults_dict_set_val 'com.apple.Notes' NSUserKeyEquivalents '\033Format\033Title' '@$i'
+        # Notes
+        defaults_dict_set_val 'com.apple.Notes' NSUserKeyEquivalents '\033Format\033Font\033Remove Style' '@$t'
+        defaults_dict_set_val 'com.apple.Notes' NSUserKeyEquivalents '\033Format\033Title' '@$i'
     } &
 
     {
-    # Mail
-    defaults_dict_set_val 'com.apple.mail' NSUserKeyEquivalents '\033Message\033Mark as Read' '@^$d'
-    defaults_dict_set_val 'com.apple.mail' NSUserKeyEquivalents '\033Message\033Mark as Unread' '@^$d'
+        # Mail
+        defaults_dict_set_val 'com.apple.mail' NSUserKeyEquivalents '\033Message\033Mark as Read' '@^$d'
+        defaults_dict_set_val 'com.apple.mail' NSUserKeyEquivalents '\033Message\033Mark as Unread' '@^$d'
     } &
 
     {
-    # Safari
-    defaults_dict_set_val 'com.apple.Safari' NSUserKeyEquivalents '\033File\033Export as PDF...' '@~p'
-    defaults_dict_set_val 'com.apple.Safari' NSUserKeyEquivalents '\033Window\033Show Next Tab' '@~l'
-    defaults_dict_set_val 'com.apple.Safari' NSUserKeyEquivalents '\033Window\033Show Previous Tab' '@~h'
-    # defaults_dict_set_val 'com.apple.Safari' NSUserKeyEquivalents '\033Window\033Show Next Tab' '@~\U2192'
-    # defaults_dict_set_val 'com.apple.Safari' NSUserKeyEquivalents '\033Window\033Show Previous Tab' '@~\U2190'
-    defaults_dict_set_val 'com.apple.Safari' NSUserKeyEquivalents '\033Edit\033Undo Close Tab' '@$t'
+        # Safari
+        defaults_dict_set_val 'com.apple.Safari' NSUserKeyEquivalents '\033File\033Export as PDF...' '@~p'
+        defaults_dict_set_val 'com.apple.Safari' NSUserKeyEquivalents '\033Window\033Show Next Tab' '@~l'
+        defaults_dict_set_val 'com.apple.Safari' NSUserKeyEquivalents '\033Window\033Show Previous Tab' '@~h'
+        # defaults_dict_set_val 'com.apple.Safari' NSUserKeyEquivalents '\033Window\033Show Next Tab' '@~\U2192'
+        # defaults_dict_set_val 'com.apple.Safari' NSUserKeyEquivalents '\033Window\033Show Previous Tab' '@~\U2190'
+        defaults_dict_set_val 'com.apple.Safari' NSUserKeyEquivalents '\033Edit\033Undo Close Tab' '@$t'
     } &
 
     {
-    defaults_dict_set_val 'com.apple.iChat' NSUserKeyEquivalents '\033Window\033Select Next Conversation' '@~j'
-    defaults_dict_set_val 'com.apple.iChat' NSUserKeyEquivalents '\033Window\033Select Previous Conversation' '@~k'
+        defaults_dict_set_val 'com.apple.iChat' NSUserKeyEquivalents '\033Window\033Select Next Conversation' '@~j'
+        defaults_dict_set_val 'com.apple.iChat' NSUserKeyEquivalents '\033Window\033Select Previous Conversation' '@~k'
     } &
 
     # Messsages - switch conversations with Cmd-option-j/k.
     {
-    defaults_dict_set_val 'com.apple.MobileSMS' NSUserKeyEquivalents '\033Window\033Go to Next Conversation' '@~j'
-    defaults_dict_set_val 'com.apple.MobileSMS' NSUserKeyEquivalents '\033Window\033Go to Previous Conversation' '@~k'
+        defaults_dict_set_val 'com.apple.MobileSMS' NSUserKeyEquivalents '\033Window\033Go to Next Conversation' '@~j'
+        defaults_dict_set_val 'com.apple.MobileSMS' NSUserKeyEquivalents '\033Window\033Go to Previous Conversation' '@~k'
     } &
 
     # Wait for defaults to be written down
@@ -300,7 +314,7 @@ set_mac_prefs() {
 
     # Show hidden files in the finder.
     if [[ "$(defaults read com.apple.finder AppleShowAllFiles)" != 1 ]]; then
-      defaults write com.apple.finder AppleShowAllFiles -int 1 && killall Finder
+        defaults write com.apple.finder AppleShowAllFiles -int 1 && killall Finder
     fi
 
     # Use list view in all Finder windows by default
@@ -332,7 +346,7 @@ set_mac_prefs() {
     defaults write com.apple.Safari SafariGeolocationPermissionPolicy -int 2
 
     #  # Examples from gibfahn
-    #  
+    #
     #  # Create global shortcut "Merge all windows" ⌘-M
     #  if ! defaults read 'Apple Global Domain' NSUserKeyEquivalents | grep -q "Merge All Windows"; then
     #    defaults write 'Apple Global Domain' NSUserKeyEquivalents -dict-add "Merge All Windows" '@$m'
@@ -421,72 +435,79 @@ set_mac_prefs() {
     #    defaults write -globalDomain AppleScrollerPagingBehavior -int 1
     #  fi
 
-
-
 }
 
 main() {
     parse_args "$@"
 
-    # Config specific actions
-    # Note: this will unfortunately return 0 after an OS Upgrade, in which case
-    # "xcode-select --install" has to be run manually.
-    xcode-select -p >/dev/null 2>&1
-    if [[ $? == 2 ]]; then
-        echo "* Installing xcode command line tools (git, ...)"
-        xcode-select --install
+    if [[ $IS_MAC == 1 ]]; then
+        # Config specific actions
+        # Note: this will unfortunately return 0 after an OS Upgrade, in which case
+        # "xcode-select --install" has to be run manually.
+        xcode-select -p >/dev/null 2>&1
+        if [[ $? == 2 ]]; then
+            echo "* Installing xcode command line tools (git, ...)"
+            xcode-select --install
+        fi
     fi
 
     if [[ $INSTALL == true ]]; then
         ln -nsf $THIS_DIR/bin ~/bin
 
-        echo "* Setting mac preferences (keyboard shortcuts) with 'defaults'"
-        echo "Note: you need to allow full disk access to '/bin/bash' first in Preferences"
-        set_mac_prefs
+        if [[ $IS_MAC == 1 ]]; then
+            echo "* Setting mac preferences (keyboard shortcuts) with 'defaults'"
+            echo "Note: you need to allow full disk access to '/bin/bash' first in Preferences"
+            set_mac_prefs
 
-        if ! command -v brew >/dev/null 2>&1; then
-            echo "* Installing brew"
-            echo "Go to https://brew.sh/ and manually install brew..."
-            echo "Once you are done, open a new shell and re-run this install script"
-            echo "This is needed to ensure the rest of the install script use the brew-install tools"
-            exit 0
+            if ! command -v brew >/dev/null 2>&1; then
+                echo "* Installing brew"
+                echo "Go to https://brew.sh/ and manually install brew..."
+                echo "Once you are done, open a new shell and re-run this install script"
+                echo "This is needed to ensure the rest of the install script use the brew-install tools"
+                exit 0
+            fi
+            echo "* Installing / updating software using brew"
+            brew bundle install --file=$(dirname ${BASH_SOURCE[0]})/resources/Brewfile
+
+            rustup-init -y
+            ~/.cargo/bin/rustup install stable
+        elif [[ $IS_LINUX == 1 ]]; then
+            echo "* Installing APT packages: ${LINUX_PACKAGES[*]}"
+            sudo apt-get install -y "${LINUX_PACKAGES[@]}"
         fi
-
-        echo "* Installing / updating software using brew"
-        brew bundle install --file=$(dirname ${BASH_SOURCE[0]})/resources/Brewfile
-
-        rustup-init -y
-        ~/.cargo/bin/rustup install stable
     fi
 
     echo "* Symlinking dotfiles"
     linkall
 
-    if command -v python2 >/dev/null 2>&1; then
-        echo "* Adding python2 packages"
-        python2 -m ensurepip --user
-        python2 -m pip install --user --upgrade pip virtualenv neovim ropevim
-    fi
+    if [[ $IS_MAC == 1 ]]; then
+        #
+        # if command -v python2 >/dev/null 2>&1; then
+        #     echo "* Adding python2 packages"
+        #     python2 -m ensurepip --user
+        #     python2 -m pip install --user --upgrade pip virtualenv neovim ropevim
+        # fi
 
-    echo "* Adding python3 packages"
-    pip3 install --upgrade neovim ropevim pip
+        echo "* Adding python3 packages"
+        pip3 install --upgrade neovim ropevim pip
 
-    echo "* Adding ruby gems"
-    gem install --user-install neovim
+        echo "* Adding ruby gems"
+        gem install --user-install neovim
 
-    echo "* Adding npm packages"
-    npm install -g neovim
+        echo "* Adding npm packages"
+        npm install -g neovim
 
-    echo "* Adding iCloud symlink"
-    ln -snf ~/'Library/Mobile Documents/com~apple~CloudDocs' ~/iCloud
+        echo "* Adding iCloud symlink"
+        ln -snf ~/'Library/Mobile Documents/com~apple~CloudDocs' ~/iCloud
 
-    echo "* Follow the following tutorial if your display sucks"
-    echo "https://www.mathewinkson.com/2013/03/force-rgb-mode-in-mac-os-x-to-fix-the-picture-quality-of-an-external-monitor"
-    echo "The script to generate the right calibration is under resources/patch-screen.rb"
+        echo "* Follow the following tutorial if your display sucks"
+        echo "https://www.mathewinkson.com/2013/03/force-rgb-mode-in-mac-os-x-to-fix-the-picture-quality-of-an-external-monitor"
+        echo "The script to generate the right calibration is under resources/patch-screen.rb"
 
-    if [[ $INSTALL == true ]]; then
-        echo "* Installing vim plugins"
-        nvim -c 'PlugInstall | qa'
+        if [[ $INSTALL == true ]]; then
+            echo "* Installing vim plugins"
+            nvim -c 'PlugInstall | qa'
+        fi
     fi
 }
 

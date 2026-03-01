@@ -1,4 +1,4 @@
-# bash and zsh rc file
+# basH and zsh rc file
 
 ###############################
 #           PRELUDE           #
@@ -12,25 +12,27 @@ else
     shell=unknown
 fi
 
-# Functions to measure how long parts of your zshrc takes to execute.
-# Call `time_tick` to split things into sections.
-# Finish by calling `time_toal`.
-declare -F SECONDS=$SECONDS
-declare -i ddd_firsttime=$((SECONDS * 1000))
-declare -i ddd_oldtime=$ddd_firsttime
-time_tick() {
-    [[ $shell != zsh ]] && return
-    printf "%s" "$((i++)): "
-    ddd_newtime=$((SECONDS * 1000))
+if [[ $shell == zsh ]]; then
+    # Functions to measure how long parts of your zshrc takes to execute.
+    # Call `time_tick` to split things into sections.
+    # Finish by calling `time_toal`.
+    declare -F SECONDS=$SECONDS
+    declare -i ddd_firsttime=$((SECONDS * 1000))
+    declare -i ddd_oldtime=$ddd_firsttime
+    time_tick() {
+        [[ $shell != zsh ]] && return
+        printf "%s" "$((i++)): "
+        ddd_newtime=$((SECONDS * 1000))
 
-    printf "%dms\n" "$((ddd_newtime - ddd_oldtime))"
-    ddd_oldtime=$ddd_newtime
-}
-time_total() {
-    [[ $shell != zsh ]] && return
-    ddd_newtime=$((SECONDS * 1000))
-    printf "Last: %sms\n" "$((ddd_newtime - ddd_firsttime))"
-}
+        printf "%dms\n" "$((ddd_newtime - ddd_oldtime))"
+        ddd_oldtime=$ddd_newtime
+    }
+    time_total() {
+        [[ $shell != zsh ]] && return
+        ddd_newtime=$((SECONDS * 1000))
+        printf "Last: %sms\n" "$((ddd_newtime - ddd_firsttime))"
+    }
+fi
 
 # Non-interactive mode
 [[ -z "$PS1" ]] && return
@@ -39,6 +41,13 @@ if [[ -n ${COMMONRC_SOURCED:-} ]]; then
     echo "~/.commonrc was already sourced!" >&2
 fi
 COMMONRC_SOURCED=1
+
+my_relpath() {
+  local path=$1
+  local relto=$2
+  [[ $path == /* ]] && echo "$path" || echo "$relto/${path#./}"
+}
+
 
 exists() { command -v "$1" >/dev/null 2>&1; } # Check if command exists (is in path).
 
@@ -373,35 +382,43 @@ alias vim_restore_session='vim $(find . -name ".*.sw[pon]" | while read f; do rm
 
 ## Fuzzy-finder (fzf) - see https://junegunn.kr/2016/07/fzf-git/
 
-# Key bindings containing spaces need to be quoted.
-# The shift-left/right bindings will be available in fzf >0.50.0
-_fzf_bindings=(
-'ctrl-t:toggle-all,alt-j:jump,alt-k:jump-accept,alt-p:toggle-preview,shift-up:toggle+up,shift-down:toggle+down'
-\''shift-left:transform:for _ in $(seq $FZF_POS $FZF_MATCH_COUNT); do echo -n +toggle+up; done'\'
-\''shift-right:transform:for _ in $(seq 1 $FZF_POS); do echo -n +toggle+down; done'\'
-)
-# multi-selection, 60% height (default 40%),
-# extended: use leading single quote for exact word matches.
-export FZF_DEFAULT_OPTS="--multi --extended --height=60% ${_fzf_bindings[@]/#/--bind }"
+# TODO: inline dotfiles.git/config/.fzf.bash in here
+if exists fzf; then
+    # Key bindings containing spaces need to be quoted.
+    # The shift-left/right bindings will be available in fzf >0.50.0
+    _fzf_bindings=(
+    'ctrl-t:toggle-all,alt-j:jump,alt-k:jump-accept,alt-p:toggle-preview,shift-up:toggle+up,shift-down:toggle+down'
+    )
+    fzf_version=$(fzf --version | cut -d' ' -f1)
+    if [[ $fzf_version == 0.[56789]?.* ]] || [[ $fzf_version == *.???.* ]]; then
+        _fzf_bindings+=(
+            \''shift-left:transform:for _ in $(seq $FZF_POS $FZF_MATCH_COUNT); do echo -n +toggle+up; done'\'
+            \''shift-right:transform:for _ in $(seq 1 $FZF_POS); do echo -n +toggle+down; done'\'
+        )
+    fi
+    # multi-selection, 60% height (default 40%),
+    # extended: use leading single quote for exact word matches.
+    export FZF_DEFAULT_OPTS="--multi --extended --height=60% ${_fzf_bindings[@]/#/--bind }"
 
-if command -v fd >/dev/null 2>&1; then
-    export FZF_ALT_C_COMMAND="command fd --type d 2> /dev/null"
-    export FZF_DEFAULT_COMMAND='fd --type f'
+    if command -v fd >/dev/null 2>&1; then
+        export FZF_ALT_C_COMMAND="command fd --type d 2> /dev/null"
+        export FZF_DEFAULT_COMMAND='fd --type f'
+    fi
+
+    # Custom fuzzy completion for "z" command
+    #   e.g. z **<TAB>
+    _fzf_complete_z() {
+        FZF_COMPLETION_TRIGGER='' FZF_COMPLETION_OPTS="$FZF_COMPLETION_OPTS --tac --no-sort" \
+            _fzf_complete --reverse "$@" < <(_z -l 2>&1)
+        COMPREPLY=$(sed -E 's/[^ ]*[[:space:]]+//' <<< "$COMPREPLY")
+
+        # Need to add the following (doing it at the end of this file
+        # to override z completion)
+        # if [[ -n "$BASH" ]]; then
+        # 	complete -F _fzf_complete_z -o default -o bashdefault z
+        # fi
+    }
 fi
-
-# Custom fuzzy completion for "z" command
-#   e.g. z **<TAB>
-_fzf_complete_z() {
-    FZF_COMPLETION_TRIGGER='' FZF_COMPLETION_OPTS="$FZF_COMPLETION_OPTS --tac --no-sort" \
-        _fzf_complete --reverse "$@" < <(_z -l 2>&1)
-    COMPREPLY=$(sed -E 's/[^ ]*[[:space:]]+//' <<< "$COMPREPLY")
-
-    # Need to add the following (doing it at the end of this file
-    # to override z completion)
-    # if [[ -n "$BASH" ]]; then
-    # 	complete -F _fzf_complete_z -o default -o bashdefault z
-    # fi
-}
 
 
 # No worky?
@@ -565,7 +582,9 @@ case "$shell" in
         autoload -U compinit
         _update_zcomp() {
             setopt extendedglob
-            if [[ -z ~/.zcompdump(#qN.mh-24) ]]; then
+            # Is the completion file < 24h old? Use an eval otherwise sourcing the file with bash throws a syntax error.
+            is_compdump_older_than_24h=$(eval '[[ -z ~/.zcompdump(#qN.mh-24) ]] && echo "1" || echo "0"')
+            if [[ $is_compdump_older_than_24h == 1 ]]; then
             # if true; then
                 compinit -d ~/.zcompdump
                 touch ~/.zcompdump
@@ -672,7 +691,7 @@ case "$shell" in
             # Completion
             # zplugin ice wait blockf atpull'zplugin creinstall -q .'
             # zplugin light zsh-users/zsh-completions
- 
+
             # Pure theme
             # zplugin ice pick"async.zsh" src"pure.zsh"
             # zplugin light sindresorhus/pure
@@ -1086,8 +1105,8 @@ case "$shell" in
             [ -f $(brew --prefix)/etc/profile.d/z.sh ] && source $(brew --prefix)/etc/profile.d/z.sh
         fi
 
-        # Add the fuzzyfinder completion
-        if [[ -n "$BASH" ]]; then
+        # Add the fuzzyfinder completion for z
+        if [[ -n "$BASH" ]] && exists z; then
             complete -r z
             complete -F _fzf_complete_z -o default -o bashdefault z
         fi
