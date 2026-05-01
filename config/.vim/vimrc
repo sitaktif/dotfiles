@@ -141,8 +141,34 @@ Plug 'alfredodeza/pytest.vim'
 " Plug 'python-rope/ropevim'
 Plug 'nvie/vim-flake8'
 
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'https://github.com/apple/pkl-neovim.git'
+
 " Initialize plugin system
 call plug#end()
+
+" The below is required for enabling the tree-sitter syntax engine, which is used by pkl-neovim.
+"
+" This requires:
+" - the PKL LSP to be installed: `brew install pkl-lsp`
+" - setting `vim.g.pkl_neovim = { start_command = { "pkl-lsp" }, pkl_cli_path = "/path/to/pkl" }` in .config/nvim/init.vim
+" - manually calling `:TSInstall pkl` and waiting a bit for it to finish. You
+"   can do :e on an existing PKL file to check.
+lua <<EOF
+local hasConfigs, configs = pcall(require, "nvim-treesitter.configs")
+if hasConfigs then
+  configs.setup {
+    ensure_installed = "pkl",
+    highlight = {
+      enable = true,              -- false will disable the whole extension
+    },
+    indent = {
+      enable = true
+    }
+  }
+end
+EOF
+
 
 "  }}}
 
@@ -356,6 +382,8 @@ au CmdWinEnter * nnoremap <buffer> <bs> <bs>
 " Quickfix next/previous
 nnoremap <space> :cn<CR>
 nnoremap ` :cp<CR>
+
+vnoremap <C-S-C> "*y
 
 " Beginners that want to have a good habit
 " (i.e. use hjkl instead of <left>,<down>,<up>,<right>) can use:

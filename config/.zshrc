@@ -24,3 +24,4 @@ fi
 # # <<< conda initialize <<<
 
 test -e /Users/rchossart/.iterm2_shell_integration.zsh && source /Users/rchossart/.iterm2_shell_integration.zsh || true
+export PATH="$PATH:$HOME/.npm-global/bin"

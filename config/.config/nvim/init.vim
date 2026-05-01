@@ -40,6 +40,14 @@ if exists("g:neovide")
     let g:neovide_scroll_animation_length = 0.02
 end
 
+lua << EOF
+vim.g.pkl_neovim = {
+    start_command = { "pkl-lsp" },
+    pkl_cli_path = "/opt/homebrew/bin/pkl"
+}
+EOF
+
+
 " -- Allow clipboard copy paste in neovim
 " vim.api.nvim_set_keymap('', '<D-v>', '+p<CR>', { noremap = true, silent = true})
 " vim.api.nvim_set_keymap('!', '<D-v>', '<C-R>+', { noremap = true, silent = true})
